@@ -7,8 +7,7 @@
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="@color/accent_material_dark"
-        android:id="@+id/">
+        android:background="@color/accent_material_dark" >
 
         <!-- TextView for start purchase -->
         <TextView
@@ -66,7 +65,7 @@
             android:layout_height="wrap_content"
             android:clickable="true"
             android:onClick="selectOption"
-            android:drawableTop="@drawable/listPurchase"
+            android:drawableTop="@drawable/list_purchase"
             android:text="@string/list_purchases"
             android:textColor="#FFFFFF"
             android:textStyle="bold"
@@ -75,8 +74,5 @@
             android:layout_toEndOf="@+id/edit_profile"
             android:layout_marginLeft="49dp"
             android:layout_marginStart="49dp" />
-
     </RelativeLayout>
-
-
 </LinearLayout>
