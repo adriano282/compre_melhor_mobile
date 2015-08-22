@@ -2,10 +2,31 @@
     <string name="app_name">CompreMelhor</string>
 
     <!-- Page Login's resources -->
-    <string name="user">User</string>
-    <string name="password">Password</string>
+    <string name="user">Email</string>
+    <string name="password">Senha</string>
     <string name="login">Log in</string>
     <string name="register">Cadastrar se</string>
 
     <string name="app_id">app_id</string>
+
+    <!-- Register page's resources -->
+    <string name="name">Nome</string>
+    <string name="email">E-mail</string>
+    <string name="document">Numero Documento</string>
+    <string name="addAddress">Adicionar Endereco</string>
+    <string name="password2">Repita a senha</string>
+
+    <!-- Register Address page's resources -->
+    <string name="street">Rua</string>
+    <string name="number">Numero</string>
+    <string name="quarter">Bairro</string>
+    <string name="city">Cidade</string>
+    <string name="state">Estado</string>
+    <string name="zipcode">CEP</string>
+
+    <!-- Dashboard page's resources -->
+    <string name="start_purchase">Iniciar Compra</string>
+    <string name="edit_profile">Editar Cadastro</string>
+    <string name="manager_addresses">Gerenciar Endereços</string>
+    <string name="list_purchases">Listar Compras Feitas</string>
 </resources>

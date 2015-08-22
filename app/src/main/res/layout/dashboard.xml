@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/accent_material_dark"
+        android:id="@+id/">
+
+        <!-- TextView for start purchase -->
+        <TextView
+            android:id="@+id/start_purchase"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="49dp"
+            android:layout_marginTop="93dp"
+            android:clickable="true"
+            android:drawableTop="@drawable/sacola"
+            android:onClick="selectOption"
+            android:text="@string/start_purchase"
+            android:textColor="#FFFFFF"
+            android:textStyle="bold"
+            android:layout_marginStart="49dp"
+            android:layout_alignParentTop="true"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true" />
+
+        <!-- TextView for edit profile -->
+        <TextView
+            android:id="@+id/edit_profile"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:clickable="true"
+            android:onClick="selectOption"
+            android:drawableTop="@drawable/negocios"
+            android:text="@string/edit_profile"
+            android:textColor="#FFFFFF"
+            android:textStyle="bold"
+            android:layout_marginBottom="95dp"
+            android:layout_alignParentBottom="true"
+            android:layout_alignLeft="@+id/start_purchase"
+            android:layout_alignStart="@+id/start_purchase" />
+
+        <!-- TextView for Manager Addresses -->
+        <TextView
+            android:id="@+id/manager_addresses"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:clickable="true"
+            android:onClick="selectOption"
+            android:drawableTop="@drawable/address"
+            android:text="@string/manager_addresses"
+            android:textStyle="bold"
+            android:textColor="#FFFFFF"
+            android:layout_alignBottom="@+id/start_purchase"
+            android:layout_alignLeft="@+id/list_purchases"
+            android:layout_alignStart="@+id/list_purchases" />
+
+        <!-- TextView for de list of purchases done -->
+        <TextView
+            android:id="@+id/list_purchases"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:clickable="true"
+            android:onClick="selectOption"
+            android:drawableTop="@drawable/listPurchase"
+            android:text="@string/list_purchases"
+            android:textColor="#FFFFFF"
+            android:textStyle="bold"
+            android:layout_alignBottom="@+id/edit_profile"
+            android:layout_toRightOf="@+id/edit_profile"
+            android:layout_toEndOf="@+id/edit_profile"
+            android:layout_marginLeft="49dp"
+            android:layout_marginStart="49dp" />
+
+    </RelativeLayout>
+
+
+</LinearLayout>

@@ -7,22 +7,22 @@
     android:layout_height="match_parent"
     android:gravity="center_vertical"
     android:paddingLeft="16dp"
+    android:background="#FFFFFF"
     android:paddingRight="16dp"
     android:paddingTop="16dp"
     android:paddingBottom="16dp"
-    tools:context=".LoginActivity">
+    tools:context=".LoginActivity" >
 
     <ImageView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
-        android:layout_marginBottom="50dp"
-        android:src="@drawable/abc_btn_check_material"/>
+        android:src="@drawable/ecommerce_carrinho" />
 
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@string/user"/>
+        android:text="@string/user" />
 
     <EditText
         android:id="@+id/user"
@@ -34,12 +34,12 @@
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@string/password"/>
+        android:text="@string/password" />
 
     <EditText
         android:id="@+id/password"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content" />
+        android:layout_height="wrap_content"/>
 
     <Button
         android:id="@+id/buttonLogin"
@@ -55,11 +55,6 @@
 
     <com.facebook.login.widget.LoginButton
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        />
-
-
-
-
+        android:layout_height="wrap_content" />
 
 </LinearLayout>
