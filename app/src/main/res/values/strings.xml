@@ -1,13 +1,16 @@
 <resources>
+    <!-- Generic information -->
     <string name="app_name">CompreMelhor</string>
+    <string name="app_id">1621410234792107</string>
+
 
     <!-- Page Login's resources -->
     <string name="user">Email</string>
     <string name="password">Senha</string>
     <string name="login">Log in</string>
     <string name="register">Cadastrar se</string>
+    <string name="keep_connected">Manter-se conectado</string>
 
-    <string name="app_id">app_id</string>
 
     <!-- Register page's resources -->
     <string name="name">Nome</string>
@@ -16,6 +19,7 @@
     <string name="addAddress">Adicionar Endereco</string>
     <string name="password2">Repita a senha</string>
 
+
     <!-- Register Address page's resources -->
     <string name="street">Rua</string>
     <string name="number">Numero</string>
@@ -23,6 +27,7 @@
     <string name="city">Cidade</string>
     <string name="state">Estado</string>
     <string name="zipcode">CEP</string>
+
 
     <!-- Dashboard page's resources -->
     <string name="start_purchase">Iniciar Compra</string>

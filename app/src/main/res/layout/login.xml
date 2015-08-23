@@ -41,6 +41,12 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"/>
 
+    <CheckBox
+        android:id="@+id/keep_connected"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/keep_connected"/>
+
     <Button
         android:id="@+id/buttonLogin"
         android:layout_width="match_parent"
@@ -54,6 +60,7 @@
         android:text="@string/register" />
 
     <com.facebook.login.widget.LoginButton
+        android:id="@+id/login_button_facebook"
         android:layout_width="match_parent"
         android:layout_height="wrap_content" />
 
