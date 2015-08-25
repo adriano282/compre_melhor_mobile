@@ -3,7 +3,7 @@ package br.com.compremelhor.model;
 /**
  * Created by adriano on 25/08/15.
  */
-public class Manufacturer {
+public class Manufacturer extends DomainEntity {
     String companyName;
 
     public String getCompanyName() {

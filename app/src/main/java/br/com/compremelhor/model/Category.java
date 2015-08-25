@@ -3,7 +3,7 @@ package br.com.compremelhor.model;
 /**
  * Created by adriano on 25/08/15.
  */
-public class Category {
+public class Category extends DomainEntity {
     String name;
 
     public void setName(String name) {

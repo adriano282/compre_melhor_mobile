@@ -3,7 +3,7 @@ package br.com.compremelhor.model;
 /**
  * Created by adriano on 25/08/15.
  */
-public class Product {
+public class Product extends DomainEntity {
     private String name;
     private String description;
     private Unit unit;

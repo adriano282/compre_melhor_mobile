@@ -5,7 +5,7 @@ import java.util.List;
 /**
  * Created by adriano on 25/08/15.
  */
-public class Cart {
+public class Cart extends DomainEntity {
     private List<Item> itens;
 
 

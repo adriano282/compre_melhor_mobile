@@ -5,7 +5,7 @@ import java.math.BigDecimal;
 /**
  * Created by adriano on 25/08/15.
  */
-public class Freight {
+public class Freight extends DomainEntity {
     private Address address;
     private BigDecimal valueTotalDrive;
 

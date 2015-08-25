@@ -7,7 +7,7 @@ import java.util.List;
 /**
  * Created by adriano on 24/08/15.
  */
-public class Purchase {
+public class Purchase extends DomainEntity {
     private Calendar datePurchase;
     private BigDecimal valueTotal;
     private Status status;
