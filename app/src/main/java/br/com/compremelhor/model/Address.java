@@ -1,15 +1,31 @@
 package br.com.compremelhor.model;
 
+import com.j256.ormlite.field.DatabaseField;
+import com.j256.ormlite.table.DatabaseTable;
+
 /**
  * Created by adriano on 25/08/15.
  */
+@DatabaseTable(tableName = "address")
 public class Address extends DomainEntity {
+    @DatabaseField(id = true, generatedId = true)
+    private Long id;
+    @DatabaseField
     private String street;
+    @DatabaseField
     private String number;
+    @DatabaseField
     private String quarter;
+    @DatabaseField
     private String city;
+    @DatabaseField
     private String state;
+    @DatabaseField
     private String zipcode;
+
+    public Address() {
+        // ORMLite needs a no-arg constructor
+    }
 
     public String getStreet() {
         return street;
@@ -57,5 +73,14 @@ public class Address extends DomainEntity {
 
     public void setZipcode(String zipcode) {
         this.zipcode = zipcode;
+    }
+
+    @Override
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
     }
 }
