@@ -34,4 +34,11 @@
     <string name="edit_profile">Editar Cadastro</string>
     <string name="manager_addresses">Gerenciar Endereços</string>
     <string name="list_purchases">Listar Compras Feitas</string>
+    <string name="add_address">Adicionar Novo Endereço</string>
+    <string name="title_my_addresses">Meus Endereços</string>
+    <string name="change_password">Alterar minha senha</string>
+    <string name="undone">Desfazer</string>
+    <string name="save">alterar</string>
+    <string name="identification">N. Documento</string>
+    <string name="my_data">Meu Cadastro</string>
 </resources>
