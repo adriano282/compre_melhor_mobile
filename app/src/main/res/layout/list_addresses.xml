@@ -1,26 +1,34 @@
-<?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical"
+    android:orientation="horizontal"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:background="@color/accent_material_dark">
+    android:layout_height="wrap_content"
+    android:minHeight="?android:listPreferredItemHeight"
+    android:divider="?android:dividerVertical"
+    android:dividerPadding="8dp"
+    android:showDividers="middle" >
 
-    <LinearLayout
-        android:id="@+id/zipcode"
-        android:layout_width="match_parent"
+    <LinearLayout android:id="@+id/primary_target"
+        android:layout_width="0dp"
         android:layout_height="match_parent"
-        android:orientation="vertical" >
+        android:layout_weight="1"
+        android:orientation="vertical"
+        android:paddingLeft="@dimen/page_margin"
+        android:paddingRight="@dimen/page_margin"
+        android:clickable="true"
+        android:focusable="true"
+        android:gravity="center_vertical"
+        android:background="?android:selectableItemBackground" >
 
-        <TextView
-            android:id="@+id/street"
-            android:layout_width="wrap_content"
+        <TextView style="?android:textAppearanceListItemSmall"
+            android:id="@+id/zipcode_address"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:textColor="@android:color/black"/>
+            android:text="Zip code here!" />
 
-        <TextView
-            android:id="@+id/quarter"
-            android:layout_width="wrap_content"
+        <TextView style="?android:textAppearanceListItemSmall"
+            android:id="@+id/street_address"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:textColor="@android:color/black" />
+            android:text="Street here!" />
     </LinearLayout>
 </LinearLayout>
