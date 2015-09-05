@@ -70,9 +70,9 @@
 
     <Button
         android:id="@+id/btnRegister"
+        android:layout_gravity="center"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@string/register"/>
-
-
+        android:text="@string/register"
+        style="?android:attr/buttonBarButtonStyle"/>
 </LinearLayout>
