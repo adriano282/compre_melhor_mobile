@@ -11,6 +11,7 @@ import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.Button;
 import android.widget.EditText;
+import android.content.Intent;
 
 import br.com.compremelhor.R;
 
@@ -23,7 +24,6 @@ public class ProfileActivity extends Activity
     private Button btnSave;
     private Button btnUndone;
     private Button btnChangePassword;
-    private Button btnAddNewAddress;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -32,11 +32,11 @@ public class ProfileActivity extends Activity
 
         edName = (EditText) findViewById(R.id.profile_name);
         edEmail = (EditText) findViewById(R.id.profile_email);
-        edDocument = (EditText) findViewById(R.id.profile_name);
+        edDocument = (EditText) findViewById(R.id.profile_document);
 
-        btnSave = (Button) findViewById(R.id.profile_button_save);
-        btnUndone = (Button) findViewById(R.id.profile_button_undone);
-        btnChangePassword = (Button) findViewById(R.id.profile_button_change_password);
+        btnSave = (Button) findViewById(R.id.profile_btn_save);
+        btnUndone = (Button) findViewById(R.id.profile_btn_undone);
+        btnChangePassword = (Button) findViewById(R.id.profile_btn_change_password);
 
         btnChangePassword.setOnClickListener(this);
         btnUndone.setOnClickListener(this);
@@ -52,7 +52,12 @@ public class ProfileActivity extends Activity
     }
     @Override
     public void onClick(View view) {
+        Intent intent;
         switch(view.getId()) {
+            case R.id.profile_btn_change_password:
+                intent = new Intent(this, PasswordActivity.class);
+                startActivity(intent);
+            break;
 
         }
     }

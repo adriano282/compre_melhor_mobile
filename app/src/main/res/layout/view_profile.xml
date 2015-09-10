@@ -83,21 +83,21 @@
             android:layout_weight="1">
 
             <Button
-                android:id="@+id/profile_button_save"
+                android:id="@+id/profile_btn_save"
                 android:text="@string/save"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 style="?android:attr/buttonBarButtonStyle" />
 
             <Button
-                android:id="@+id/profile_button_undone"
+                android:id="@+id/profile_btn_undone"
                 android:text="@string/undone"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 style="?android:attr/buttonBarButtonStyle" />
 
             <Button
-                android:id="@+id/profile_button_change_password"
+                android:id="@+id/profile_btn_change_password"
                 android:text="@string/change_password"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
