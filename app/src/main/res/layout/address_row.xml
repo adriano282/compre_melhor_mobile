@@ -1,0 +1,27 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:paddingLeft="@dimen/page_margin"
+    android:paddingRight="@dimen/page_margin"
+    android:clickable="true"
+    android:focusable="true"
+    android:gravity="center_vertical"
+    android:background="?android:selectableItemBackground" >
+
+        <TextView style="?android:textAppearanceListItemSmall"
+            android:id="@+id/zipcode"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Zip code here!" />
+
+        <TextView style="?android:textAppearanceListItemSmall"
+            android:id="@+id/street"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Street here!" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="10sp" />
+</LinearLayout>

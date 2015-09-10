@@ -16,7 +16,7 @@
     <string name="name">Nome</string>
     <string name="email">E-mail</string>
     <string name="document">Numero Documento</string>
-    <string name="addAddress">Adicionar Endereco</string>
+    <string name="addAddress">Adicionar Endereço</string>
     <string name="password2">Repita a senha</string>
 
 
@@ -27,6 +27,13 @@
     <string name="city">Cidade</string>
     <string name="state">Estado</string>
     <string name="zipcode">CEP</string>
+
+    <string name="edit">Editar</string>
+    <string name="new_address">Novo Endereço</string>
+    <string name="remove">Remover Endereço</string>
+    <string name="options">Opções</string>
+    <string name="cancel">Cancelar</string>
+    <string name="back">Voltar</string>
 
 
     <!-- Dashboard page's resources -->
@@ -41,4 +48,5 @@
     <string name="save">alterar</string>
     <string name="identification">N. Documento</string>
     <string name="my_data">Meu Cadastro</string>
+    <string name="out">Sair</string>
 </resources>
