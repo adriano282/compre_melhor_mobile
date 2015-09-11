@@ -28,11 +28,11 @@ import br.com.compremelhor.useful.Constants;
  */
 public class LoginActivity extends Activity implements Constants {
     private LoginButton loginButtonFacebook;
+    private final String TAG = "LoginActivity";
     private CallbackManager callbackManager;
     private SharedPreferences preferences;
     private EditText user, password;
     private CheckBox keepConnected;
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -59,12 +59,12 @@ public class LoginActivity extends Activity implements Constants {
 
             @Override
             public void onCancel() {
-                System.out.println("logout");
+                Log.d(TAG, "An error occur during login of user.");
             }
 
             @Override
             public void onError(FacebookException error) {
-                Log.e("Login: ", "An error occur during login of user.");
+                Log.e(TAG, "An error occur during login of user.");
             }
         });
 

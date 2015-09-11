@@ -10,6 +10,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.BaseAdapter;
+import android.widget.Button;
 import android.widget.ListView;
 import android.widget.TextView;
 
@@ -23,20 +24,30 @@ import br.com.compremelhor.model.Address;
  * Created by adriano on 09/09/15.
  */
 public class AddressListActivity extends Activity
-        implements AdapterView.OnItemClickListener, DialogInterface.OnClickListener {
+        implements DialogInterface.OnClickListener {
+
     private AlertDialog alertDialog;
     private int addressSelect;
     private ListView listView;
+    private Button btnAddAddress;
+    private Button btnBack;
     private final String TAG = "AddressActivity";
 
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.list_address);
 
-        this.alertDialog = createAlertDialog();
-
         this.listView = (ListView) findViewById(R.id.list_address);
-        this.listView.setOnItemClickListener(this);
+        this.listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                Log.d(TAG, "Item clicked " + id);
+                addressSelect = position;
+                alertDialog.show();
+            }
+        });
+
+        this.alertDialog = createAlertDialog();
 
         this.listView.setAdapter(new BaseAdapter() {
             @Override
@@ -69,15 +80,6 @@ public class AddressListActivity extends Activity
                 return view;
             }
         });
-    }
-
-    @Override
-    public void onItemClick(AdapterView<?> parent,
-                            View view, int position,
-                            long id) {
-        Log.d(TAG, "Item clicked " + id);
-        this.addressSelect = position;
-        alertDialog.show();
     }
 
     @Override
