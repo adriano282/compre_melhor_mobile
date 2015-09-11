@@ -34,6 +34,9 @@
     <string name="options">Opções</string>
     <string name="cancel">Cancelar</string>
     <string name="back">Voltar</string>
+    <string name="confirm_delete">Do you really want remove this address?</string>
+    <string name="yes">Sim</string>
+    <string name="no">Não</string>
 
 
     <!-- Dashboard page's resources -->

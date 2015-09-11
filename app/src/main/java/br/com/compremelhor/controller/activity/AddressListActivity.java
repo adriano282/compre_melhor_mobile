@@ -1,21 +1,21 @@
 package br.com.compremelhor.controller.activity;
 
-import android.app.Activity;
 import android.app.AlertDialog;
+import android.app.ListActivity;
 import android.content.DialogInterface;
+import android.content.Intent;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.AdapterView;
-import android.widget.BaseAdapter;
 import android.widget.Button;
-import android.widget.ListView;
-import android.widget.TextView;
+import android.widget.SimpleAdapter;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import br.com.compremelhor.R;
 import br.com.compremelhor.model.Address;
@@ -23,12 +23,14 @@ import br.com.compremelhor.model.Address;
 /**
  * Created by adriano on 09/09/15.
  */
-public class AddressListActivity extends Activity
-        implements DialogInterface.OnClickListener {
+public class AddressListActivity extends ListActivity
+        implements AdapterView.OnItemClickListener, DialogInterface.OnClickListener {
 
+    private List<Map<String, Object>> addresses;
     private AlertDialog alertDialog;
+    private AlertDialog alertDialogConfirmation;
     private int addressSelect;
-    private ListView listView;
+
     private Button btnAddAddress;
     private Button btnBack;
     private final String TAG = "AddressActivity";
@@ -37,54 +39,67 @@ public class AddressListActivity extends Activity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.list_address);
 
-        this.listView = (ListView) findViewById(R.id.list_address);
-        this.listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                Log.d(TAG, "Item clicked " + id);
-                addressSelect = position;
-                alertDialog.show();
-            }
-        });
+        getListView().setOnItemClickListener(this);
+        alertDialog = createAlertDialog();
+        alertDialogConfirmation = createDialogConfirmation();
 
-        this.alertDialog = createAlertDialog();
+        new Task().execute();
+    }
 
-        this.listView.setAdapter(new BaseAdapter() {
-            @Override
-            public int getCount() {
-                return getAddress().size();
-            }
+    private class Task extends AsyncTask<Void, Void, List<Map<String, Object>>> {
+        @Override
+        protected List<Map<String,Object>> doInBackground(Void... params) {
+            return listAddress();
+        }
 
-            @Override
-            public Object getItem(int position) {
-                return getAddress().get(position);
-            }
+        @Override
+        protected void onPostExecute(List<Map<String, Object>> result) {
+            String[] from = {"zipcode", "street"};
+            int[] to = {R.id.zipcode, R.id.street};
 
-            @Override
-            public long getItemId(int position) {
-                return position;
-            }
+            SimpleAdapter adapter = new SimpleAdapter(AddressListActivity.this,
+                    listAddress(), R.layout.address_row, from, to);
 
-            @Override
-            public View getView(int position, View convertView, ViewGroup parent) {
-                LayoutInflater inflater =
-                        (LayoutInflater) getSystemService(LAYOUT_INFLATER_SERVICE);
-                View view = inflater.inflate(R.layout.address_row, null);
-
-                TextView tvZipcode = (TextView) view.findViewById(R.id.zipcode);
-                tvZipcode.setText(getAddress().get(position).getZipcode());
-
-                TextView tvStreet = (TextView) view.findViewById(R.id.street);
-                tvStreet.setText(getAddress().get(position).getStreet());
-
-                return view;
-            }
-        });
+            setListAdapter(adapter);
+        }
     }
 
     @Override
-    public void onClick(DialogInterface dialog, int which) {
+    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+        this.addressSelect = position;
+        alertDialog.show();
+    }
+
+    private AlertDialog createDialogConfirmation() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setMessage(R.string.confirm_delete);
+        builder.setPositiveButton(getString(R.string.yes), this);
+        builder.setNegativeButton(getString(R.string.no), this);
+
+        return builder.create();
+    }
+
+    @Override
+    public void onClick(DialogInterface dialog, int item) {
         Log.d(TAG, "Item clicked ");
+        Intent intent;
+        switch (item) {
+            case 0:
+                break;
+
+            case 2:
+                alertDialogConfirmation.show();
+                break;
+
+            case DialogInterface.BUTTON_POSITIVE:
+                getAddress().remove(this.addressSelect);
+                getListView().invalidateViews();
+                break;
+
+            case DialogInterface.BUTTON_NEGATIVE:
+                alertDialogConfirmation.dismiss();
+                break;
+        }
     }
 
     private AlertDialog createAlertDialog() {
@@ -99,6 +114,27 @@ public class AddressListActivity extends Activity
         builder.setItems(items, this);
 
         return builder.create();
+    }
+
+    private List<Map<String, Object>> listAddress() {
+        addresses = new ArrayList<Map<String, Object>>();
+
+        Map<String, Object> item;
+
+        for (Address d: getAddress()) {
+            item = new HashMap<>();
+
+            item.put("city", d.getCity());
+            item.put("number", d.getNumber());
+            item.put("quarter", d.getQuarter());
+            item.put("state", d.getState());
+            item.put("street", d.getStreet());
+            item.put("zipcode", d.getZipcode());
+
+            addresses.add(item);
+        }
+
+        return addresses;
     }
 
     private List<Address> getAddress() {

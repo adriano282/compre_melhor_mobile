@@ -71,7 +71,7 @@ public class LoginActivity extends Activity implements Constants {
         if (preferences.getBoolean(KEEP_CONNECT, false) && AccessToken.getCurrentAccessToken() != null) {
             initDashboard();
         }
-
+        initDashboard();
         setContentView(R.layout.login);
     }
 
