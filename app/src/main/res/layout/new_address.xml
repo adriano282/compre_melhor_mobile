@@ -1,126 +1,133 @@
 <?xml version="1.0" encoding="utf-8"?>
-
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="vertical"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:paddingLeft="@dimen/page_margin"
-    android:paddingRight="@dimen/page_margin" >
+    android:layout_height="match_parent" >
 
     <TextView
-        android:layout_marginTop="10sp"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:drawableTop="@drawable/address" />
-
-    <TextView
+        android:background="@android:color/black"
+        android:textColor="@android:color/white"
         android:textSize="20sp"
         android:gravity="center"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Cadastro de Novo Endereço"/>
+        android:text="Novo Endereço"/>
 
-    <TextView
-        android:layout_marginTop="20sp"
+    <LinearLayout
+        android:orientation="vertical"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="@string/zipcode" />
+        android:paddingLeft="@dimen/page_margin"
+        android:paddingRight="@dimen/page_margin">
 
-    <EditText
-        android:id="@+id/new_address_zipcode"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:inputType="number"/>
+        <TextView
+            android:layout_marginTop="10sp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:drawableTop="@drawable/address" />
 
-    <TableLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:stretchColumns="0">
-        <TableRow>
+        <TextView
+            android:layout_marginTop="20sp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/zipcode" />
 
-            <TextView
-                android:layout_marginTop="10sp"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_column="0"
-                android:text="Rua"/>
+        <EditText
+            android:id="@+id/new_address_zipcode"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:inputType="number"/>
 
-            <TextView
-                android:layout_marginTop="10sp"
-                android:layout_width="100sp"
-                android:layout_height="wrap_content"
-                android:layout_column="1"
-                android:text="@string/number"/>
+        <TableLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:stretchColumns="0">
+            <TableRow>
+
+                <TextView
+                    android:layout_marginTop="10sp"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_column="0"
+                    android:text="Rua"/>
+
+                <TextView
+                    android:layout_marginTop="10sp"
+                    android:layout_width="100sp"
+                    android:layout_height="wrap_content"
+                    android:layout_column="1"
+                    android:text="@string/number"/>
 
 
-        </TableRow>
-        <TableRow>
-            <EditText
-                android:id="@+id/new_address_street"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_column="0"/>
+            </TableRow>
+            <TableRow>
+                <EditText
+                    android:id="@+id/new_address_street"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_column="0"/>
 
-            <EditText
-                android:id="@+id/new_address_number"
-                android:layout_width="100sp"
-                android:layout_column="1"
-                android:layout_height="wrap_content" />
-        </TableRow>
-    </TableLayout>
+                <EditText
+                    android:id="@+id/new_address_number"
+                    android:layout_width="100sp"
+                    android:layout_column="1"
+                    android:layout_height="wrap_content" />
+            </TableRow>
+        </TableLayout>
 
-    <TextView
-        android:layout_marginTop="10sp"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="@string/quarter" />
+        <TextView
+            android:layout_marginTop="10sp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/quarter" />
 
-    <EditText
-        android:id="@+id/new_address_quarter"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content" />
+        <EditText
+            android:id="@+id/new_address_quarter"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
 
-    <TextView
-        android:layout_marginTop="10sp"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="@string/city"/>
+        <TextView
+            android:layout_marginTop="10sp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/city"/>
 
-    <EditText
-        android:id="@+id/new_address_city"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content" />
+        <EditText
+            android:id="@+id/new_address_city"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
 
-    <TableLayout
-        android:layout_marginTop="20sp"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:stretchColumns="0,1,2">
-        <TableRow>
-            <Button
-                android:id="@+id/new_address_submit"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_column="0"
-                android:text="Salvar"
-                style="?android:attr/buttonBarButtonStyle" />
+        <TableLayout
+            android:layout_marginTop="20sp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:stretchColumns="0,1,2">
+            <TableRow>
+                <Button
+                    android:id="@+id/new_address_submit"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_column="0"
+                    android:text="Salvar"
+                    style="?android:attr/buttonBarButtonStyle" />
 
-            <Button
-                android:id="@+id/new_address_cancel"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_column="1"
-                android:text="Cancelar"
-                style="?android:attr/buttonBarButtonStyle" />
+                <Button
+                    android:id="@+id/new_address_cancel"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_column="1"
+                    android:text="Cancelar"
+                    style="?android:attr/buttonBarButtonStyle" />
 
-            <Button
-                android:id="@+id/new_address_reset"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_column="3"
-                android:text="Limpar"
-                style="?android:attr/buttonBarButtonStyle" />
-        </TableRow>
-    </TableLayout>
+                <Button
+                    android:id="@+id/new_address_reset"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_column="3"
+                    android:text="Limpar"
+                    style="?android:attr/buttonBarButtonStyle" />
+            </TableRow>
+        </TableLayout>
+    </LinearLayout>
 </LinearLayout>
 

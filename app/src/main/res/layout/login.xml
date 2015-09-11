@@ -6,10 +6,10 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:gravity="center_vertical"
-    android:paddingLeft="16dp"
-    android:background="#FFFFFF"
-    android:paddingRight="16dp"
+    android:paddingLeft="@dimen/page_margin"
+    android:paddingRight="@dimen/page_margin"
     android:paddingTop="16dp"
+    android:background="#FFFFFF"
     android:paddingBottom="16dp"
     tools:context=".LoginActivity" >
 
@@ -47,17 +47,28 @@
         android:layout_height="wrap_content"
         android:text="@string/keep_connected"/>
 
-    <Button
-        android:id="@+id/buttonLogin"
+    <LinearLayout
+        android:orientation="horizontal"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="@string/login" />
+        android:layout_height="wrap_content">
 
-    <Button
-        android:id="@+id/buttonRegister"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="@string/register" />
+        <Button
+            android:id="@+id/buttonLogin"
+            android:layout_weight="1"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:text="@string/login"
+            style="?android:attr/buttonBarButtonStyle" />
+
+        <Button
+            android:id="@+id/buttonRegister"
+            android:layout_weight="1"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:text="@string/register"
+            style="?android:attr/buttonBarButtonStyle" />
+
+    </LinearLayout>
 
     <com.facebook.login.widget.LoginButton
         android:id="@+id/login_button_facebook"
