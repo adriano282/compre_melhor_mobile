@@ -33,7 +33,7 @@
             android:text="@string/zipcode" />
 
         <EditText
-            android:id="@+id/new_address_zipcode"
+            android:id="@+id/et_address_zipcode"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:inputType="number"/>
@@ -62,13 +62,13 @@
             </TableRow>
             <TableRow>
                 <EditText
-                    android:id="@+id/new_address_street"
+                    android:id="@+id/et_address_street"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_column="0"/>
 
                 <EditText
-                    android:id="@+id/new_address_number"
+                    android:id="@+id/et_address_number"
                     android:layout_width="100sp"
                     android:layout_column="1"
                     android:layout_height="wrap_content" />
@@ -82,7 +82,7 @@
             android:text="@string/quarter" />
 
         <EditText
-            android:id="@+id/new_address_quarter"
+            android:id="@+id/et_address_quarter"
             android:layout_width="match_parent"
             android:layout_height="wrap_content" />
 
@@ -93,7 +93,7 @@
             android:text="@string/city"/>
 
         <EditText
-            android:id="@+id/new_address_city"
+            android:id="@+id/et_address_city"
             android:layout_width="match_parent"
             android:layout_height="wrap_content" />
 
@@ -104,7 +104,7 @@
             android:stretchColumns="0,1,2">
             <TableRow>
                 <Button
-                    android:id="@+id/new_address_submit"
+                    android:id="@+id/btn_address_submit"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_column="0"
@@ -112,7 +112,7 @@
                     style="?android:attr/buttonBarButtonStyle" />
 
                 <Button
-                    android:id="@+id/new_address_cancel"
+                    android:id="@+id/btn_address_cancel"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_column="1"
@@ -120,7 +120,7 @@
                     style="?android:attr/buttonBarButtonStyle" />
 
                 <Button
-                    android:id="@+id/new_address_reset"
+                    android:id="@+id/btn_address_reset"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_column="3"

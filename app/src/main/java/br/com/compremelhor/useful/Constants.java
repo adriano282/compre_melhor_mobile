@@ -9,4 +9,14 @@ package br.com.compremelhor.useful;
 public interface Constants {
     String PREFERENCES = "global_preferences";
     String KEEP_CONNECT = "keep_connected";
+
+    String ADDRESS_BUNDLE = "address_bundle";
+    String ZIPCODE = "zipcode";
+    String STREET = "street";
+    String NUMBER = "number";
+    String QUARTER = "quarter";
+    String CITY = "city";
+    String STATE = "state";
+    String ADDRESS_ID = "address_id";
+
 }

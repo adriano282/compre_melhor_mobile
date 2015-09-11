@@ -23,6 +23,7 @@
         <activity android:name=".controller.activity.DashboardActivity" />
         <activity android:name=".controller.activity.ProfileActivity" />
         <activity android:name=".controller.activity.AddressListActivity" />
+        <activity android:name=".controller.activity.AddressActivity" />
         <activity android:name=".controller.activity.PasswordActivity" />
         <activity android:name="com.facebook.FacebookActivity" />
 

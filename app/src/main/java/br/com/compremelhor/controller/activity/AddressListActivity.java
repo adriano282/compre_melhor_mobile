@@ -19,12 +19,14 @@ import java.util.Map;
 
 import br.com.compremelhor.R;
 import br.com.compremelhor.model.Address;
+import br.com.compremelhor.useful.Constants;
 
 /**
  * Created by adriano on 09/09/15.
  */
 public class AddressListActivity extends ListActivity
-        implements AdapterView.OnItemClickListener, DialogInterface.OnClickListener {
+        implements AdapterView.OnItemClickListener, DialogInterface.OnClickListener,
+        Constants {
 
     private List<Map<String, Object>> addresses;
     private AlertDialog alertDialog;
@@ -83,8 +85,24 @@ public class AddressListActivity extends ListActivity
     public void onClick(DialogInterface dialog, int item) {
         Log.d(TAG, "Item clicked ");
         Intent intent;
+
         switch (item) {
             case 0:
+                Log.d(TAG, "EDIT ADDRESS CLICKED");
+                intent = new Intent(this, AddressActivity.class);
+                intent.putExtra(CITY, getAddress().get(addressSelect).getCity());
+                intent.putExtra(NUMBER, getAddress().get(addressSelect).getNumber());
+                intent.putExtra(QUARTER, getAddress().get(addressSelect).getQuarter());
+                intent.putExtra(STREET, getAddress().get(addressSelect).getStreet());
+                intent.putExtra(ZIPCODE, getAddress().get(addressSelect).getZipcode());
+                intent.putExtra(ADDRESS_ID, getAddress().get(addressSelect).getId());
+
+                startActivity(intent);
+                break;
+
+            case 1:
+                intent = new Intent(this, AddressActivity.class);
+                startActivity(intent);
                 break;
 
             case 2:
