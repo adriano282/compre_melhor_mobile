@@ -1,28 +1,30 @@
 package br.com.compremelhor.model;
 
-import com.j256.ormlite.field.DatabaseField;
-
 /**
  * Created by adriano on 25/08/15.
  */
 public class Address extends DomainEntity {
-    @DatabaseField(id = true, generatedId = true)
     private Long id;
-    @DatabaseField
     private String street;
-    @DatabaseField
     private String number;
-    @DatabaseField
     private String quarter;
-    @DatabaseField
     private String city;
-    @DatabaseField
     private String state;
-    @DatabaseField
     private String zipcode;
 
     public Address() {
-        // ORMLite needs a no-arg constructor
+    }
+
+    public Address(Long id, String street, String number,
+                   String quarter, String city, String state,
+                   String zipcode) {
+        this.id = id;
+        this.street = street;
+        this.number = number;
+        this.quarter = quarter;
+        this.city = city;
+        this.state = state;
+        this.zipcode = zipcode;
     }
 
     @Override

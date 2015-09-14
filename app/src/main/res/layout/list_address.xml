@@ -31,34 +31,28 @@
 
         <ListView android:id="@android:id/list"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="20sp">
+            android:layout_height="194dp"
+            android:layout_marginTop="20sp"
+            android:scrollbarSize="@dimen/abc_text_size_display_3_material">
         </ListView>
 
-        <LinearLayout
-            android:layout_marginTop="20sp"
-            android:orientation="horizontal"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content">
 
-            <Button android:layout_gravity="center"
-                android:id="@+id/list_address_btn_add_new_address"
-                android:text="@string/add_address"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                style="?android:attr/buttonBarButtonStyle"
-                />
+        <Button android:layout_gravity="center"
+            android:id="@+id/btn_list_address_new"
+            android:text="@string/add_address"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            style="?android:attr/buttonBarButtonStyle"
+            />
 
-            <Button android:layout_gravity="center"
-                android:id="@+id/btn_back"
-                android:text="@string/back"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                style="?android:attr/buttonBarButtonStyle"
-                />
+        <Button android:layout_gravity="center"
+            android:id="@+id/btn_list_address_back"
+            android:text="@string/back"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            style="?android:attr/buttonBarButtonStyle"
+            />
 
-        </LinearLayout>
+
     </LinearLayout>
 </LinearLayout>

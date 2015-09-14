@@ -4,7 +4,6 @@ import android.app.AlertDialog;
 import android.app.ListActivity;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -18,6 +17,7 @@ import java.util.List;
 import java.util.Map;
 
 import br.com.compremelhor.R;
+import br.com.compremelhor.dao.AddressDAO;
 import br.com.compremelhor.model.Address;
 import br.com.compremelhor.useful.Constants;
 
@@ -26,7 +26,7 @@ import br.com.compremelhor.useful.Constants;
  */
 public class AddressListActivity extends ListActivity
         implements AdapterView.OnItemClickListener, DialogInterface.OnClickListener,
-        Constants {
+        Constants, View.OnClickListener {
 
     private List<Map<String, Object>> addresses;
     private AlertDialog alertDialog;
@@ -42,28 +42,19 @@ public class AddressListActivity extends ListActivity
         setContentView(R.layout.list_address);
 
         getListView().setOnItemClickListener(this);
+        addresses = listAddress();
         alertDialog = createAlertDialog();
         alertDialogConfirmation = createDialogConfirmation();
 
-        new Task().execute();
-    }
+        String[] from = {ZIPCODE, STREET};
+        int[] to = {R.id.zipcode, R.id.street};
 
-    private class Task extends AsyncTask<Void, Void, List<Map<String, Object>>> {
-        @Override
-        protected List<Map<String,Object>> doInBackground(Void... params) {
-            return listAddress();
-        }
+        SimpleAdapter adapter = new SimpleAdapter(AddressListActivity.this,
+                listAddress(), R.layout.address_row, from, to);
 
-        @Override
-        protected void onPostExecute(List<Map<String, Object>> result) {
-            String[] from = {"zipcode", "street"};
-            int[] to = {R.id.zipcode, R.id.street};
+        setListAdapter(adapter);
 
-            SimpleAdapter adapter = new SimpleAdapter(AddressListActivity.this,
-                    listAddress(), R.layout.address_row, from, to);
-
-            setListAdapter(adapter);
-        }
+        setWidgets();
     }
 
     @Override
@@ -77,41 +68,35 @@ public class AddressListActivity extends ListActivity
         builder.setMessage(R.string.confirm_delete);
         builder.setPositiveButton(getString(R.string.yes), this);
         builder.setNegativeButton(getString(R.string.no), this);
-
         return builder.create();
     }
 
     @Override
     public void onClick(DialogInterface dialog, int item) {
-        Log.d(TAG, "Item clicked ");
+        Log.d(TAG, "Item clicked " + item);
         Intent intent;
 
         switch (item) {
             case 0:
-                Log.d(TAG, "EDIT ADDRESS CLICKED");
                 intent = new Intent(this, AddressActivity.class);
-                intent.putExtra(CITY, getAddress().get(addressSelect).getCity());
-                intent.putExtra(NUMBER, getAddress().get(addressSelect).getNumber());
-                intent.putExtra(QUARTER, getAddress().get(addressSelect).getQuarter());
-                intent.putExtra(STREET, getAddress().get(addressSelect).getStreet());
-                intent.putExtra(ZIPCODE, getAddress().get(addressSelect).getZipcode());
-                intent.putExtra(ADDRESS_ID, getAddress().get(addressSelect).getId());
-
+                intent.putExtra(ADDRESS_ID, Long.parseLong(addresses.get(addressSelect).get("id").toString()));
                 startActivity(intent);
                 break;
 
             case 1:
+                alertDialogConfirmation.show();
+                break;
+
+            case 2:
                 intent = new Intent(this, AddressActivity.class);
                 startActivity(intent);
                 break;
 
-            case 2:
-                alertDialogConfirmation.show();
-                break;
-
             case DialogInterface.BUTTON_POSITIVE:
-                getAddress().remove(this.addressSelect);
+                new AddressDAO(this).delete(Long.parseLong(addresses.get(addressSelect).get("id").toString()));
+                addresses.remove(addressSelect);
                 getListView().invalidateViews();
+                setWidgets();
                 break;
 
             case DialogInterface.BUTTON_NEGATIVE:
@@ -120,12 +105,52 @@ public class AddressListActivity extends ListActivity
         }
     }
 
+    @Override
+    public void onClick(View view) {
+        Intent intent;
+
+        switch (view.getId()) {
+            case R.id.btn_list_address_back:
+                intent = new Intent(this, DashboardActivity.class);
+                startActivity(intent);
+                break;
+
+            case R.id.btn_list_address_new:
+                intent = new Intent(this, AddressActivity.class);
+                startActivity(intent);
+                break;
+        }
+    }
+
+    private void setWidgets() {
+        btnAddAddress = (Button) findViewById(R.id.btn_list_address_new);
+        btnBack = (Button) findViewById(R.id.btn_list_address_back);
+
+        btnBack.setOnClickListener(this);
+        btnAddAddress.setOnClickListener(this);
+
+        if (addresses.size() >= 3) {
+            btnAddAddress.setEnabled(false);
+        } else {
+            btnAddAddress.setEnabled(true);
+        }
+    }
+
     private AlertDialog createAlertDialog() {
-        final CharSequence[] items = {
-                getString(R.string.edit),
-                getString(R.string.new_address),
-                getString(R.string.remove)
-        };
+        final CharSequence[] items;
+
+        if (addresses.size() >= 3) {
+            items = new CharSequence[]{
+                    getString(R.string.edit),
+                    getString(R.string.remove)
+            };
+        } else {
+            items = new CharSequence[]{
+                    getString(R.string.edit),
+                    getString(R.string.remove),
+                    getString(R.string.new_address)
+            };
+        }
 
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setTitle(R.string.options);
@@ -137,9 +162,10 @@ public class AddressListActivity extends ListActivity
     private List<Map<String, Object>> listAddress() {
         addresses = new ArrayList<Map<String, Object>>();
 
+        List<Address> listAddress = new AddressDAO(this).listAddresses();
         Map<String, Object> item;
 
-        for (Address d: getAddress()) {
+        for (Address d: listAddress) {
             item = new HashMap<>();
 
             item.put("city", d.getCity());
@@ -148,45 +174,10 @@ public class AddressListActivity extends ListActivity
             item.put("state", d.getState());
             item.put("street", d.getStreet());
             item.put("zipcode", d.getZipcode());
+            item.put("id", d.getId());
 
             addresses.add(item);
         }
-
-        return addresses;
-    }
-
-    private List<Address> getAddress() {
-        List<Address> addresses = new ArrayList<Address>();
-
-        Address ad1 = new Address();
-        ad1.setCity("Mogi das Cruzes");
-        ad1.setNumber("49");
-        ad1.setQuarter("Vila Brasileira");
-        ad1.setState("Sao Paulo");
-        ad1.setStreet("Rua Alfredo Gomes Loureiro");
-        ad1.setZipcode("08738250");
-
-        addresses.add(ad1);
-
-        Address ad2 = new Address();
-        ad2.setCity("Mogi das Cruzes");
-        ad2.setNumber("49");
-        ad2.setQuarter("Vila Brasileira");
-        ad2.setState("Sao Paulo");
-        ad2.setStreet("Rua Alfredo Gomes Loureiro");
-        ad2.setZipcode("08888888");
-
-        addresses.add(ad2);
-
-        Address ad3 = new Address();
-        ad3.setCity("Mogi das Cruzes");
-        ad3.setNumber("49");
-        ad3.setQuarter("Vila Brasileira");
-        ad3.setState("Sao Paulo");
-        ad3.setStreet("Rua Coronel Gomes Loureiro");
-        ad3.setZipcode("087394-490");
-
-        addresses.add(ad3);
 
         return addresses;
     }

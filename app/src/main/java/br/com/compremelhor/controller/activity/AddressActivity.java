@@ -10,6 +10,8 @@ import android.widget.EditText;
 import android.widget.Toast;
 
 import br.com.compremelhor.R;
+import br.com.compremelhor.dao.AddressDAO;
+import br.com.compremelhor.model.Address;
 import br.com.compremelhor.useful.Constants;
 
 /**
@@ -28,6 +30,8 @@ public class AddressActivity extends Activity implements OnClickListener, Consta
     private Button btnCancel;
     private Button btnReset;
 
+    private long id;
+
     @Override
     public void onCreate(Bundle savedInstaceState) {
         super.onCreate(savedInstaceState);
@@ -38,10 +42,11 @@ public class AddressActivity extends Activity implements OnClickListener, Consta
 
     @Override
     public void onClick(View view) {
+        Intent intent;
         switch(view.getId()) {
             case R.id.btn_address_cancel:
                 showMessage("Operação cancelada");
-                Intent intent = new Intent(this, AddressListActivity.class);
+                intent = new Intent(this, AddressListActivity.class);
                 startActivity(intent);
                 break;
 
@@ -50,14 +55,24 @@ public class AddressActivity extends Activity implements OnClickListener, Consta
                 break;
 
             case R.id.btn_address_submit:
-                // Persist on the database
+                AddressDAO dao = new AddressDAO(this);
+
+                int result = dao.insertOrUpdate(getAddressView());
+
+                intent = new Intent(this, AddressListActivity.class);
+                startActivity(intent);
+
+                if (result == -1) {
+                    showMessage("The address wasn't saved");
+                } else {
+                    showMessage("The address have been saved successufully");
+                }
                 break;
         }
     }
 
 
     private void setWidgets() {
-
         etZipcode = (EditText) findViewById(R.id.et_address_zipcode);
         etStreet = (EditText) findViewById(R.id.et_address_street);
         etNumber = (EditText) findViewById(R.id.et_address_number);
@@ -76,14 +91,16 @@ public class AddressActivity extends Activity implements OnClickListener, Consta
     }
 
     private void fillFields() {
-        if (getIntent().hasExtra(ZIPCODE)) {
-            Bundle b = getIntent().getExtras();
+        if (getIntent().hasExtra(ADDRESS_ID)) {
 
-            etZipcode.setText(String.valueOf(b.get(ZIPCODE)));
-            etStreet.setText(String.valueOf(b.get(STREET)));
-            etNumber.setText(String.valueOf(b.get(NUMBER)));
-            etQuarter.setText(String.valueOf(b.get(QUARTER)));
-            etCity.setText(String.valueOf(b.get(CITY)));
+            id = getIntent().getLongExtra(ADDRESS_ID, 0);
+            Address ad = new AddressDAO(this).getAddressById(id);
+
+            etZipcode.setText(ad.getZipcode());
+            etStreet.setText(ad.getStreet());
+            etNumber.setText(ad.getNumber());
+            etQuarter.setText(ad.getQuarter());
+            etCity.setText(ad.getCity());
         }
     }
 
@@ -93,6 +110,17 @@ public class AddressActivity extends Activity implements OnClickListener, Consta
         etNumber.setText("");
         etQuarter.setText("");
         etCity.setText("");
+    }
+
+    private Address getAddressView() {
+        return new Address(
+                getIntent().getLongExtra(ADDRESS_ID, 0), etStreet.getText().toString(),
+                etNumber.getText().toString(),
+                etQuarter.getText().toString(),
+                etCity.getText().toString(),
+                null, etZipcode.getText().toString()
+        );
+
     }
 
     private void showMessage(String message) {
