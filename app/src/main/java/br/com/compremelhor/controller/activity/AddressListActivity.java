@@ -43,8 +43,6 @@ public class AddressListActivity extends ListActivity
 
         getListView().setOnItemClickListener(this);
         addresses = listAddress();
-        alertDialog = createAlertDialog();
-        alertDialogConfirmation = createDialogConfirmation();
 
         String[] from = {ZIPCODE, STREET};
         int[] to = {R.id.zipcode, R.id.street};
@@ -134,6 +132,9 @@ public class AddressListActivity extends ListActivity
         } else {
             btnAddAddress.setEnabled(true);
         }
+
+        alertDialog = createAlertDialog();
+        alertDialogConfirmation = createDialogConfirmation();
     }
 
     private AlertDialog createAlertDialog() {
