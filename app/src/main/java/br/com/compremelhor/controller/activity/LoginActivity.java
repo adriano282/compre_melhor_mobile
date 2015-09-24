@@ -17,6 +17,7 @@ import com.facebook.appevents.AppEventsLogger;
 import com.facebook.login.LoginManager;
 import com.facebook.login.LoginResult;
 import com.facebook.login.widget.LoginButton;
+import com.google.android.gms.common.SignInButton;
 
 import java.util.Arrays;
 
@@ -33,11 +34,13 @@ public class LoginActivity extends Activity implements Constants {
     private SharedPreferences preferences;
     private EditText user, password;
     private CheckBox keepConnected;
+    private SignInButton signGooglePlus;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        signGooglePlus = (SignInButton) findViewById(R.id.login_teste);
         user = (EditText) findViewById(R.id.user);
         password = (EditText) findViewById(R.id.password);
         keepConnected = (CheckBox) findViewById(R.id.keep_connected);
@@ -71,7 +74,7 @@ public class LoginActivity extends Activity implements Constants {
         if (preferences.getBoolean(KEEP_CONNECT, false) && AccessToken.getCurrentAccessToken() != null) {
             initDashboard();
         }
-        initDashboard();
+
         setContentView(R.layout.login);
     }
 
