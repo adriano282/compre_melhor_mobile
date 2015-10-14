@@ -36,6 +36,7 @@ public class LoginActivity extends Activity implements Constants {
     private CheckBox keepConnected;
     private SignInButton signGooglePlus;
 
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -50,10 +51,10 @@ public class LoginActivity extends Activity implements Constants {
         FacebookSdk.sdkInitialize(getApplicationContext());
         callbackManager = CallbackManager.Factory.create();
         loginButtonFacebook = (LoginButton) findViewById(R.id.login_button_facebook);
+        
+        final LoginManager loginManager = LoginManager.getInstance();
 
-        LoginManager loginManager = LoginManager.getInstance();
-
-        loginManager.logInWithReadPermissions(this, Arrays.asList("public_profile", "user_friends"));
+        loginManager.logInWithReadPermissions(this, Arrays.asList("public_profile", "user_friends", "email"));
         loginManager.registerCallback(callbackManager, new FacebookCallback<LoginResult>() {
             @Override
             public void onSuccess(LoginResult loginResult) {
@@ -78,10 +79,12 @@ public class LoginActivity extends Activity implements Constants {
         setContentView(R.layout.login);
     }
 
+
     public void initDashboard() {
         Intent intent = new Intent(this, DashboardActivity.class);
         startActivity(intent);
     }
+
 
     @Override
     protected void onResume() {
@@ -90,6 +93,7 @@ public class LoginActivity extends Activity implements Constants {
         AppEventsLogger.activateApp(this);
     }
 
+
     @Override
     protected void onPause() {
         super.onPause();
@@ -97,11 +101,11 @@ public class LoginActivity extends Activity implements Constants {
         AppEventsLogger.deactivateApp(this);
     }
 
+
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         callbackManager.onActivityResult(requestCode, resultCode, data);
 
     }
-
 }

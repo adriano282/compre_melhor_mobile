@@ -12,9 +12,9 @@ import br.com.compremelhor.model.Address;
 /**
  * Created by adriano on 13/09/15.
  */
-public class AddressDAO extends DAO {
+public class DAOAddress extends DAO {
 
-    public AddressDAO(Context context) {
+    public DAOAddress(Context context) {
         super(context);
     }
 

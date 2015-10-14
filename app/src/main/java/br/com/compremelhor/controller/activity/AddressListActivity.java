@@ -17,7 +17,7 @@ import java.util.List;
 import java.util.Map;
 
 import br.com.compremelhor.R;
-import br.com.compremelhor.dao.AddressDAO;
+import br.com.compremelhor.dao.DAOAddress;
 import br.com.compremelhor.model.Address;
 import br.com.compremelhor.useful.Constants;
 
@@ -91,7 +91,7 @@ public class AddressListActivity extends ListActivity
                 break;
 
             case DialogInterface.BUTTON_POSITIVE:
-                new AddressDAO(this).delete(Long.parseLong(addresses.get(addressSelect).get("id").toString()));
+                new DAOAddress(this).delete(Long.parseLong(addresses.get(addressSelect).get("id").toString()));
                 addresses.remove(addressSelect);
                 getListView().invalidateViews();
                 setWidgets();
@@ -163,7 +163,7 @@ public class AddressListActivity extends ListActivity
     private List<Map<String, Object>> listAddress() {
         addresses = new ArrayList<Map<String, Object>>();
 
-        List<Address> listAddress = new AddressDAO(this).listAddresses();
+        List<Address> listAddress = new DAOAddress(this).listAddresses();
         Map<String, Object> item;
 
         for (Address d: listAddress) {

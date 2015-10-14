@@ -37,6 +37,7 @@
     <string name="confirm_delete">Do you really want remove this address?</string>
     <string name="yes">Sim</string>
     <string name="no">Não</string>
+    <string name="list_is_empty">Você ainda não possui nenhum endereço cadastrado.</string>
 
 
     <!-- Dashboard page's resources -->
@@ -52,4 +53,5 @@
     <string name="identification">N. Documento</string>
     <string name="my_data">Meu Cadastro</string>
     <string name="out">Sair</string>
+    <string name="type_document">Tipo de Documento:</string>
 </resources>

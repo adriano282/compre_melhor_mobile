@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ScrollView
+<RelativeLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent" >
@@ -71,7 +71,47 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:inputType="number"/>
+
+            <TableLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <TableRow>
+                    <TextView
+                        android:layout_marginTop="10sp"
+                        android:layout_gravity="center"
+                        android:text="@string/type_document"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content" />
+
+                    <RadioGroup
+                        android:id="@+id/profile_rd_group"
+                        android:layout_marginTop="10sp"
+                        android:layout_gravity="center"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        >
+
+                        <RadioButton
+                            android:id="@+id/profile_rbCpf"
+                            android:text="CPF"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"/>
+
+                        <RadioButton
+                            android:id="@+id/profile_rbCnpj"
+                            android:text="CNPJ"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"/>
+
+                    </RadioGroup>
+
+                </TableRow>
+
+            </TableLayout>
         </LinearLayout>
+
         <LinearLayout
             android:orientation="horizontal"
             android:paddingLeft="@dimen/page_margin"
@@ -103,6 +143,6 @@
                 android:layout_height="wrap_content"
                 style="?android:attr/buttonBarButtonStyle" />
         </LinearLayout>
-
     </LinearLayout>
-</ScrollView>
+
+</RelativeLayout>

@@ -34,6 +34,14 @@
             android:layout_height="194dp"
             android:layout_marginTop="20sp"
             android:scrollbarSize="@dimen/abc_text_size_display_3_material">
+
+            <TextView
+                android:id="@id/android:empty"
+                android:text="@string/list_is_empty"
+                android:textSize="25sp"
+                android:gravity="center_vertical|center_horizontal"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent" />
         </ListView>
 
 

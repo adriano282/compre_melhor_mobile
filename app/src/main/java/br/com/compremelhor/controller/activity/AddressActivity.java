@@ -23,7 +23,7 @@ import java.net.URL;
 import java.net.URLConnection;
 
 import br.com.compremelhor.R;
-import br.com.compremelhor.dao.AddressDAO;
+import br.com.compremelhor.dao.DAOAddress;
 import br.com.compremelhor.model.Address;
 import br.com.compremelhor.useful.Constants;
 
@@ -79,7 +79,7 @@ public class AddressActivity extends Activity implements OnClickListener, Consta
                 break;
 
             case R.id.btn_address_submit:
-                AddressDAO dao = new AddressDAO(this);
+                DAOAddress dao = new DAOAddress(this);
 
                 int result = dao.insertOrUpdate(getAddressView());
 
@@ -142,7 +142,7 @@ public class AddressActivity extends Activity implements OnClickListener, Consta
         if (getIntent().hasExtra(ADDRESS_ID)) {
 
             id = getIntent().getLongExtra(ADDRESS_ID, 0);
-            Address ad = new AddressDAO(this).getAddressById(id);
+            Address ad = new DAOAddress(this).getAddressById(id);
 
             etZipcode.setText(ad.getZipcode());
             etStreet.setText(ad.getStreet());

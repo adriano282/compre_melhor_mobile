@@ -19,4 +19,6 @@ public interface Constants {
     String STATE = "state";
     String ADDRESS_ID = "address_id";
 
+    String USER_ID = "user_id";
+
 }
