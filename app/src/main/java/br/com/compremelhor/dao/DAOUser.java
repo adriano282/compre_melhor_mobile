@@ -15,11 +15,13 @@ public class DAOUser extends DAO {
         super(context);
     }
 
-    public User getUser() {
+
+    public User getUserById(Long id) {
         Cursor cursor = getDB().query(
-            DatabaseHelper.User.TABLE,
-            DatabaseHelper.User.COLUMNS,
-            null, null, null, null, null);
+                DatabaseHelper.User.TABLE,
+                DatabaseHelper.User.COLUMNS,
+                DatabaseHelper.User._ID + " = ?" ,
+                new String[] {id.toString()}, null, null, null);
 
         User user = null;
         if (cursor.moveToNext()) {
@@ -30,19 +32,62 @@ public class DAOUser extends DAO {
         return user;
     }
 
-    public int insertOrUpdate(User user) {
+
+    public User getUserByEmail(String email) {
+        Cursor cursor = getDB().query(
+            DatabaseHelper.User.TABLE,
+            DatabaseHelper.User.COLUMNS,
+            DatabaseHelper.User.EMAIL + " = ?" ,
+        new String[] {email}, null, null, null);
+
+        User user = null;
+        if (cursor.moveToNext()) {
+            user =  (User) getBind().bind(new User(), cursor);
+        }
+
+        cursor.close();
+        return user;
+    }
+
+
+    public Long insertOrUpdate(User user) {
         ContentValues values = new ContentValues();
 
         values.put(DatabaseHelper.User.EMAIL, user.getEmail());
         values.put(DatabaseHelper.User.NAME, user.getName());
         values.put(DatabaseHelper.User.DOCUMENT, user.getDocument());
-        values.put(DatabaseHelper.User.TYPE_DOCUMENT, user.getTypeDocument().toString());
+
+        if (user.getTypeDocument() != null) {
+            values.put(DatabaseHelper.User.TYPE_DOCUMENT, user.getTypeDocument().toString());
+        } else {
+            values.put(DatabaseHelper.User.TYPE_DOCUMENT, "");
+        }
+
+
         values.put(DatabaseHelper.User.PASSWORD, user.getPassword());
 
-        if (user.getId() == null || user.getId() == 0)
-            return (int) getDB().insert(DatabaseHelper.User.TABLE, null, values);
+        if ((user.getId() == null || user.getId() == 0) && !userAlreadyRegistered(user))
+            return getDB().insert(DatabaseHelper.User.TABLE, null, values);
 
-        return getDB().update(DatabaseHelper.User.TABLE, values,
-                DatabaseHelper.User._ID + " = ?", new String[] {user.getId().toString()});
+        return new Long(getDB().update(DatabaseHelper.User.TABLE, values,
+                DatabaseHelper.User._ID + " = ?", new String[] {user.getId().toString()}));
+    }
+
+
+    private boolean userAlreadyRegistered(User user) {
+
+        if (user == null || user.getEmail() == null || user.getEmail().equals(""))
+            return false;
+
+        User userStored =  getUserByEmail(user.getEmail());
+        if (userStored != null) {
+            user.setId(userStored.getId());
+            user.setDocument(userStored.getDocument());
+            user.setName(userStored.getName());
+            user.setPassword(userStored.getPassword());
+            user.setTypeDocument(userStored.getTypeDocument() == null? null:userStored.getTypeDocument().getType().toString());
+            return true;
+        }
+        return false;
     }
 }

@@ -9,7 +9,7 @@ import android.database.sqlite.SQLiteOpenHelper;
  */
 public class DatabaseHelper extends SQLiteOpenHelper {
     private static final String DATABASE = "CompreMelhor.db";
-    private static int DATABASE_VERSION = 7;
+    private static int DATABASE_VERSION = 8;
 
     public static class Address {
         public static final String TABLE = "address";
@@ -20,8 +20,9 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         public static final String CITY = "city";
         public static final String STATE = "state";
         public static final String ZIPCODE = "zipcode";
+        public static final String _USER_ID = "_user_id";
         public static final String[] COLUMNS = new String[] {_ID, STREET, NUMBER,
-            QUARTER, CITY, STATE, ZIPCODE };
+            QUARTER, CITY, STATE, ZIPCODE, _USER_ID };
     }
 
     public static class User {
@@ -43,15 +44,6 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
     @Override
     public void onCreate(SQLiteDatabase db) {
-        db.execSQL("CREATE TABLE " + Address.TABLE + " (" +
-                Address._ID + " INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, " +
-                Address.STREET + " TEXT, " +
-                Address.NUMBER + " TEXT, " +
-                Address.QUARTER + " TEXT, " +
-                Address.CITY + " TEXT, " +
-                Address.STATE + " TEXT, " +
-                Address.ZIPCODE + " TEXT);");
-
         db.execSQL("CREATE TABLE " +  User.TABLE + " (" +
                 User._ID + " INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, " +
                 User.EMAIL + " TEXT," +
@@ -59,6 +51,20 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 User.DOCUMENT + " NUMERIC, " +
                 User.PASSWORD + " TEXT, " +
                 User.TYPE_DOCUMENT + " TEXT);");
+
+        db.execSQL("CREATE TABLE " + Address.TABLE + " (" +
+                Address._ID + " INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, " +
+                Address.STREET + " TEXT, " +
+                Address.NUMBER + " TEXT, " +
+                Address.QUARTER + " TEXT, " +
+                Address.CITY + " TEXT, " +
+                Address.STATE + " TEXT, " +
+                Address.ZIPCODE + " TEXT, " +
+                Address._USER_ID + " INTEGER, " +
+                " FOREIGN KEY(" + Address._USER_ID + ") " +
+                " REFERENCES user(" + User._ID + "));");
+
+
     }
 
     @Override
@@ -66,15 +72,6 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         db.execSQL("DROP TABLE address");
         db.execSQL("DROP TABLE user");
 
-        db.execSQL("CREATE TABLE " + Address.TABLE + " (" +
-                Address._ID + " INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, " +
-                Address.STREET + " TEXT, " +
-                Address.NUMBER + " TEXT, " +
-                Address.QUARTER + " TEXT, " +
-                Address.CITY + " TEXT, " +
-                Address.STATE + " TEXT, " +
-                Address.ZIPCODE + " TEXT);");
-
         db.execSQL("CREATE TABLE " +  User.TABLE + " (" +
                 User._ID + " INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, " +
                 User.EMAIL + " TEXT," +
@@ -82,5 +79,19 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 User.DOCUMENT + " NUMERIC, " +
                 User.PASSWORD + " TEXT, " +
                 User.TYPE_DOCUMENT + " TEXT);");
+
+        db.execSQL("CREATE TABLE " + Address.TABLE + " (" +
+                Address._ID + " INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, " +
+                Address.STREET + " TEXT, " +
+                Address.NUMBER + " TEXT, " +
+                Address.QUARTER + " TEXT, " +
+                Address.CITY + " TEXT, " +
+                Address.STATE + " TEXT, " +
+                Address.ZIPCODE + " TEXT, " +
+                Address._USER_ID + " INTEGER, " +
+                " FOREIGN KEY(" + Address._USER_ID + ") " +
+                " REFERENCES " + User.TABLE + "(" + User._ID + "));");
+
+
     }
 }

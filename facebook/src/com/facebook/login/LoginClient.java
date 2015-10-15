@@ -54,7 +54,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-class LoginClient implements Parcelable {
+public class LoginClient implements Parcelable {
     LoginMethodHandler [] handlersToTry;
     int currentHandler = -1;
     Fragment fragment;

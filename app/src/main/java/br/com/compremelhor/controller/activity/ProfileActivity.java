@@ -6,6 +6,7 @@ package br.com.compremelhor.controller.activity;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -27,7 +28,8 @@ public class ProfileActivity extends Activity
     private EditText edEmail;
     private EditText edDocument;
 
-    private long id;
+    private SharedPreferences preferences;
+    private Long id;
 
     private Button btnSave;
     private Button btnUndone;
@@ -81,15 +83,19 @@ public class ProfileActivity extends Activity
     }
 
     private void fillFields() {
-
-        User user = new DAOUser(this).getUser();
+        preferences = getSharedPreferences(PREFERENCES, MODE_PRIVATE);
+        id = preferences.getLong("USER_ID", 0);
+        User user = new DAOUser(this).getUserById(id);
         if (user != null) {
             id = user.getId() == null? 0:user.getId();
             edName.setText(user.getName());
             edEmail.setText(user.getEmail());
             edDocument.setText(user.getDocument());
-            rbCnpj.setChecked(user.getTypeDocument().getType().equals(TypeDocument.CNPJ.toString().toLowerCase()));
-            rbCpf.setChecked(user.getTypeDocument().getType().equals(TypeDocument.CPF.toString().toLowerCase()));
+
+            if (user.getTypeDocument() != null) {
+                rbCnpj.setChecked(user.getTypeDocument().getType().equals(TypeDocument.CNPJ.toString().toLowerCase()));
+                rbCpf.setChecked(user.getTypeDocument().getType().equals(TypeDocument.CPF.toString().toLowerCase()));
+            }
         }
     }
 
@@ -104,7 +110,7 @@ public class ProfileActivity extends Activity
             case R.id.profile_btn_save:
                 DAOUser dao = new DAOUser(this);
 
-                int result = dao.insertOrUpdate(getUserView());
+                Long result = dao.insertOrUpdate(getUserView());
 
                 intent = new Intent(this, DashboardActivity.class);
                 startActivity(intent);

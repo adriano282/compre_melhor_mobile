@@ -4,12 +4,14 @@ import android.app.AlertDialog;
 import android.app.ListActivity;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.SimpleAdapter;
+import android.widget.TextView;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -28,11 +30,12 @@ public class AddressListActivity extends ListActivity
         implements AdapterView.OnItemClickListener, DialogInterface.OnClickListener,
         Constants, View.OnClickListener {
 
+    private SharedPreferences preferences;
+    private boolean isEmptyListAddress;
     private List<Map<String, Object>> addresses;
     private AlertDialog alertDialog;
     private AlertDialog alertDialogConfirmation;
     private int addressSelect;
-
     private Button btnAddAddress;
     private Button btnBack;
     private final String TAG = "AddressActivity";
@@ -42,6 +45,9 @@ public class AddressListActivity extends ListActivity
         setContentView(R.layout.list_address);
 
         getListView().setOnItemClickListener(this);
+
+        preferences = getSharedPreferences(PREFERENCES, MODE_PRIVATE);
+
         addresses = listAddress();
 
         String[] from = {ZIPCODE, STREET};
@@ -120,9 +126,18 @@ public class AddressListActivity extends ListActivity
         }
     }
 
+
     private void setWidgets() {
         btnAddAddress = (Button) findViewById(R.id.btn_list_address_new);
         btnBack = (Button) findViewById(R.id.btn_list_address_back);
+
+        TextView tv = (TextView) findViewById(R.id.empty);
+
+        if (isEmptyListAddress) {
+            tv.setText(R.string.list_is_empty);
+        } else {
+            tv.setText("");
+        }
 
         btnBack.setOnClickListener(this);
         btnAddAddress.setOnClickListener(this);
@@ -136,6 +151,7 @@ public class AddressListActivity extends ListActivity
         alertDialog = createAlertDialog();
         alertDialogConfirmation = createDialogConfirmation();
     }
+
 
     private AlertDialog createAlertDialog() {
         final CharSequence[] items;
@@ -160,10 +176,12 @@ public class AddressListActivity extends ListActivity
         return builder.create();
     }
 
+
     private List<Map<String, Object>> listAddress() {
         addresses = new ArrayList<Map<String, Object>>();
 
-        List<Address> listAddress = new DAOAddress(this).listAddresses();
+        Long userId = preferences.getLong("USER_ID", 0);
+        List<Address> listAddress = new DAOAddress(this).getAddressesByUserId(userId);
         Map<String, Object> item;
 
         for (Address d: listAddress) {
@@ -180,6 +198,7 @@ public class AddressListActivity extends ListActivity
             addresses.add(item);
         }
 
+        isEmptyListAddress = addresses.isEmpty() ? true : false;
         return addresses;
     }
 }

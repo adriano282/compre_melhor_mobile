@@ -3,6 +3,7 @@ package br.com.compremelhor.controller.activity;
 import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
@@ -32,6 +33,7 @@ import br.com.compremelhor.useful.Constants;
  */
 public class AddressActivity extends Activity implements OnClickListener, Constants {
 
+    private SharedPreferences preferences;
     /* Resources from address.xml's page */
     private EditText etZipcode;
     private EditText etStreet;
@@ -61,6 +63,7 @@ public class AddressActivity extends Activity implements OnClickListener, Consta
         super.onCreate(savedInstaceState);
         setContentView(R.layout.address);
 
+        preferences = getSharedPreferences(PREFERENCES, MODE_PRIVATE);
         setWidgets();
     }
 
@@ -165,12 +168,14 @@ public class AddressActivity extends Activity implements OnClickListener, Consta
     }
 
     private Address getAddressView() {
+
         return new Address(
                 getIntent().getLongExtra(ADDRESS_ID, 0), etStreet.getText().toString(),
                 etNumber.getText().toString(),
                 etQuarter.getText().toString(),
                 etCity.getText().toString(),
-                null, etZipcode.getText().toString()
+                null, etZipcode.getText().toString(),
+                preferences.getLong("USER_ID", 0)
         );
 
     }

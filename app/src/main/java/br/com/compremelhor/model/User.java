@@ -11,6 +11,12 @@ public class User {
     private TypeDocument typeDocument;
     private String password;
 
+    public User() {}
+    public User(String  name, String email) {
+        this.name = name;
+        this.email = email;
+    }
+
     public TypeDocument getTypeDocument() {
         return typeDocument;
     }
@@ -24,6 +30,9 @@ public class User {
     }
 
     public void setTypeDocument(String type) {
+        if (type == null)
+            return;
+
         if (type.equals(TypeDocument.CNPJ.toString())) {
             this.typeDocument = TypeDocument.CNPJ;
         } else if (type.equals(TypeDocument.CPF.toString())) {

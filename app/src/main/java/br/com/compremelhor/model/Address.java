@@ -11,6 +11,7 @@ public class Address extends DomainEntity {
     private String city;
     private String state;
     private String zipcode;
+    private Long userId;
 
     public Address() {
     }
@@ -27,9 +28,30 @@ public class Address extends DomainEntity {
         this.zipcode = zipcode;
     }
 
+    public Address(Long id, String street, String number,
+                   String quarter, String city, String state,
+                   String zipcode, Long userId) {
+        this.id = id;
+        this.street = street;
+        this.number = number;
+        this.quarter = quarter;
+        this.city = city;
+        this.state = state;
+        this.zipcode = zipcode;
+        this.userId = userId;
+    }
+
     @Override
     public String toString() {
         return this.getZipcode() + " - " + this.getStreet();
+    }
+
+    public void setUserId(Long userId) {
+        this.userId = userId;
+    }
+
+    public Long getUserId()  {
+        return this.userId;
     }
 
     public String getStreet() {

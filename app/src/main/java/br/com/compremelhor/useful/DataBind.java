@@ -22,6 +22,7 @@ public class DataBind {
             ad.setQuarter(cursor.getString(cursor.getColumnIndex(DatabaseHelper.Address.QUARTER)));
             ad.setCity(cursor.getString(cursor.getColumnIndex(DatabaseHelper.Address.CITY)));
             ad.setNumber(cursor.getString(cursor.getColumnIndex(DatabaseHelper.Address.NUMBER)));
+            ad.setUserId(cursor.getLong(cursor.getColumnIndex(DatabaseHelper.Address._USER_ID)));
 
             return ad;
         } else if (objectModel instanceof User) {

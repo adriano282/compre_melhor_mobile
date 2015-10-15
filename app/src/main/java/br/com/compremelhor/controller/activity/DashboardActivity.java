@@ -15,6 +15,7 @@ import br.com.compremelhor.R;
  */
 public class DashboardActivity extends Activity implements View.OnClickListener {
     private static final String TAG = "Dashboard";
+    private Long userId;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -25,6 +26,10 @@ public class DashboardActivity extends Activity implements View.OnClickListener 
         findViewById(R.id.start_purchase).setOnClickListener(this);
         findViewById(R.id.list_purchases).setOnClickListener(this);
         findViewById(R.id.manager_addresses).setOnClickListener(this);
+
+
+        userId = getIntent().getLongExtra("USER_ID", 0);
+
     }
 
     @Override
@@ -33,6 +38,7 @@ public class DashboardActivity extends Activity implements View.OnClickListener 
         switch(view.getId()) {
             case R.id.edit_profile:
                 intent = new Intent(this, ProfileActivity.class);
+                intent.putExtra("USER_ID", userId);
                 startActivity(intent);
                 break;
 
@@ -45,6 +51,7 @@ public class DashboardActivity extends Activity implements View.OnClickListener 
             case R.id.manager_addresses:
                 Log.d(TAG, "Manager Address have been clicked");
                 intent = new Intent(this, AddressListActivity.class);
+                intent.putExtra("USER_ID", userId);
                 startActivity(intent);
                 break;
         }
