@@ -54,4 +54,6 @@
     <string name="my_data">Meu Cadastro</string>
     <string name="out">Sair</string>
     <string name="type_document">Tipo de Documento:</string>
+
+    <string name="total">Total R$ </string>
 </resources>
