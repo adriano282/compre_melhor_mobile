@@ -34,7 +34,7 @@
     <string name="options">Opções</string>
     <string name="cancel">Cancelar</string>
     <string name="back">Voltar</string>
-    <string name="confirm_delete">Do you really want remove this address?</string>
+    <string name="confirm_delete">Do you really want remove this item?</string>
     <string name="yes">Sim</string>
     <string name="no">Não</string>
     <string name="list_is_empty">Você ainda não possui nenhum endereço cadastrado.</string>
@@ -56,4 +56,9 @@
     <string name="type_document">Tipo de Documento:</string>
 
     <string name="total">Total R$ </string>
+    <string name="add_product">Adicionar Produto</string>
+    <string name="finish_purchase">Finalizar Esta Compra</string>
+    <string name="remove_product">Remover Produto</string>
+    <string name="alter_quantity">Alterar Quantidade</string>
+    <string name="establishment">Estabelecimento:</string>
 </resources>
