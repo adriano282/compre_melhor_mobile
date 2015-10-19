@@ -3,8 +3,7 @@ package br.com.compremelhor.model;
 /**
  * Created by adriano on 29/09/15.
  */
-public class User {
-    private Long id;
+public class User  extends DomainEntity{
     private String name;
     private String email;
     private String document;
@@ -19,14 +18,6 @@ public class User {
 
     public TypeDocument getTypeDocument() {
         return typeDocument;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public Long getId() {
-        return this.id;
     }
 
     public void setTypeDocument(String type) {

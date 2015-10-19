@@ -106,7 +106,6 @@ public class DataBind {
             freight.setAddress(address);
 
             freight.setTotalValueDrive(getBigDecimal(cursor, DatabaseHelper.Freight.TOTAL_VALUE_DRIVE));
-
         }
 
         return null;

@@ -84,7 +84,7 @@ public class AddressActivity extends Activity implements OnClickListener, Consta
             case R.id.btn_address_submit:
                 DAOAddress dao = new DAOAddress(this);
 
-                int result = dao.insertOrUpdate(getAddressView());
+                long result = dao.insertOrUpdate(getAddressView());
 
                 intent = new Intent(this, AddressListActivity.class);
                 startActivity(intent);
