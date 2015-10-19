@@ -1,6 +1,5 @@
 package br.com.compremelhor.model;
 
-import com.j256.ormlite.field.DatabaseField;
 import com.j256.ormlite.table.DatabaseTable;
 
 /**
@@ -8,20 +7,14 @@ import com.j256.ormlite.table.DatabaseTable;
  */
 @DatabaseTable(tableName = "product")
 public class Product extends DomainEntity {
-    @DatabaseField(generatedId = true)
     private Long id;
-    @DatabaseField
     private String name;
-    @DatabaseField
     private String description;
-    @DatabaseField
-    private Unit unit;
-    @DatabaseField(foreign = true)
+    private String unit;
     private Manufacturer manufacturer;
-    @DatabaseField
     private Code code;
-    @DatabaseField(foreign = true)
     private Category category;
+
 
     public Product() {}
     public String getName() {
@@ -47,11 +40,11 @@ public class Product extends DomainEntity {
         this.description = description;
     }
 
-    public Unit getUnit() {
+    public String getUnit() {
         return unit;
     }
 
-    public void setUnit(Unit unit) {
+    public void setUnit(String unit) {
         this.unit = unit;
     }
 

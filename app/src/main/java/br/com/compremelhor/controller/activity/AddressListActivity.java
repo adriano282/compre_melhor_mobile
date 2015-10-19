@@ -20,6 +20,7 @@ import java.util.Map;
 
 import br.com.compremelhor.R;
 import br.com.compremelhor.dao.DAOAddress;
+import br.com.compremelhor.dao.DatabaseHelper;
 import br.com.compremelhor.model.Address;
 import br.com.compremelhor.useful.Constants;
 
@@ -77,7 +78,7 @@ public class AddressListActivity extends ListActivity
 
     @Override
     public void onClick(DialogInterface dialog, int item) {
-        Log.d(TAG, "Item clicked " + item);
+        Log.d(TAG, "PurchaseLine clicked " + item);
         Intent intent;
 
         switch (item) {
@@ -97,7 +98,7 @@ public class AddressListActivity extends ListActivity
                 break;
 
             case DialogInterface.BUTTON_POSITIVE:
-                new DAOAddress(this).delete(Long.parseLong(addresses.get(addressSelect).get("id").toString()));
+                new DAOAddress(this).delete(Long.parseLong(addresses.get(addressSelect).get("id").toString()), DatabaseHelper.Address.TABLE);
                 addresses.remove(addressSelect);
                 getListView().invalidateViews();
                 setWidgets();

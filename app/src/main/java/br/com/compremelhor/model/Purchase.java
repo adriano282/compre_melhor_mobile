@@ -1,58 +1,27 @@
 package br.com.compremelhor.model;
 
-import com.j256.ormlite.field.DatabaseField;
-import com.j256.ormlite.field.ForeignCollectionField;
-import com.j256.ormlite.table.DatabaseTable;
-
 import java.math.BigDecimal;
-import java.util.Calendar;
 import java.util.Collection;
 import java.util.List;
 
 /**
  * Created by adriano on 24/08/15.
  */
-@DatabaseTable(tableName = "purchase")
 public class Purchase extends DomainEntity {
-    @DatabaseField(generatedId = true)
-    private Long id;
-    @DatabaseField
-    private Calendar datePurchase;
-    @DatabaseField
-    private BigDecimal valueTotal;
-    @DatabaseField
+    private BigDecimal totalValue;
     private Status status;
-    @ForeignCollectionField
-    private Collection<Item> items;
-    @DatabaseField(foreign = true)
+    private Collection<PurchaseLine> items;
     private Freight freight;
-    @DatabaseField(foreign = true)
     private Establishment establishment;
 
     public Purchase() {}
 
-    public void setId(Long id) {
-        this.id = id;
+    public BigDecimal getTotalValue() {
+        return totalValue;
     }
 
-    public Long getId() {
-        return id;
-    }
-
-    public Calendar getDatePurchase() {
-        return datePurchase;
-    }
-
-    public void setDatePurchase(Calendar datePurchase) {
-        this.datePurchase = datePurchase;
-    }
-
-    public BigDecimal getValueTotal() {
-        return valueTotal;
-    }
-
-    public void setValueTotal(BigDecimal valueTotal) {
-        this.valueTotal = valueTotal;
+    public void setTotalValue(BigDecimal totalValue) {
+        this.totalValue = totalValue;
     }
 
     public Status getStatus() {
@@ -63,11 +32,11 @@ public class Purchase extends DomainEntity {
         this.status = status;
     }
 
-    public Collection<Item> getItems() {
+    public Collection<PurchaseLine> getItems() {
         return items;
     }
 
-    public void setItems(List<Item> items) {
+    public void setItems(List<PurchaseLine> items) {
         this.items = items;
     }
 

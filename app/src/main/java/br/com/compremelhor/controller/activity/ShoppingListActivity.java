@@ -5,8 +5,8 @@ import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
-import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.ExpandableListView;
 import android.widget.Toast;
@@ -21,13 +21,11 @@ import br.com.compremelhor.controller.adapter.ExpandableListAdapter;
 /**
  * Created by adriano on 16/10/15.
  */
-public class ShoppingListActivity extends Activity
-        implements AdapterView.OnItemClickListener, DialogInterface.OnClickListener {
+public class ShoppingListActivity extends Activity implements DialogInterface.OnClickListener {
     private ExpandableListAdapter listAdapter;
     private ExpandableListView explictView;
     private List<String> listDataHeader;
     private HashMap<String, List<String>> listDataChild;
-
     private int productSelected;
 
     private Button btnAddProduct;
@@ -52,11 +50,6 @@ public class ShoppingListActivity extends Activity
         setWidgets();
     }
 
-    private void showMessage(String message) {
-        Toast toast = Toast.makeText(this, message, Toast.LENGTH_SHORT);
-        toast.show();
-    }
-
 
     private void setWidgets() {
         btnAddProduct = (Button) findViewById(R.id.btn_shopping_list_add);
@@ -76,7 +69,14 @@ public class ShoppingListActivity extends Activity
             }
         });
 
-        alertDialog = createAlertDialog();
+        btnAddProduct.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                createReadingAlertDialog().show();
+            }
+        });
+
+        alertDialog = createProductAlertDialog();
         alertDialogConfirmation = createDialogConfirmation();
     }
 
@@ -120,7 +120,20 @@ public class ShoppingListActivity extends Activity
     }
 
 
-    private AlertDialog createAlertDialog() {
+    public void onActivityResult(int requestCode, int resultCode, Intent intent) {
+        if (requestCode == 0) {
+            if (resultCode == RESULT_OK) {
+                Log.v("SCRIP", intent.getStringExtra("SCAN_RESULT_FORMAT"));
+                Log.v("SCRIP", intent.getStringExtra("SCAN_RESULT"));
+            } else if (resultCode == RESULT_CANCELED) {
+                Log.v("SCRIP", "Press a button to start a scan.");
+                Log.v("SCRIP", "Scan cancelled");
+            }
+        }
+    }
+
+
+    private AlertDialog createProductAlertDialog() {
         final CharSequence[] items;
 
         items = new CharSequence[] {
@@ -162,10 +175,40 @@ public class ShoppingListActivity extends Activity
         }
     }
 
+    private AlertDialog createReadingAlertDialog() {
+        final CharSequence[] items;
 
-    @Override
-    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-        this.productSelected = position;
-        alertDialog.show();
+        items = new CharSequence[] {
+                getString(R.string.QR_CODE),
+                getString(R.string.BARCODE),
+                getString(R.string.OTHER)
+        };
+
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle(getString(R.string.read_type));
+        builder.setItems(items, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int item) {
+                Intent intent = new Intent("com.google.zxing.client.android.SCAN");
+                switch(item) {
+                    case 0:
+                        intent.putExtra("SCAN_MODE", "QR_CODE_MODE");
+                        break;
+                    case 1:
+                        intent.putExtra("SCAN_MODE", "PRODUCT_MODE");
+                        break;
+                    case 2:
+                        intent.putExtra("SCAN_MODE", "CODE_39,CODE_93,CODE_128,DATA_MATRIX,ITF");
+                        break;
+                }
+                startActivityForResult(intent, 0);
+            }
+        });
+        return builder.create();
+    }
+
+    private void showMessage(String message) {
+        Toast toast = Toast.makeText(this, message, Toast.LENGTH_SHORT);
+        toast.show();
     }
 }

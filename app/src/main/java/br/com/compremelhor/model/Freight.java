@@ -1,23 +1,14 @@
 package br.com.compremelhor.model;
 
-import com.j256.ormlite.field.DatabaseField;
-import com.j256.ormlite.table.DatabaseTable;
-
 import java.math.BigDecimal;
 
 /**
  * Created by adriano on 25/08/15.
  */
-@DatabaseTable(tableName = "freight")
 public class Freight extends DomainEntity {
-    @DatabaseField(generatedId = true)
-    private Long id;
-    @DatabaseField(foreign = true)
     private Purchase purchase;
-    @DatabaseField(foreign = true)
     private Address address;
-    @DatabaseField
-    private BigDecimal valueTotalDrive;
+    private BigDecimal totalValueDrive;
 
     public Freight() {}
 
@@ -29,22 +20,12 @@ public class Freight extends DomainEntity {
         this.address = address;
     }
 
-    public BigDecimal getValueTotalDrive() {
-        return valueTotalDrive;
+    public BigDecimal getTotalValueDrive() {
+        return totalValueDrive;
     }
 
-    public void setValueTotalDrive(BigDecimal valueTotalDrive) {
-        this.valueTotalDrive = valueTotalDrive;
-    }
-
-    @Override
-    public Long getId() {
-        return id;
-    }
-
-    @Override
-    public void setId(Long id) {
-        this.id = id;
+    public void setTotalValueDrive(BigDecimal totalValueDrive) {
+        this.totalValueDrive = totalValueDrive;
     }
 
     public Purchase getPurchase() {

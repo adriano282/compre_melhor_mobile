@@ -6,14 +6,14 @@ import java.util.List;
  * Created by adriano on 25/08/15.
  */
 public class Cart extends DomainEntity {
-    private List<Item> itens;
+    private List<PurchaseLine> itens;
 
 
-    public List<Item> getItens() {
+    public List<PurchaseLine> getItens() {
         return itens;
     }
 
-    public void setItens(List<Item> itens) {
+    public void setItens(List<PurchaseLine> itens) {
         this.itens = itens;
     }
 }

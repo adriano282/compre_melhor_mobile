@@ -1,21 +1,24 @@
 package br.com.compremelhor.model;
 
-import com.j256.ormlite.field.DatabaseField;
-import com.j256.ormlite.table.DatabaseTable;
-
 import java.math.BigDecimal;
 
 /**
  * Created by adriano on 25/08/15.
  */
-@DatabaseTable(tableName = "Item")
-public class Item {
-    @DatabaseField
+public class PurchaseLine {
     private BigDecimal quantity;
-    @DatabaseField
     private BigDecimal priceUnitary;
+    private Product product;
 
-    public Item() {}
+    public PurchaseLine() {}
+
+    public void setProduct(Product product) {
+        this.product = product;
+    }
+
+    public Product getProduct() {
+        return this.product;
+    }
 
     public BigDecimal getQuantity() {
         return quantity;

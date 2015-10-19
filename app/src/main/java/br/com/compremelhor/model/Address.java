@@ -4,7 +4,6 @@ package br.com.compremelhor.model;
  * Created by adriano on 25/08/15.
  */
 public class Address extends DomainEntity {
-    private Long id;
     private String street;
     private String number;
     private String quarter;
@@ -19,7 +18,7 @@ public class Address extends DomainEntity {
     public Address(Long id, String street, String number,
                    String quarter, String city, String state,
                    String zipcode) {
-        this.id = id;
+        super(id);
         this.street = street;
         this.number = number;
         this.quarter = quarter;
@@ -31,7 +30,7 @@ public class Address extends DomainEntity {
     public Address(Long id, String street, String number,
                    String quarter, String city, String state,
                    String zipcode, Long userId) {
-        this.id = id;
+        super(id);
         this.street = street;
         this.number = number;
         this.quarter = quarter;
@@ -100,14 +99,5 @@ public class Address extends DomainEntity {
 
     public void setZipcode(String zipcode) {
         this.zipcode = zipcode;
-    }
-
-    @Override
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
     }
 }

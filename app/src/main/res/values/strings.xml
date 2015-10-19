@@ -61,4 +61,10 @@
     <string name="remove_product">Remover Produto</string>
     <string name="alter_quantity">Alterar Quantidade</string>
     <string name="establishment">Estabelecimento:</string>
+
+    <string name="QR_CODE">Leitura de QR Code</string>
+    <string name="BARCODE">Código de Barras</string>
+    <string name="OTHER">Outro tipo de Código de Barras</string>
+    <string name="manual">Inserir Código</string>
+    <string name="read_type">Adionar Produto Por:</string>
 </resources>
