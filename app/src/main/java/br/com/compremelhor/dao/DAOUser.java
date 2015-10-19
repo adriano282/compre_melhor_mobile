@@ -6,6 +6,7 @@ import android.content.Context;
 import android.database.Cursor;
 import android.os.Build;
 
+import br.com.compremelhor.model.DomainEntity;
 import br.com.compremelhor.model.User;
 
 /**
@@ -47,7 +48,8 @@ public class DAOUser extends DAO {
         }
     }
 
-    public Long insertOrUpdate(User user) {
+    public long insertOrUpdate(DomainEntity o) {
+        User user = (User) o;
         ContentValues values = new ContentValues();
 
         values.put(DatabaseHelper.User.EMAIL, user.getEmail());

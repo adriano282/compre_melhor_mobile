@@ -19,7 +19,7 @@ public class DAOManufacturer extends DAO {
     }
 
     @Override
-    public int insertOrUpdate(DomainEntity manufacturer) {
+    public long insertOrUpdate(DomainEntity manufacturer) {
         ContentValues values = new ContentValues();
         Manufacturer m = (Manufacturer) manufacturer;
 
