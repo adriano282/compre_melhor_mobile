@@ -8,8 +8,30 @@ import android.database.sqlite.SQLiteOpenHelper;
  * Created by adriano on 25/08/15.
  */
 public class DatabaseHelper extends SQLiteOpenHelper {
+
     private static final String DATABASE = "CompreMelhor.db";
     private static int DATABASE_VERSION = 9;
+
+    private final String[] TABLES;
+
+    {
+        TABLES = new String[] {
+                Purchase.TABLE,
+                PurchaseLine.TABLE,
+                Establishment.TABLE,
+                Freight.TABLE,
+                Product.TABLE,
+                Category.TABLE,
+                Code.TABLE,
+                Manufacturer.TABLE,
+                Address.TABLE,
+                User.TABLE
+        };
+    }
+
+    public DatabaseHelper(Context context) {
+        super(context, DATABASE, null, DATABASE_VERSION);
+    }
 
     public interface Domain {
         String  _ID = "_id",
@@ -103,39 +125,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         String[] COLUMNS = {_ID, QUANTITY, UNITARY_PRICE, _PRODUCT_ID, _PURCHASE_ID, DATE_CREATED, DATE_UPDATED};
     }
 
-
-    public DatabaseHelper(Context context) {
-        super(context, DATABASE, null, DATABASE_VERSION);
-    }
-
     @Override
     public void onCreate(SQLiteDatabase db) {
-        db.execSQL("CREATE TABLE " +  User.TABLE + " (" +
-                User._ID + " INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, " +
-                User.EMAIL + " TEXT," +
-                User.NAME + " TEXT, " +
-                User.DOCUMENT + " NUMERIC, " +
-                User.PASSWORD + " TEXT, " +
-                User.TYPE_DOCUMENT + " TEXT);");
-
-        db.execSQL("CREATE TABLE " + Address.TABLE + " (" +
-                Address._ID + " INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, " +
-                Address.STREET + " TEXT, " +
-                Address.NUMBER + " TEXT, " +
-                Address.QUARTER + " TEXT, " +
-                Address.CITY + " TEXT, " +
-                Address.STATE + " TEXT, " +
-                Address.ZIPCODE + " TEXT, " +
-                Address._USER_ID + " INTEGER, " +
-                " FOREIGN KEY(" + Address._USER_ID + ") " +
-                " REFERENCES user(" + User._ID + "));");
-    }
-
-    @Override
-    public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-        db.execSQL("DROP TABLE address");
-        db.execSQL("DROP TABLE user");
-
         db.execSQL("CREATE TABLE " +  User.TABLE + " (" +
                 User._ID + " INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, " +
                 User.EMAIL + " VARCHAR(30)," +
@@ -238,4 +229,12 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 " FOREIGN KEY( " + Purchase._FREIGHT_ID + ") " +
                 " REFERENCES " + Freight.TABLE + "(" + Freight._ID + "));");
     }
+
+    @Override
+    public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
+        for (String table : TABLES) {
+            db.execSQL("DROP TABLE IF EXISTS " + table);
+        }
+        onCreate(db);
+     }
 }
