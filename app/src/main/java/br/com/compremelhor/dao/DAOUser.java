@@ -27,7 +27,7 @@ public class DAOUser extends DAO {
                 new String[] {id.toString()}, null, null, null)) {
 
             User user = null;
-            if (cursor.moveToNext()) {
+            if (cursor.moveToFirst()) {
                 user =  (User) getBind().bind(new User(), cursor);
             }
             return user;
@@ -62,7 +62,7 @@ public class DAOUser extends DAO {
             values.put(DatabaseHelper.User.TYPE_DOCUMENT, "");
         }
 
-        if ((user.getId() == null || user.getId() == 0) && !userAlreadyRegistered(user))
+        if ((user.getId() == null || user.getId() == 0))
             return getDB().insert(DatabaseHelper.User.TABLE, null, values);
 
         return new Long(getDB().update(DatabaseHelper.User.TABLE, values,
