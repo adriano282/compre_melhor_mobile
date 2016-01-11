@@ -4,10 +4,13 @@ package br.com.compremelhor.controller.activity;
  * Created by adriano on 05/09/15.
  */
 
-import android.app.Activity;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
@@ -22,8 +25,7 @@ import br.com.compremelhor.model.TypeDocument;
 import br.com.compremelhor.model.User;
 import br.com.compremelhor.useful.Constants;
 
-public class ProfileActivity extends Activity
-        implements OnClickListener, Constants{
+public class ProfileActivity extends AppCompatActivity implements OnClickListener, Constants{
     private EditText edName;
     private EditText edEmail;
     private EditText edDocument;
@@ -42,7 +44,14 @@ public class ProfileActivity extends Activity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.view_profile);
 
+        setToolbar();
         setWidgets();
+    }
+
+    private void setToolbar() {
+        Toolbar myToolbar = (Toolbar) findViewById(R.id.my_toolbar);
+        myToolbar.setLogo(R.mipmap.icon);
+        setSupportActionBar(myToolbar);
     }
 
     private void setWidgets() {
@@ -52,14 +61,14 @@ public class ProfileActivity extends Activity
 
         btnSave = (Button) findViewById(R.id.profile_btn_save);
         btnUndone = (Button) findViewById(R.id.profile_btn_undone);
-        btnChangePassword = (Button) findViewById(R.id.profile_btn_change_password);
+        //btnChangePassword = (Button) findViewById(R.id.profile_btn_change_password);
 
         rbCnpj = (RadioButton) findViewById(R.id.profile_rbCnpj);
         rbCpf = (RadioButton) findViewById(R.id.profile_rbCpf);
 
         rdGroup = (RadioGroup) findViewById(R.id.profile_rd_group);
 
-        btnChangePassword.setOnClickListener(this);
+        //btnChangePassword.setOnClickListener(this);
         btnUndone.setOnClickListener(this);
         btnSave.setOnClickListener(this);
 
@@ -78,7 +87,6 @@ public class ProfileActivity extends Activity
         } else {
             user.setTypeDocument(TypeDocument.CPF.toString());
         }
-
         return user;
     }
 
@@ -103,14 +111,14 @@ public class ProfileActivity extends Activity
     public void onClick(View view) {
         Intent intent;
         switch(view.getId()) {
-            case R.id.profile_btn_change_password:
-                intent = new Intent(this, PasswordActivity.class);
-                startActivity(intent);
-                break;
             case R.id.profile_btn_save:
                 DAOUser dao = new DAOUser(this);
 
                 Long result = dao.insertOrUpdate(getUserView());
+
+                SharedPreferences.Editor edit = preferences.edit();
+                edit.putLong(USER_ID, result != -1? result : 0);
+                edit.commit();
 
                 intent = new Intent(this, DashboardActivity.class);
                 startActivity(intent);
@@ -127,6 +135,27 @@ public class ProfileActivity extends Activity
     private void showMessage(String message) {
         Toast toast = Toast.makeText(this, message, Toast.LENGTH_SHORT);
         toast.show();
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.action_bars_menu, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.menu_settings:
+                // Here we would open up our settings activity
+                return true;
+
+            case R.id.menu_password:
+                startActivity(new Intent(this, PasswordActivity.class));
+                break;
+        }
+
+        return super.onOptionsItemSelected(item);
     }
 
 }
