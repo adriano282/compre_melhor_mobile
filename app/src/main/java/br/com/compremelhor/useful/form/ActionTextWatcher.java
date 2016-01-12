@@ -1,7 +1,28 @@
 package br.com.compremelhor.useful.form;
 
-/**
- * Created by adriano on 12/01/16.
- */
-public class ActionTextWatcher {
+import android.text.Editable;
+import android.text.TextWatcher;
+
+import br.com.compremelhor.useful.function.MyConsumer;
+import br.com.compremelhor.useful.function.MyPredicate;
+
+public class ActionTextWatcher implements TextWatcher {
+    private MyConsumer<MyPredicate> consumer;
+    private MyPredicate predicate;
+
+    public ActionTextWatcher(MyConsumer consumer, MyPredicate predicate) {
+        this.predicate = predicate;
+        this.consumer = consumer;
+    }
+
+    @Override
+    public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
+
+    @Override
+    public void onTextChanged(CharSequence s, int start, int before, int count) {}
+
+    @Override
+    public void afterTextChanged(Editable s) {
+        consumer.accept(predicate);
+    }
 }
