@@ -6,10 +6,10 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.EditText;
-import android.widget.Toast;
 
 import com.facebook.CallbackManager;
 import com.facebook.FacebookCallback;
@@ -65,7 +65,6 @@ public class LoginActivity extends Activity {
         callbackManager = CallbackManager.Factory.create();
 
         lgbFacebook.registerCallback(callbackManager, new FaceCallback());
-        initDashboard();
     }
 
     @Override
@@ -87,11 +86,12 @@ public class LoginActivity extends Activity {
 
     }
 
-    public void onLogin() {
-        if (identification()) {
+    public void onLogin(View view) {
+        initDashboard();
+        /*if (identification()) {
             initDashboard();
         }
-        Toast.makeText(this, "Usuário ou senha incorretos", Toast.LENGTH_SHORT).show();
+        Toast.makeText(this, "Usuário ou senha incorretos", Toast.LENGTH_SHORT).show();*/
     }
 
     public void onRegister() {

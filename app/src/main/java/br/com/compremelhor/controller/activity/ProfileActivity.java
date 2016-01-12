@@ -40,6 +40,8 @@ public class ProfileActivity extends AppCompatActivity implements OnClickListene
         super.onCreate(savedInstanceState);
         setContentView(R.layout.view_profile);
 
+        preferences = getSharedPreferences(PREFERENCES, MODE_PRIVATE);
+
         setToolbar();
         setWidgets();
     }
@@ -134,7 +136,6 @@ public class ProfileActivity extends AppCompatActivity implements OnClickListene
     }
 
     private void fillFields() {
-        preferences = getSharedPreferences(PREFERENCES, MODE_PRIVATE);
         id = preferences.getLong(USER_ID, 0);
         User user = new DAOUser(this).getUserById(id);
         if (user != null) {

@@ -74,4 +74,10 @@
     <string name="action_bar_change_password_label">Senha Login</string>
     <string name="btn_change_password_cancel_operation">Cancelar Operação</string>
     <string name="btn_change_password_commit_changes">Alterar senha</string>
+    <string name="err_field_not_filled">Campo necessário não preenchido</string>
+    <string name="err_differents_password">Senha divergentes</string>
+    <string name="err_invalid_password_cannot_contain_space">Senha inválida. Não pode possuir espaços</string>
+    <string name="err_wrong_password">Senha informada incorreta</string>
+    <string name="err_expired_session">Sessão expirada. Por favor realize login novamente.</string>
+    <string name="password_updated_successfully">Sua senha foi atualizada com sucesso.</string>
 </resources>
