@@ -1,9 +1,5 @@
 package br.com.compremelhor.controller.activity;
 
-/**
- * Created by adriano on 05/09/15.
- */
-
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
@@ -23,9 +19,9 @@ import br.com.compremelhor.R;
 import br.com.compremelhor.dao.DAOUser;
 import br.com.compremelhor.model.TypeDocument;
 import br.com.compremelhor.model.User;
-import br.com.compremelhor.useful.Constants;
+import static br.com.compremelhor.useful.Constants.*;
 
-public class ProfileActivity extends AppCompatActivity implements OnClickListener, Constants{
+public class ProfileActivity extends AppCompatActivity implements OnClickListener {
     private EditText edName;
     private EditText edEmail;
     private EditText edDocument;
@@ -36,7 +32,6 @@ public class ProfileActivity extends AppCompatActivity implements OnClickListene
 
     private Button btnSave;
     private Button btnUndone;
-    private Button btnChangePassword;
     private RadioButton rbCpf, rbCnpj;
     private RadioGroup rdGroup;
 
@@ -49,76 +44,17 @@ public class ProfileActivity extends AppCompatActivity implements OnClickListene
         setWidgets();
     }
 
-    private void setToolbar() {
-        Toolbar myToolbar = (Toolbar) findViewById(R.id.my_toolbar);
-        myToolbar.setLogo(R.mipmap.icon);
-        setSupportActionBar(myToolbar);
-    }
-
-    private void setWidgets() {
-        edName = (EditText) findViewById(R.id.profile_name);
-        edEmail = (EditText) findViewById(R.id.profile_email);
-        edDocument = (EditText) findViewById(R.id.profile_document);
-
-        btnSave = (Button) findViewById(R.id.profile_btn_save);
-        btnUndone = (Button) findViewById(R.id.profile_btn_undone);
-        //btnChangePassword = (Button) findViewById(R.id.profile_btn_change_password);
-
-        rbCnpj = (RadioButton) findViewById(R.id.profile_rbCnpj);
-        rbCpf = (RadioButton) findViewById(R.id.profile_rbCpf);
-
-        rdGroup = (RadioGroup) findViewById(R.id.profile_rd_group);
-
-        //btnChangePassword.setOnClickListener(this);
-        btnUndone.setOnClickListener(this);
-        btnSave.setOnClickListener(this);
-
-        fillFields();
-    }
-
-    private User getUserView() {
-        User user = new User();
-        user.setId(this.id);
-        user.setName(edName.getText().toString());
-        user.setDocument(edDocument.getText().toString());
-        user.setEmail(edEmail.getText().toString());
-
-        if (rdGroup.getCheckedRadioButtonId() == R.id.profile_rbCnpj) {
-            user.setTypeDocument(TypeDocument.CNPJ.toString());
-        } else {
-            user.setTypeDocument(TypeDocument.CPF.toString());
-        }
-        return user;
-    }
-
-    private void fillFields() {
-        preferences = getSharedPreferences(PREFERENCES, MODE_PRIVATE);
-        id = preferences.getLong("USER_ID", 0);
-        User user = new DAOUser(this).getUserById(id);
-        if (user != null) {
-            id = user.getId() == null? 0:user.getId();
-            edName.setText(user.getName());
-            edEmail.setText(user.getEmail());
-            edDocument.setText(user.getDocument());
-
-            if (user.getTypeDocument() != null) {
-                rbCnpj.setChecked(user.getTypeDocument().getType().equals(TypeDocument.CNPJ.toString().toLowerCase()));
-                rbCpf.setChecked(user.getTypeDocument().getType().equals(TypeDocument.CPF.toString().toLowerCase()));
-            }
-        }
-    }
-
     @Override
     public void onClick(View view) {
         Intent intent;
-        switch(view.getId()) {
+        switch (view.getId()) {
             case R.id.profile_btn_save:
                 DAOUser dao = new DAOUser(this);
 
                 Long result = dao.insertOrUpdate(getUserView());
 
                 SharedPreferences.Editor edit = preferences.edit();
-                edit.putLong(USER_ID, result != -1? result : 0);
+                edit.putLong(USER_ID, result != -1 ? result : 0);
                 edit.commit();
 
                 intent = new Intent(this, DashboardActivity.class);
@@ -131,11 +67,6 @@ public class ProfileActivity extends AppCompatActivity implements OnClickListene
                 }
                 break;
         }
-    }
-
-    private void showMessage(String message) {
-        Toast toast = Toast.makeText(this, message, Toast.LENGTH_SHORT);
-        toast.show();
     }
 
     @Override
@@ -162,4 +93,64 @@ public class ProfileActivity extends AppCompatActivity implements OnClickListene
         return super.onOptionsItemSelected(item);
     }
 
+    private void setToolbar() {
+        Toolbar myToolbar = (Toolbar) findViewById(R.id.my_toolbar);
+        myToolbar.setLogo(R.mipmap.icon);
+        setSupportActionBar(myToolbar);
+    }
+
+    private void setWidgets() {
+        edName = (EditText) findViewById(R.id.profile_name);
+        edEmail = (EditText) findViewById(R.id.profile_email);
+        edDocument = (EditText) findViewById(R.id.profile_document);
+
+        btnSave = (Button) findViewById(R.id.profile_btn_save);
+        btnUndone = (Button) findViewById(R.id.profile_btn_undone);
+
+        rbCnpj = (RadioButton) findViewById(R.id.profile_rbCnpj);
+        rbCpf = (RadioButton) findViewById(R.id.profile_rbCpf);
+
+        rdGroup = (RadioGroup) findViewById(R.id.profile_rd_group);
+
+        btnUndone.setOnClickListener(this);
+        btnSave.setOnClickListener(this);
+
+        fillFields();
+    }
+
+    private User getUserView() {
+        User user = new User();
+        user.setId(this.id);
+        user.setName(edName.getText().toString());
+        user.setDocument(edDocument.getText().toString());
+        user.setEmail(edEmail.getText().toString());
+
+        if (rdGroup.getCheckedRadioButtonId() == R.id.profile_rbCnpj) {
+            user.setTypeDocument(TypeDocument.CNPJ.toString());
+        } else {
+            user.setTypeDocument(TypeDocument.CPF.toString());
+        }
+        return user;
+    }
+
+    private void fillFields() {
+        preferences = getSharedPreferences(PREFERENCES, MODE_PRIVATE);
+        id = preferences.getLong(USER_ID, 0);
+        User user = new DAOUser(this).getUserById(id);
+        if (user != null) {
+            id = user.getId() == null ? 0 : user.getId();
+            edName.setText(user.getName());
+            edEmail.setText(user.getEmail());
+            edDocument.setText(user.getDocument());
+
+            if (user.getTypeDocument() != null) {
+                rbCnpj.setChecked(user.getTypeDocument().getType().equals(TypeDocument.CNPJ.toString().toLowerCase()));
+                rbCpf.setChecked(user.getTypeDocument().getType().equals(TypeDocument.CPF.toString().toLowerCase()));
+            }
+        }
+    }
+
+    private void showMessage(String message) {
+        Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
+    }
 }
