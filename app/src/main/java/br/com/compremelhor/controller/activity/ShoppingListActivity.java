@@ -1,11 +1,13 @@
 package br.com.compremelhor.controller.activity;
 
-import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ExpandableListView;
@@ -21,7 +23,8 @@ import br.com.compremelhor.controller.adapter.ExpandableListAdapter;
 /**
  * Created by adriano on 16/10/15.
  */
-public class ShoppingListActivity extends Activity implements DialogInterface.OnClickListener {
+public class ShoppingListActivity extends AppCompatActivity
+        implements DialogInterface.OnClickListener {
     private ExpandableListAdapter listAdapter;
     private ExpandableListView explictView;
     private List<String> listDataHeader;
@@ -50,6 +53,22 @@ public class ShoppingListActivity extends Activity implements DialogInterface.On
         setWidgets();
     }
 
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.action_bars_menu, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.menu_settings:
+                // Here we would open up our settings activity
+                return true;
+        }
+
+        return super.onOptionsItemSelected(item);
+    }
 
     private void setWidgets() {
         btnAddProduct = (Button) findViewById(R.id.btn_shopping_list_add);

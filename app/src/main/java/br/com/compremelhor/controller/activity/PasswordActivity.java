@@ -1,7 +1,7 @@
 package br.com.compremelhor.controller.activity;
 
-import android.app.Activity;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
@@ -12,7 +12,7 @@ import br.com.compremelhor.R;
 /**
  * Created by adriano on 10/09/15.
  */
-public class PasswordActivity extends Activity implements OnClickListener {
+public class PasswordActivity extends AppCompatActivity implements OnClickListener {
     private Button btnChancePassword;
     private Button btnCancelOperation;
 

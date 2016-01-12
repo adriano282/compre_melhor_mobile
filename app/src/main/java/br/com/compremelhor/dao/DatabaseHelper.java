@@ -160,7 +160,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         db.execSQL("CREATE TABLE " + Code.TABLE + " (" +
                 Code._ID + " INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, " +
                 Code.CODE + " VARCHAR(20) UNIQUE NOT NULL, " +
-                Code.CODE_TYPE + " VARCHAR(10) NOT NULL" +
+                Code.CODE_TYPE + " VARCHAR(10) NOT NULL, " +
                 Code.DATE_CREATED + " TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP, " +
                 Code.DATE_UPDATED + " TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP);");
 
@@ -205,10 +205,10 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
         db.execSQL("CREATE TABLE " + PurchaseLine.TABLE + " (" +
                 PurchaseLine._ID + " INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, " +
-                PurchaseLine.QUANTITY + " DECIMAL(10,2) NOT NULL DEFAULT 0.0 " +
-                PurchaseLine.UNITARY_PRICE + " DECIMAL(10,2) NOT NULL DEFAULT 0.00 " +
-                PurchaseLine._PRODUCT_ID + " INTEGER NOT NULL " +
-                PurchaseLine._PURCHASE_ID + " INTEGER NOT NULL " +
+                PurchaseLine.QUANTITY + " DECIMAL(10,2) NOT NULL DEFAULT 0.0, " +
+                PurchaseLine.UNITARY_PRICE + " DECIMAL(10,2) NOT NULL DEFAULT 0.00, " +
+                PurchaseLine._PRODUCT_ID + " INTEGER NOT NULL, " +
+                PurchaseLine._PURCHASE_ID + " INTEGER NOT NULL, " +
                 PurchaseLine.DATE_CREATED + " TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP, " +
                 PurchaseLine.DATE_UPDATED + " TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP, " +
                 " FOREIGN KEY( " + PurchaseLine._PRODUCT_ID + ") " +
@@ -219,11 +219,11 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         db.execSQL("CREATE TABLE " + Purchase.TABLE + " (" +
                 Purchase._ID + " INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, " +
                 Purchase.STATUS + " VARCHAR(10) NOT NULL, " +
-                Purchase.TOTAL_VALUE + " DECIMAL(10,2) DEFAULT NOT NULL DEFAULT 0.00, " +
+                Purchase.TOTAL_VALUE + " DECIMAL(10,2) NOT NULL DEFAULT 0.00, " +
                 Purchase._ESTABLISHMENT_ID + " INTEGER NOT NULL, " +
                 Purchase._FREIGHT_ID + " INTEGER NOT NULL, " +
-                Purchase.DATE_CREATED + " TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP, " +
-                Purchase.DATE_UPDATED + " TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP, " +
+                Purchase.DATE_CREATED + " TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL, " +
+                Purchase.DATE_UPDATED + " TIMESTAMP  DEFAULT CURRENT_TIMESTAMP NOT NULL, " +
                 " FOREIGN KEY( " + Purchase._ESTABLISHMENT_ID + ") " +
                 " REFERENCES " + Establishment.TABLE + "(" + Establishment._ID + "), " +
                 " FOREIGN KEY( " + Purchase._FREIGHT_ID + ") " +

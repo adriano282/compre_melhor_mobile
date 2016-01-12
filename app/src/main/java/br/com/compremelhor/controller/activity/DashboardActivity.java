@@ -2,20 +2,23 @@ package br.com.compremelhor.controller.activity;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.Menu;
-import android.view.MenuItem;
 import android.view.View;
 
 import br.com.compremelhor.R;
+import br.com.compremelhor.dao.DAOUser;
+import br.com.compremelhor.model.User;
 
+import static br.com.compremelhor.useful.Constants.PREFERENCES;
+import static br.com.compremelhor.useful.Constants.USER_ID;
 /**
  * Created by adriano on 21/08/15.
  */
 public class DashboardActivity extends Activity implements View.OnClickListener {
     private static final String TAG = "Dashboard";
-    private Long userId;
+    private SharedPreferences preferences;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -27,9 +30,7 @@ public class DashboardActivity extends Activity implements View.OnClickListener 
         findViewById(R.id.list_purchases).setOnClickListener(this);
         findViewById(R.id.manager_addresses).setOnClickListener(this);
 
-
-        userId = getIntent().getLongExtra("USER_ID", 0);
-
+        preferences = getSharedPreferences(PREFERENCES, MODE_PRIVATE);
     }
 
     @Override
@@ -38,7 +39,12 @@ public class DashboardActivity extends Activity implements View.OnClickListener 
         switch(view.getId()) {
             case R.id.edit_profile:
                 intent = new Intent(this, ProfileActivity.class);
-                intent.putExtra("USER_ID", userId);
+
+                User user = new DAOUser(this).getUserById(new Long(1));
+                SharedPreferences.Editor edit = preferences.edit();
+                edit.putLong(USER_ID, user != null? user.getId() : 0);
+                edit.commit();
+
                 startActivity(intent);
                 break;
 
@@ -47,33 +53,14 @@ public class DashboardActivity extends Activity implements View.OnClickListener 
 
             case R.id.start_purchase:
                 intent = new Intent(this, ShoppingListActivity.class);
-                intent.putExtra("USER_ID", userId);
                 startActivity(intent);
                 break;
 
             case R.id.manager_addresses:
                 Log.d(TAG, "Manager Address have been clicked");
                 intent = new Intent(this, AddressListActivity.class);
-                intent.putExtra("USER_ID", userId);
                 startActivity(intent);
                 break;
         }
-    }
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.dashboad_menu, menu);
-        return true;
-    }
-
-    @Override
-    public boolean onMenuItemSelected(int featureId, MenuItem item) {
-        int id = item.getItemId();
-
-       if (id == R.id.action_getout) {
-           finish();
-           return true;
-       }
-        return super.onOptionsItemSelected(item);
     }
 }

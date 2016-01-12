@@ -8,4 +8,10 @@
         android:title="@string/menu_settings"
         support:showAsAction="never"/>
 
+    <item
+        android:id="@+id/menu_password"
+        android:icon="@drawable/lock"
+        android:title="@string/change_password"
+        support:showAsAction="ifRoom" />
+
 </menu>

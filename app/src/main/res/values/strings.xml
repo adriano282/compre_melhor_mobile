@@ -67,4 +67,7 @@
     <string name="OTHER">Outro tipo de Código de Barras</string>
     <string name="manual">Inserir Código</string>
     <string name="read_type">Adionar Produto Por:</string>
+    <string name="menu_settings">Configutações</string>
+    <string name="cpf_type">CPF</string>
+    <string name="cnpj_type">CNPJ</string>
 </resources>

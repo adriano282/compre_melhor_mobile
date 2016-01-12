@@ -1,11 +1,11 @@
 package br.com.compremelhor.controller.activity;
 
-import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
@@ -31,10 +31,10 @@ import br.com.compremelhor.useful.Constants;
 /**
  * Created by adriano on 11/09/15.
  */
-public class AddressActivity extends Activity implements OnClickListener, Constants {
+public class AddressActivity extends AppCompatActivity implements OnClickListener, Constants {
 
     private SharedPreferences preferences;
-    /* Resources from address.xml's page */
+
     private EditText etZipcode;
     private EditText etStreet;
     private EditText etNumber;
