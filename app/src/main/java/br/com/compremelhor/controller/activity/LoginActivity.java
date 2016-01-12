@@ -45,16 +45,14 @@ public class LoginActivity extends Activity {
     private CheckBox cbKeepConnected;
     private DAOUser dao;
 
-    {
-        preferences = getSharedPreferences(PREFERENCES, Context.MODE_PRIVATE);
-        dao = new DAOUser(LoginActivity.this);
-    }
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         FacebookSdk.sdkInitialize(getApplicationContext());
         setContentView(R.layout.login);
+
+        preferences = getSharedPreferences(PREFERENCES, Context.MODE_PRIVATE);
+        dao = new DAOUser(LoginActivity.this);
 
         edUser = (EditText) findViewById(R.id.user);
         edPassword = (EditText) findViewById(R.id.password);
@@ -92,7 +90,7 @@ public class LoginActivity extends Activity {
         if (identification()) {
             initDashboard();
         }
-        Toast.makeText(this, "Usuário ou senha incorretos", Toast.LENGTH_SHORT);
+        Toast.makeText(this, "Usuário ou senha incorretos", Toast.LENGTH_SHORT).show();
     }
 
     public void onRegister() {

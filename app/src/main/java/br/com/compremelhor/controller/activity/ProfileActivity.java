@@ -32,6 +32,7 @@ public class ProfileActivity extends AppCompatActivity implements OnClickListene
 
     private SharedPreferences preferences;
     private Long id;
+    private final int change_password_id = 0;
 
     private Button btnSave;
     private Button btnUndone;
@@ -139,6 +140,9 @@ public class ProfileActivity extends AppCompatActivity implements OnClickListene
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
+        menu.add(0, change_password_id, 0, R.string.change_password)
+                .setIcon(R.drawable.lock)
+                .setShowAsAction(MenuItem.SHOW_AS_ACTION_IF_ROOM);
         getMenuInflater().inflate(R.menu.action_bars_menu, menu);
         return true;
     }
@@ -150,7 +154,7 @@ public class ProfileActivity extends AppCompatActivity implements OnClickListene
                 // Here we would open up our settings activity
                 return true;
 
-            case R.id.menu_password:
+            case change_password_id:
                 startActivity(new Intent(this, PasswordActivity.class));
                 break;
         }
