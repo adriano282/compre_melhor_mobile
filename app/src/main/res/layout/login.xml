@@ -57,13 +57,16 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:text="@string/login"
+            android:onClick="onLogin"
             style="?android:attr/buttonBarButtonStyle" />
+
         <Button
             android:id="@+id/buttonRegister"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="@string/register"
             android:layout_weight="1"
+            android:onClick="onRegister"
             style="?android:attr/buttonBarButtonStyle" />
     </LinearLayout>
 
