@@ -25,14 +25,17 @@
             android:name=".controller.activity.DashboardActivity"
             android:theme="@android:style/Theme.NoTitleBar" />
 
-        <activity android:name=".controller.activity.ProfileActivity"
-            android:label="Cadastro"
-            android:logo="@mipmap/ic_launcher" />
+        <activity
+            android:name=".controller.activity.ProfileActivity"
+            android:label="@string/action_bar_profile_label" />
+        <activity
+            android:name=".controller.activity.PasswordActivity"
+            android:label="@string/action_bar_change_password_label" />
 
         <activity android:name=".controller.activity.RegisterActivity" />
         <activity android:name=".controller.activity.AddressListActivity" />
         <activity android:name=".controller.activity.AddressActivity" />
-        <activity android:name=".controller.activity.PasswordActivity" />
+
         <activity android:name="com.facebook.FacebookActivity" />
 
     </application>

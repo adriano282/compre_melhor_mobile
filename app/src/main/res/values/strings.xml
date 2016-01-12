@@ -70,4 +70,8 @@
     <string name="menu_settings">Configutações</string>
     <string name="cpf_type">CPF</string>
     <string name="cnpj_type">CNPJ</string>
+    <string name="action_bar_profile_label">Meus dados</string>
+    <string name="action_bar_change_password_label">Senha Login</string>
+    <string name="btn_change_password_cancel_operation">Cancelar Operação</string>
+    <string name="btn_change_password_commit_changes">Alterar senha</string>
 </resources>

@@ -65,6 +65,7 @@ public class LoginActivity extends Activity {
         callbackManager = CallbackManager.Factory.create();
 
         lgbFacebook.registerCallback(callbackManager, new FaceCallback());
+        initDashboard();
     }
 
     @Override
