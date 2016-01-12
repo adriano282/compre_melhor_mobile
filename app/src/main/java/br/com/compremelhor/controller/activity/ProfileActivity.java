@@ -90,6 +90,10 @@ public class ProfileActivity extends AppCompatActivity implements OnClickListene
             case change_password_id:
                 startActivity(new Intent(this, PasswordActivity.class));
                 break;
+
+            case android.R.id.home:
+                finish();
+                return true;
         }
 
         return super.onOptionsItemSelected(item);
@@ -99,6 +103,10 @@ public class ProfileActivity extends AppCompatActivity implements OnClickListene
         Toolbar myToolbar = (Toolbar) findViewById(R.id.my_toolbar);
         myToolbar.setLogo(R.mipmap.icon);
         setSupportActionBar(myToolbar);
+        if (getSupportActionBar() != null) {
+            getSupportActionBar().setDisplayShowHomeEnabled(true);
+            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        }
     }
 
     private void setWidgets() {

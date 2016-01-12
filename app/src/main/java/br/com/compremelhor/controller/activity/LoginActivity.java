@@ -10,6 +10,7 @@ import android.view.View;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.EditText;
+import android.widget.Toast;
 
 import com.facebook.CallbackManager;
 import com.facebook.FacebookCallback;
@@ -87,11 +88,10 @@ public class LoginActivity extends Activity {
     }
 
     public void onLogin(View view) {
-        initDashboard();
-        /*if (identification()) {
+        if (identification())
             initDashboard();
-        }
-        Toast.makeText(this, "Usuário ou senha incorretos", Toast.LENGTH_SHORT).show();*/
+        else
+            Toast.makeText(this, R.string.err_wrong_credentials, Toast.LENGTH_SHORT).show();
     }
 
     public void onRegister() {
@@ -99,15 +99,15 @@ public class LoginActivity extends Activity {
     }
 
     private boolean identification() {
-        String username = edUser.getText().toString();
-        String password = edPassword.getText().toString();
+        String username = edUser.getText().toString().trim();
+        String password = edPassword.getText().toString().trim();
 
         if (username.isEmpty())
             return false;
 
         User user = dao.getUserByEmail(username);
         putUserId(user);
-        return user != null && user.getPassword().equals(password);
+        return user != null && user.getPassword() != null && user.getPassword().equals(password);
     }
 
     private void putUserId(User user) {
@@ -166,6 +166,7 @@ public class LoginActivity extends Activity {
         @Override
         public void onError(FacebookException error) {
             Log.d(TAG, "Occurred a error attempting to login on facebook");
+            Toast.makeText(LoginActivity.this, R.string.err_login_facebook, Toast.LENGTH_LONG).show();
         }
     }
 }

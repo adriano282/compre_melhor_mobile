@@ -80,4 +80,6 @@
     <string name="err_wrong_password">Senha informada incorreta</string>
     <string name="err_expired_session">Sessão expirada. Por favor realize login novamente.</string>
     <string name="password_updated_successfully">Sua senha foi atualizada com sucesso.</string>
+    <string name="err_wrong_credentials">Usuário ou senha incorretos</string>
+    <string name="err_login_facebook">Occurred a error while we were attempting to login on facebook.</string>
 </resources>

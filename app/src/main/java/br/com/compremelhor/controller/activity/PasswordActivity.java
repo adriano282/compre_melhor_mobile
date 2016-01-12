@@ -35,6 +35,8 @@ public class PasswordActivity extends AppCompatActivity implements OnClickListen
 
     private SharedPreferences preferences;
 
+    private Toolbar myToolbar;
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -80,10 +82,15 @@ public class PasswordActivity extends AppCompatActivity implements OnClickListen
             case R.id.menu_settings:
                 // Here we would open up our settings activity
                 return true;
+
+            case android.R.id.home:
+                finish();
+                return true;
         }
 
         return super.onOptionsItemSelected(item);
     }
+
 
     private boolean matcherPasswordOnDatabase() {
         Long id = preferences.getLong(USER_ID, 0);
@@ -156,8 +163,12 @@ public class PasswordActivity extends AppCompatActivity implements OnClickListen
     }
 
     private void setToolbar() {
-        Toolbar myToolbar = (Toolbar) findViewById(R.id.my_toolbar);
-        myToolbar.setLogo(R.drawable.icon);
+        myToolbar = (Toolbar) findViewById(R.id.my_toolbar);
+        myToolbar.setLogo(R.mipmap.icon);
         setSupportActionBar(myToolbar);
+        if (getSupportActionBar() != null) {
+            getSupportActionBar().setDisplayShowHomeEnabled(true);
+            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        }
     }
 }
