@@ -1,16 +1,27 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical"
+    android:orientation="horizontal"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:padding="8dp"
-    android:background="@color/accent_material_light" >
+    android:background="@color/accent_material_light"
+    android:id='@+id/category_id'
+    >
 
     <TextView
         android:id="@+id/lblListCategory"
-        android:layout_width="match_parent"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:paddingLeft="?android:attr/expandableListPreferredItemPaddingLeft"
-        android:textSize="17dp"
+        android:textSize="15sp"
+        android:layout_weight="1"
         android:textColor="#FFFFFF" />
+
+    <TextView
+        android:id="@+id/lblSubTotalByCategory"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="end"
+        android:textSize="15sp"
+        android:textColor="#FFFFFF"/>
 </LinearLayout>

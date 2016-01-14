@@ -68,40 +68,52 @@ public class ExpandableListAdapter extends BaseExpandableListAdapter {
     @Override
     public View getGroupView(int groupPosition, boolean isExpanded, View convertView, ViewGroup parent) {
         String headerTitle = (String) getGroup(groupPosition);
+        String title = headerTitle.split("/")[0];
+        String value = headerTitle.split("/")[1];
 
         if (convertView == null) {
-            LayoutInflater infalInflater = (LayoutInflater) this._context
+            LayoutInflater inflater = (LayoutInflater) this._context
                     .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-            convertView = infalInflater.inflate(R.layout.shopping_list_group, null);
+            convertView = inflater.inflate(R.layout.shopping_list_group, null);
         }
 
         TextView lblListHeader = (TextView) convertView
                 .findViewById(R.id.lblListCategory);
         lblListHeader.setTypeface(null, Typeface.BOLD);
-        lblListHeader.setText(headerTitle);
+        lblListHeader.setText(title);
 
+        TextView lblSubtotal = (TextView) convertView.findViewById(R.id.lblSubTotalByCategory);
+        lblSubtotal.setTypeface(null, Typeface.BOLD);
+        lblSubtotal.setText(value);
         return convertView;
     }
 
     @Override
     public View getChildView(int groupPosition, int childPosition, boolean isLastChild, View convertView, ViewGroup parent) {
-        final String childText = (String) getChild(groupPosition, childPosition);
+        String childText = (String) getChild(groupPosition, childPosition);
+        String name = childText.split("/")[0];
+        String qtde = childText.split("/")[1];
+        String value = childText.split("/")[2];
 
         if (convertView == null) {
-            LayoutInflater infalInflater = (LayoutInflater) this._context
-                    .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-            convertView = infalInflater.inflate(R.layout.shopping_list_item, null);
+            LayoutInflater inflater = (LayoutInflater) this._context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+            convertView = inflater.inflate(R.layout.shopping_list_item, null);
         }
 
-        TextView txtListChild = (TextView) convertView
-                .findViewById(R.id.lblListItem);
+        TextView txtListChild = (TextView) convertView.findViewById(R.id.lblItem);
+        txtListChild.setText(name);
 
-        txtListChild.setText(childText);
+        TextView tvQtde = (TextView) convertView.findViewById(R.id.lblQtde);
+        tvQtde.setText(qtde);
+
+        TextView tvValue = (TextView) convertView.findViewById(R.id.lblValueItem);
+        tvValue.setText(value);
+
         return convertView;
     }
 
     @Override
     public boolean isChildSelectable(int groupPosition, int childPosition) {
-        return true;
+        return false;
     }
 }

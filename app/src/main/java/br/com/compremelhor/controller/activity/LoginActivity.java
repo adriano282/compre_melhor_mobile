@@ -42,6 +42,7 @@ public class LoginActivity extends Activity {
     private CallbackManager callbackManager;
 
     private SharedPreferences preferences;
+
     private EditText edUser, edPassword;
     private CheckBox cbKeepConnected;
     private DAOUser dao;
@@ -66,6 +67,7 @@ public class LoginActivity extends Activity {
         callbackManager = CallbackManager.Factory.create();
 
         lgbFacebook.registerCallback(callbackManager, new FaceCallback());
+        initDashboard();
     }
 
     @Override
@@ -94,7 +96,7 @@ public class LoginActivity extends Activity {
             Toast.makeText(this, R.string.err_wrong_credentials, Toast.LENGTH_SHORT).show();
     }
 
-    public void onRegister() {
+    public void onRegister(View view) {
         startActivity(new Intent(this, RegisterActivity.class));
     }
 

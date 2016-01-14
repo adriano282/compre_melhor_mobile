@@ -60,14 +60,14 @@
     <string name="finish_purchase">Finalizar Esta Compra</string>
     <string name="remove_product">Remover Produto</string>
     <string name="alter_quantity">Alterar Quantidade</string>
-    <string name="establishment">Estabelecimento:</string>
+    <string name="establishment">Local:</string>
 
     <string name="QR_CODE">Leitura de QR Code</string>
     <string name="BARCODE">Código de Barras</string>
     <string name="OTHER">Outro tipo de Código de Barras</string>
     <string name="manual">Inserir Código</string>
     <string name="read_type">Adionar Produto Por:</string>
-    <string name="menu_settings">Configutações</string>
+    <string name="menu_settings">Configurações</string>
     <string name="cpf_type">CPF</string>
     <string name="cnpj_type">CNPJ</string>
     <string name="action_bar_profile_label">Meus dados</string>
@@ -82,4 +82,10 @@
     <string name="password_updated_successfully">Sua senha foi atualizada com sucesso.</string>
     <string name="err_wrong_credentials">Usuário ou senha incorretos</string>
     <string name="err_login_facebook">Occurred a error while we were attempting to login on facebook.</string>
+    <string name="purchase_label">Nova Compra</string>
+    <string name="cart">Carrinho</string>
+    <string name="freight">Frete</string>
+    <string name="finish">Finalizar</string>
+    <string name="category">Categoria</string>
+    <string name="delete_all_in_category">Tirar todos produtos desta categoria</string>
 </resources>

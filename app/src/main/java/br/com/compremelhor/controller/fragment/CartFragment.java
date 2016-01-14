@@ -1,9 +1,8 @@
-package br.com.compremelhor.controller.fragments;
+package br.com.compremelhor.controller.fragment;
 
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.AlertDialog.Builder;
-import android.app.Fragment;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
@@ -27,7 +26,7 @@ import static br.com.compremelhor.useful.Constants.PRODUCT_MODE;
 import static br.com.compremelhor.useful.Constants.QR_CODE_MODE;
 import static br.com.compremelhor.useful.Constants.SCAN_MODE;
 
-public class Cart extends Fragment {
+public class CartFragment extends android.support.v4.app.Fragment {
     private ExpandableListAdapter listAdapter;
     private ExpandableListView explicitView;
 
@@ -45,15 +44,27 @@ public class Cart extends Fragment {
     public void onCreate(Bundle state) {
         super.onCreate(state);
         prepareListData();
+
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
         setWidgets();
         registerViews();
     }
-    
+
     @Override
     public View onCreateView(LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.shopping_list, container, false);
+        return inflater.inflate(R.layout.fragment_cart, container, false);
     }
+
+    @Override
+    public void onViewCreated(View view, Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+    }
+
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent intent) {
@@ -73,10 +84,9 @@ public class Cart extends Fragment {
 
     private void registerViews() {
         optionsListener = new OptionsDialogOnClickListener();
-
         btnAddProduct.setOnClickListener(new View.OnClickListener() {
             public void onClick(View view) {
-                createReadingAlertDialog();
+                createReadingAlertDialog().show();
             }
         });
 
@@ -90,7 +100,7 @@ public class Cart extends Fragment {
     }
 
     private void setWidgets() {
-        explicitView = (ExpandableListView) getActivity().findViewById(R.id.lv_shopping_list);
+        explicitView = (ExpandableListView) getView().findViewById(R.id.lv_shopping_list);
         listAdapter = new ExpandableListAdapter(getActivity(), listDataHeader, listDataChild);
         explicitView.setAdapter(listAdapter);
 
@@ -114,6 +124,8 @@ public class Cart extends Fragment {
                 .setItems(items, new ScannerOnClickListener())
                 .create();
     }
+
+
 
     private AlertDialog createDialogConfirmation() {
         return new Builder(getActivity())
@@ -168,7 +180,6 @@ public class Cart extends Fragment {
         listDataChild.put(listDataHeader.get(1), drinks);
         listDataChild.put(listDataHeader.get(2), sweets);
     }
-
 
     private class OptionsDialogOnClickListener implements DialogInterface.OnClickListener {
         public void onClick(DialogInterface dialog, int item) {

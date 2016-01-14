@@ -1,15 +1,38 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical"
+    android:orientation="horizontal"
     android:layout_width="match_parent"
-    android:layout_height="55dip">
+    android:layout_height="wrap_content"
+    >
 
     <TextView
-        android:id="@+id/lblListItem"
-        android:layout_width="match_parent"
+        android:id="@+id/lblItem"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:textSize="17dip"
+        android:textSize="12sp"
         android:paddingTop="5dp"
+        android:paddingRight="6dp"
         android:paddingBottom="5dp"
-        android:paddingLeft="?android:attr/expandableListPreferredChildPaddingLeft" />
+        android:paddingLeft="?android:attr/expandableListPreferredItemPaddingLeft"
+         />
+
+    <TextView
+        android:id="@+id/lblQtde"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textSize="12sp"
+        android:paddingTop="5dp"
+        android:paddingRight="10dp"
+        android:paddingBottom="5dp"/>
+
+    <TextView
+        android:id="@+id/lblValueItem"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textSize="12sp"
+        android:paddingTop="5dp"
+        android:paddingRight="10dp"
+        android:paddingBottom="5dp" />
+
+
 </LinearLayout>
