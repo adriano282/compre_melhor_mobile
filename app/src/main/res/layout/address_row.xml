@@ -4,19 +4,26 @@
     android:orientation="vertical"
     android:background="?android:selectableItemBackground" >
 
-        <TextView style="?android:textAppearanceListItemSmall"
-            android:id="@+id/zipcode"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Zip code here!" />
 
-        <TextView style="?android:textAppearanceListItemSmall"
-            android:id="@+id/street"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Street here!" />
+    <TextView style="?android:textAppearanceListItemSmall"
+        android:id="@+id/tv_address_name"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Address's Name goes here" />
 
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="10sp" />
+    <TextView style="?android:textAppearanceListItemSmall"
+        android:id="@+id/zipcode"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Zip code here!" />
+
+    <TextView style="?android:textAppearanceListItemSmall"
+        android:id="@+id/street"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Street here!" />
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="10sp" />
 </LinearLayout>

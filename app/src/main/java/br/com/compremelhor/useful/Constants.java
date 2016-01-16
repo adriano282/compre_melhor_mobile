@@ -11,15 +11,16 @@ public interface Constants {
     String KEEP_CONNECT = "keep_connected";
 
     String ADDRESS_BUNDLE = "address_bundle";
+    String ADDRESS_NAME = "address_name";
     String ZIPCODE = "zipcode";
     String STREET = "street";
     String NUMBER = "number";
     String QUARTER = "quarter";
     String CITY = "city";
     String STATE = "state";
-    String ADDRESS_ID = "address_id";
+    String ADDRESS_ID_EXTRA = "address_id";
 
-    String USER_ID = "user_id";
+    String USER_ID_SHARED_PREFERENCE = "user_id";
 
     String CLIENT_SCANNER = "com.google.zxing.client.android.SCAN";
     String SCAN_MODE = "SCAN_MODE";

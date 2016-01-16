@@ -62,6 +62,7 @@ public class DAOAddress extends DAO {
         values.put(DatabaseHelper.Address.STATE, address.getState());
         values.put(DatabaseHelper.Address.STREET, address.getStreet());
         values.put(DatabaseHelper.Address.ZIPCODE, address.getZipcode());
+        values.put(DatabaseHelper.Address.ADDRESS_NAME, address.getAddressName());
         values.put(DatabaseHelper.Address._USER_ID, address.getUserId());
 
         if (address.getId() == null || address.getId() == 0)

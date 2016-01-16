@@ -1,15 +1,15 @@
 package br.com.compremelhor.controller.activity;
 
 import android.app.ProgressDialog;
-import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
+import android.support.v7.widget.Toolbar;
 import android.view.KeyEvent;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
-import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
@@ -26,12 +26,12 @@ import java.net.URLConnection;
 import br.com.compremelhor.R;
 import br.com.compremelhor.dao.DAOAddress;
 import br.com.compremelhor.model.Address;
-import br.com.compremelhor.useful.Constants;
 
-/**
- * Created by adriano on 11/09/15.
- */
-public class AddressActivity extends AppCompatActivity implements OnClickListener, Constants {
+import static br.com.compremelhor.useful.Constants.ADDRESS_ID_EXTRA;
+import static br.com.compremelhor.useful.Constants.PREFERENCES;
+import static br.com.compremelhor.useful.Constants.USER_ID_SHARED_PREFERENCE;
+
+public class AddressActivity extends AppCompatActivity {
 
     private SharedPreferences preferences;
 
@@ -41,6 +41,10 @@ public class AddressActivity extends AppCompatActivity implements OnClickListene
     private EditText etQuarter;
     private EditText etCity;
     private EditText etState;
+    private EditText etNameAddress;
+
+    private Button btnReset;
+    private Button btnSubmit;
 
     private String zipcode;
     private String street;
@@ -48,53 +52,55 @@ public class AddressActivity extends AppCompatActivity implements OnClickListene
     private String city;
     private String state;
 
-    private Button btnSubmit;
-    private Button btnCancel;
-    private Button btnReset;
-
     private ProgressDialog dialog;
 
     private String result;
 
-    private long id;
-
     @Override
     public void onCreate(Bundle savedInstaceState) {
         super.onCreate(savedInstaceState);
-        setContentView(R.layout.address);
+        setContentView(R.layout.activity_address);
 
         preferences = getSharedPreferences(PREFERENCES, MODE_PRIVATE);
+        setToolbar();
         setWidgets();
+        registerWidgets();
     }
 
     @Override
-    public void onClick(View view) {
-        Intent intent;
-        switch(view.getId()) {
-            case R.id.btn_address_cancel:
-                showMessage("Operação cancelada");
-                intent = new Intent(this, AddressListActivity.class);
-                startActivity(intent);
-                break;
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.action_bars_menu, menu);
+        return true;
+    }
 
-            case R.id.btn_address_reset:
-                resetFields(true);
-                break;
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.menu_settings:
+                // Here we would open up our settings activity
+                return true;
 
-            case R.id.btn_address_submit:
-                DAOAddress dao = new DAOAddress(this);
+            case android.R.id.home:
+                finish();
+                return true;
+        }
 
-                long result = dao.insertOrUpdate(getAddressView());
+        return super.onOptionsItemSelected(item);
+    }
 
-                intent = new Intent(this, AddressListActivity.class);
-                startActivity(intent);
+    private void registerWidgets() {
+        btnReset.setOnClickListener(new OnClickListener());
+        btnSubmit.setOnClickListener(new OnClickListener());
+        etZipcode.setOnKeyListener(new OnKeyListener());
+    }
 
-                if (result == -1) {
-                    showMessage("The address wasn't saved");
-                } else {
-                    showMessage("The address have been saved successufully");
-                }
-                break;
+    private void setToolbar() {
+        Toolbar myToolbar = (Toolbar) findViewById(R.id.address_toolbar);
+        myToolbar.setLogo(R.mipmap.icon);
+        setSupportActionBar(myToolbar);
+        if (getSupportActionBar() != null) {
+            getSupportActionBar().setDisplayShowHomeEnabled(true);
+            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         }
     }
 
@@ -105,46 +111,23 @@ public class AddressActivity extends AppCompatActivity implements OnClickListene
         etQuarter = (EditText) findViewById(R.id.et_address_quarter);
         etCity = (EditText) findViewById(R.id.et_address_city);
         etState = (EditText) findViewById(R.id.et_address_state);
+        etNameAddress = (EditText) findViewById(R.id.et_address_name);
 
         etState.setEnabled(false);
         etStreet.setEnabled(false);
         etQuarter.setEnabled(false);
         etCity.setEnabled(false);
 
-        btnCancel = (Button) findViewById(R.id.btn_address_cancel);
         btnReset = (Button) findViewById(R.id.btn_address_reset);
         btnSubmit = (Button) findViewById(R.id.btn_address_submit);
-
-        btnCancel.setOnClickListener(this);
-        btnReset.setOnClickListener(this);
-        btnSubmit.setOnClickListener(this);
-
-        etZipcode.setOnKeyListener(new View.OnKeyListener() {
-            @Override
-            public boolean onKey(View v, int keyCode, KeyEvent event) {
-                if (etZipcode.getText().length() == 8) {
-                    HttpGetter get = new HttpGetter();
-
-                    zipcode = etZipcode.getText().toString();
-                    if (zipcode.matches("[0-9]{8}")) {
-                        get.execute();
-                    } else {
-                        showMessage("Cep inválido. Por favor digite um cep válido.");
-                    }
-                } else {
-                    resetFields(false);
-                }
-                return false;
-            }
-        });
 
         fillFields();
     }
 
     private void fillFields() {
-        if (getIntent().hasExtra(ADDRESS_ID)) {
+        if (getIntent().hasExtra(ADDRESS_ID_EXTRA)) {
 
-            id = getIntent().getLongExtra(ADDRESS_ID, 0);
+            Long id = getIntent().getLongExtra(ADDRESS_ID_EXTRA, 0);
             Address ad = new DAOAddress(this).getAddressById(id);
 
             etZipcode.setText(ad.getZipcode());
@@ -153,6 +136,7 @@ public class AddressActivity extends AppCompatActivity implements OnClickListene
             etQuarter.setText(ad.getQuarter());
             etCity.setText(ad.getCity());
             etState.setText(ad.getState());
+            etNameAddress.setText(ad.getAddressName());
         }
     }
 
@@ -170,12 +154,13 @@ public class AddressActivity extends AppCompatActivity implements OnClickListene
     private Address getAddressView() {
 
         return new Address(
-                getIntent().getLongExtra(ADDRESS_ID, 0), etStreet.getText().toString(),
+                getIntent().getLongExtra(ADDRESS_ID_EXTRA, 0), etStreet.getText().toString(),
                 etNumber.getText().toString(),
                 etQuarter.getText().toString(),
                 etCity.getText().toString(),
                 null, etZipcode.getText().toString(),
-                preferences.getLong("USER_ID", 0)
+                etNameAddress.getText().toString(),
+                preferences.getLong(USER_ID_SHARED_PREFERENCE, 0)
         );
 
     }
@@ -224,7 +209,6 @@ public class AddressActivity extends AppCompatActivity implements OnClickListene
 
                 if (!result.contains("erro")) {
                     result = "success";
-                    Log.e("Sucesso", "Sucesso.");
                     city = jsonObject.getString("localidade");
                     quarter = jsonObject.getString("bairro");
                     street = jsonObject.getString("logradouro");
@@ -241,7 +225,6 @@ public class AddressActivity extends AppCompatActivity implements OnClickListene
         @Override
         protected void onPostExecute(Void r) {
             AddressActivity.this.dialog.dismiss();
-
             if (result.equals("success")) {
                 etStreet.setText(street);
                 etCity.setText(city);
@@ -250,9 +233,51 @@ public class AddressActivity extends AppCompatActivity implements OnClickListene
             } else {
                 resetFields(true);
                 etZipcode.setFocusable(true);
-                showMessage("CEP não encontrado");
+                showMessage(getString(R.string.err_cep_not_found));
             }
         }
 
+    }
+
+    private class OnClickListener implements View.OnClickListener {
+        @Override
+        public void onClick(View view) {
+            switch(view.getId()) {
+                case R.id.btn_address_reset:
+                    resetFields(true);
+                    break;
+
+                case R.id.btn_address_submit:
+                    DAOAddress dao = new DAOAddress(AddressActivity.this);
+                    if (dao.insertOrUpdate(getAddressView()) == -1) {
+                        showMessage(getString(R.string.err_ocurred_attempting_save_address));
+                    } else {
+                        showMessage(getString(R.string.address_saved_successfully));
+                    }
+                    finish();
+                    break;
+            }
+        }
+    }
+
+    private class OnKeyListener implements View.OnKeyListener {
+        @Override
+        public boolean onKey(View v, int keyCode, KeyEvent event) {
+            zipcode = etZipcode.getText().toString();
+            if (zipcode.length() == 8 && isValidCep(etZipcode))
+                new HttpGetter().execute();
+            else
+                resetFields(false);
+
+            return false;
+        }
+
+        private boolean isValidCep(EditText cep) {
+            if (cep.getText().toString().matches("[0-9]{8}"))
+                return true;
+
+            cep.setError(getString(R.string.err_invalid_cep));
+            return false;
+        }
     }
 }

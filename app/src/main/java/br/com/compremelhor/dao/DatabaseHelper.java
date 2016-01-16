@@ -10,12 +10,14 @@ import android.database.sqlite.SQLiteOpenHelper;
 public class DatabaseHelper extends SQLiteOpenHelper {
 
     private static final String DATABASE = "CompreMelhor.db";
-    private static int DATABASE_VERSION = 9;
+    private static int DATABASE_VERSION = 12;
 
     private final String[] TABLES;
 
     {
         TABLES = new String[] {
+                CartPurchaseLine.TABLE,
+                Cart.TABLE,
                 Purchase.TABLE,
                 PurchaseLine.TABLE,
                 Establishment.TABLE,
@@ -36,25 +38,25 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     public interface Domain {
         String  _ID = "_id",
                 DATE_CREATED = "date_created",
-                DATE_UPDATED = "date_updated";
+                LAST_UPDATED = "last_updated";
     }
     public interface Manufacturer extends Domain{
         String  TABLE = "manufacturer",
                 COMPANY_NAME = "company_name";
-        String[] COLUMNS = new String[] {_ID, COMPANY_NAME, DATE_CREATED, DATE_UPDATED};
+        String[] COLUMNS = new String[] {_ID, COMPANY_NAME, DATE_CREATED, LAST_UPDATED};
     }
 
     public interface Code extends Domain {
         String  TABLE = "code",
                 CODE = "code",
                 CODE_TYPE = "code_type";
-        String[] COLUMNS = new String[] {_ID, CODE, CODE_TYPE, DATE_CREATED, DATE_UPDATED};
+        String[] COLUMNS = new String[] {_ID, CODE, CODE_TYPE, DATE_CREATED, LAST_UPDATED};
     }
 
     public interface Category extends Domain {
         String  TABLE = "category",
                 NAME = "name";
-        String[] COLUMNS = new String[] {_ID, NAME, DATE_CREATED, DATE_UPDATED};
+        String[] COLUMNS = new String[] {_ID, NAME, DATE_CREATED, LAST_UPDATED};
     }
 
     public interface Product extends Domain {
@@ -66,13 +68,13 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 _CODE_ID = "_code_id",
                 _CATEGORY_ID = "_category_id";
         String[] COLUMNS = new String[] {_ID, NAME, DESCRIPTION, UNIT,
-                _MANUFACTURER_ID, _CODE_ID, _CATEGORY_ID, DATE_CREATED, DATE_UPDATED};
+                _MANUFACTURER_ID, _CODE_ID, _CATEGORY_ID, DATE_CREATED, LAST_UPDATED};
     }
 
     public interface Establishment extends Domain {
         String  TABLE = "establishment",
                 NAME = "name";
-        String[] COLUMNS = new String[] {_ID, NAME, DATE_CREATED, DATE_UPDATED};
+        String[] COLUMNS = new String[] {_ID, NAME, DATE_CREATED, LAST_UPDATED};
     }
 
     public interface Address extends Domain {
@@ -83,9 +85,10 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 CITY = "city",
                 STATE = "state",
                 ZIPCODE = "zipcode",
+                ADDRESS_NAME = "address_name",
                 _USER_ID = "_user_id";
         String[] COLUMNS = new String[] {_ID, STREET, NUMBER,
-            QUARTER, CITY, STATE, ZIPCODE, _USER_ID, DATE_CREATED, DATE_UPDATED};
+            QUARTER, CITY, STATE, ZIPCODE, ADDRESS_NAME, _USER_ID, DATE_CREATED, LAST_UPDATED};
     }
 
     public interface User extends Domain {
@@ -96,7 +99,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 TYPE_DOCUMENT = "type_document",
                 PASSWORD = "password";
         String[] COLUMNS = new String[] {_ID, EMAIL, NAME,
-                DOCUMENT, TYPE_DOCUMENT, PASSWORD, DATE_CREATED, DATE_UPDATED};
+                DOCUMENT, TYPE_DOCUMENT, PASSWORD, DATE_CREATED, LAST_UPDATED};
     }
 
     public interface Freight extends Domain {
@@ -104,7 +107,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 TOTAL_VALUE_DRIVE = "total_value_drive",
                 _ADDRESS_ID = "_address_id";
         String[] COLUMNS = new String[] {_ID, TOTAL_VALUE_DRIVE,
-                _ADDRESS_ID, DATE_CREATED, DATE_UPDATED};
+                _ADDRESS_ID, DATE_CREATED, LAST_UPDATED};
     }
 
     public interface Purchase extends Domain {
@@ -113,7 +116,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 TOTAL_VALUE = "value_total",
                 _FREIGHT_ID = "_freight_id",
                 _ESTABLISHMENT_ID = "_establishment_id";
-        String[] COLUMNS = {_ID, STATUS, TOTAL_VALUE, _FREIGHT_ID, _ESTABLISHMENT_ID, DATE_CREATED, DATE_UPDATED};
+        String[] COLUMNS = {_ID, STATUS, TOTAL_VALUE, _FREIGHT_ID, _ESTABLISHMENT_ID, DATE_CREATED, LAST_UPDATED};
     }
 
     public interface PurchaseLine extends Domain {
@@ -122,7 +125,21 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 UNITARY_PRICE = "unitary_price",
                 _PRODUCT_ID = "_product_id",
                 _PURCHASE_ID = "_purchase_id";
-        String[] COLUMNS = {_ID, QUANTITY, UNITARY_PRICE, _PRODUCT_ID, _PURCHASE_ID, DATE_CREATED, DATE_UPDATED};
+        String[] COLUMNS = {_ID, QUANTITY, UNITARY_PRICE, _PRODUCT_ID, _PURCHASE_ID, DATE_CREATED, LAST_UPDATED};
+    }
+
+    public interface Cart extends Domain {
+        String TABLE = "cart",
+                _ID = "_id";
+        String[] COLUMNS = {_ID, DATE_CREATED, LAST_UPDATED};
+
+    }
+
+    public interface CartPurchaseLine {
+        String  TABLE = "cart_purchase_line",
+                _ID_CART = "_id_cart",
+                _ID_PURCHASE_LINE = "_id_purchase_line";
+        String[] COLUMNS = {_ID_CART, _ID_PURCHASE_LINE};
     }
 
     @Override
@@ -135,7 +152,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 User.PASSWORD + " VARCHAR(10), " +
                 User.TYPE_DOCUMENT + " VARCHAR(5) NOT NULL," +
                 User.DATE_CREATED + " TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP, " +
-                User.DATE_UPDATED + " TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP);");
+                User.LAST_UPDATED + " TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP);");
 
         db.execSQL("CREATE TABLE " + Address.TABLE + " (" +
                 Address._ID + " INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, " +
@@ -145,9 +162,10 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 Address.CITY + " VARCHAR(20), " +
                 Address.STATE + " VARCHAR(10), " +
                 Address.ZIPCODE + " VARCHAR(10) NOT NULL, " +
+                Address.ADDRESS_NAME + " VARCHAR(20), " +
                 Address._USER_ID + " INTEGER NOT NULL, " +
                 Address.DATE_CREATED + " TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP, " +
-                Address.DATE_UPDATED + " TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP, " +
+                Address.LAST_UPDATED + " TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP, " +
                 " FOREIGN KEY(" + Address._USER_ID + ") " +
                 " REFERENCES " + User.TABLE + "(" + User._ID + "));");
 
@@ -155,21 +173,21 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 Manufacturer._ID + " INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, " +
                 Manufacturer.COMPANY_NAME + " VARCHAR(20) UNIQUE NOT NULL, " +
                 Manufacturer.DATE_CREATED + " TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP, " +
-                Manufacturer.DATE_UPDATED + " TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP);");
+                Manufacturer.LAST_UPDATED + " TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP);");
 
         db.execSQL("CREATE TABLE " + Code.TABLE + " (" +
                 Code._ID + " INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, " +
                 Code.CODE + " VARCHAR(20) UNIQUE NOT NULL, " +
                 Code.CODE_TYPE + " VARCHAR(10) NOT NULL, " +
                 Code.DATE_CREATED + " TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP, " +
-                Code.DATE_UPDATED + " TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP);");
+                Code.LAST_UPDATED + " TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP);");
 
 
         db.execSQL("CREATE TABLE " + Category.TABLE + " (" +
                 Category._ID + " INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, " +
                 Category.NAME + " VARCHAR(20), " +
                 Category.DATE_CREATED + " TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP, " +
-                Category.DATE_UPDATED + " TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP);");
+                Category.LAST_UPDATED + " TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP);");
 
         db.execSQL("CREATE TABLE " + Product.TABLE + " (" +
                 Product._ID + " INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, " +
@@ -180,7 +198,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 Product._CODE_ID + " INTEGER NOT NULL, " +
                 Product._CATEGORY_ID + " INTEGER NOT NULL, " +
                 Product.DATE_CREATED + " TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP, " +
-                Product.DATE_UPDATED + " TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP, " +
+                Product.LAST_UPDATED + " TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP, " +
                 " FOREIGN KEY( " + Product._MANUFACTURER_ID + ") " +
                 " REFERENCES " + Manufacturer.TABLE + "(" + Manufacturer._ID + "), " +
                 " FOREIGN KEY( " + Product._CODE_ID + ") " +
@@ -193,7 +211,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 Freight.TOTAL_VALUE_DRIVE + " DECIMAL(10,2) NOT NULL DEFAULT 0.00, " +
                 Freight._ADDRESS_ID + " INTEGER NOT NULL, " +
                 Freight.DATE_CREATED + " TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP, " +
-                Freight.DATE_UPDATED + " TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP, " +
+                Freight.LAST_UPDATED + " TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP, " +
                 " FOREIGN KEY( " + Freight._ADDRESS_ID + ") " +
                 " REFERENCES " + Address.TABLE + "(" + Address._ID + "));");
 
@@ -201,20 +219,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 Establishment._ID + " INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, " +
                 Establishment.NAME + " VARCHAR(20) NOT NULL, " +
                 Establishment.DATE_CREATED + " TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP, " +
-                Establishment.DATE_UPDATED + " TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP);");
-
-        db.execSQL("CREATE TABLE " + PurchaseLine.TABLE + " (" +
-                PurchaseLine._ID + " INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, " +
-                PurchaseLine.QUANTITY + " DECIMAL(10,2) NOT NULL DEFAULT 0.0, " +
-                PurchaseLine.UNITARY_PRICE + " DECIMAL(10,2) NOT NULL DEFAULT 0.00, " +
-                PurchaseLine._PRODUCT_ID + " INTEGER NOT NULL, " +
-                PurchaseLine._PURCHASE_ID + " INTEGER NOT NULL, " +
-                PurchaseLine.DATE_CREATED + " TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP, " +
-                PurchaseLine.DATE_UPDATED + " TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP, " +
-                " FOREIGN KEY( " + PurchaseLine._PRODUCT_ID + ") " +
-                " REFERENCES " + Product.TABLE + "(" + Product._ID + "), " +
-                " FOREIGN KEY( " + PurchaseLine._PURCHASE_ID + ") " +
-                " REFERENCES " + Purchase.TABLE + "(" + Purchase._ID + "));");
+                Establishment.LAST_UPDATED + " TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP);");
 
         db.execSQL("CREATE TABLE " + Purchase.TABLE + " (" +
                 Purchase._ID + " INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, " +
@@ -223,11 +228,34 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 Purchase._ESTABLISHMENT_ID + " INTEGER NOT NULL, " +
                 Purchase._FREIGHT_ID + " INTEGER NOT NULL, " +
                 Purchase.DATE_CREATED + " TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL, " +
-                Purchase.DATE_UPDATED + " TIMESTAMP  DEFAULT CURRENT_TIMESTAMP NOT NULL, " +
+                Purchase.LAST_UPDATED + " TIMESTAMP  DEFAULT CURRENT_TIMESTAMP NOT NULL, " +
                 " FOREIGN KEY( " + Purchase._ESTABLISHMENT_ID + ") " +
                 " REFERENCES " + Establishment.TABLE + "(" + Establishment._ID + "), " +
                 " FOREIGN KEY( " + Purchase._FREIGHT_ID + ") " +
                 " REFERENCES " + Freight.TABLE + "(" + Freight._ID + "));");
+
+        db.execSQL("CREATE TABLE " + PurchaseLine.TABLE + " (" +
+                PurchaseLine._ID + " INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, " +
+                PurchaseLine.QUANTITY + " DECIMAL(10,2) NOT NULL DEFAULT 0.0, " +
+                PurchaseLine.UNITARY_PRICE + " DECIMAL(10,2) NOT NULL DEFAULT 0.00, " +
+                PurchaseLine._PRODUCT_ID + " INTEGER NOT NULL, " +
+                PurchaseLine._PURCHASE_ID + " INTEGER NOT NULL, " +
+                PurchaseLine.DATE_CREATED + " TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP, " +
+                PurchaseLine.LAST_UPDATED + " TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP, " +
+                " FOREIGN KEY( " + PurchaseLine._PRODUCT_ID + ") " +
+                " REFERENCES " + Product.TABLE + "(" + Product._ID + "), " +
+                " FOREIGN KEY( " + PurchaseLine._PURCHASE_ID + ") " +
+                " REFERENCES " + Purchase.TABLE + "(" + Purchase._ID + "));");
+
+        db.execSQL("CREATE TABLE " + Cart.TABLE + " (" +
+                Cart._ID + " INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, " +
+                Cart.DATE_CREATED + " TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL, " +
+                Cart.LAST_UPDATED + " TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL);");
+
+        db.execSQL("CREATE TABLE " + CartPurchaseLine.TABLE + " (" +
+                CartPurchaseLine._ID_CART + " INTEGER NOT NULL, " +
+                CartPurchaseLine._ID_PURCHASE_LINE + " INTEGER NOT NULL, " +
+                "PRIMARY KEY(" + CartPurchaseLine._ID_CART + ", " + CartPurchaseLine._ID_PURCHASE_LINE + "));");
     }
 
     @Override

@@ -5,7 +5,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
@@ -33,18 +32,12 @@ import br.com.compremelhor.model.User;
 
 import static br.com.compremelhor.useful.Constants.KEEP_CONNECT;
 import static br.com.compremelhor.useful.Constants.PREFERENCES;
-import static br.com.compremelhor.useful.Constants.USER_ID;
+import static br.com.compremelhor.useful.Constants.USER_ID_SHARED_PREFERENCE;
 
 public class LoginActivity extends Activity {
-    private final String TAG = "LoginActivity";
-
-    private LoginButton lgbFacebook;
     private CallbackManager callbackManager;
-
     private SharedPreferences preferences;
-
     private EditText edUser, edPassword;
-    private CheckBox cbKeepConnected;
     private DAOUser dao;
 
     @Override
@@ -58,12 +51,13 @@ public class LoginActivity extends Activity {
 
         edUser = (EditText) findViewById(R.id.user);
         edPassword = (EditText) findViewById(R.id.password);
-        cbKeepConnected = (CheckBox) findViewById(R.id.keep_connected);
 
-        cbKeepConnected.setOnCheckedChangeListener(new CheckButtonListener());
-        lgbFacebook = (LoginButton) findViewById(R.id.login_button_facebook);
+        ((CheckBox) findViewById(R.id.keep_connected))
+                .setOnCheckedChangeListener(new CheckButtonListener());
 
+        LoginButton lgbFacebook = (LoginButton) findViewById(R.id.login_button_facebook);
         lgbFacebook.setReadPermissions(Arrays.asList("public_profile", "email"));
+
         callbackManager = CallbackManager.Factory.create();
 
         lgbFacebook.registerCallback(callbackManager, new FaceCallback());
@@ -114,7 +108,7 @@ public class LoginActivity extends Activity {
 
     private void putUserId(User user) {
         if (user != null)
-            preferences.edit().putLong(USER_ID, user.getId()).commit();
+            preferences.edit().putLong(USER_ID_SHARED_PREFERENCE, user.getId()).apply();
     }
 
     private void initDashboard() {
@@ -125,10 +119,10 @@ public class LoginActivity extends Activity {
         @Override
         public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
             if (isChecked) {
-                preferences.edit().putBoolean(KEEP_CONNECT, true).commit();
+                preferences.edit().putBoolean(KEEP_CONNECT, true).apply();
                 return;
             }
-            preferences.edit().putBoolean(KEEP_CONNECT, false).commit();
+            preferences.edit().putBoolean(KEEP_CONNECT, false).apply();
         }
     }
 
@@ -167,7 +161,6 @@ public class LoginActivity extends Activity {
 
         @Override
         public void onError(FacebookException error) {
-            Log.d(TAG, "Occurred a error attempting to login on facebook");
             Toast.makeText(LoginActivity.this, R.string.err_login_facebook, Toast.LENGTH_LONG).show();
         }
     }

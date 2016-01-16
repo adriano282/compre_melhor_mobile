@@ -22,12 +22,12 @@
         <activity
             android:name=".controller.activity.ShoppingActivity"
             android:theme="@style/Theme.Example"
-            android:label="@string/purchase_label"
-            >
+            android:label="@string/purchase_label">
             <meta-data
                 android:name="android.support.UI_OPTIONS"
                 android:value="splitActionBarWhenNarrow" />
         </activity>
+
         <activity
             android:name=".controller.activity.DashboardActivity"
             android:theme="@android:style/Theme.NoTitleBar" />
@@ -38,9 +38,10 @@
         <activity
             android:name=".controller.activity.PasswordActivity"
             android:label="@string/action_bar_change_password_label" />
-
         <activity android:name=".controller.activity.RegisterActivity" />
-        <activity android:name=".controller.activity.AddressListActivity" />
+        <activity
+            android:name=".controller.activity.AddressListActivity"
+            android:label="@string/title_my_addresses" />
         <activity android:name=".controller.activity.AddressActivity" />
 
         <activity android:name="com.facebook.FacebookActivity" />

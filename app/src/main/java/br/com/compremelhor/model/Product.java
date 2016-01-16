@@ -2,6 +2,8 @@ package br.com.compremelhor.model;
 
 import com.j256.ormlite.table.DatabaseTable;
 
+import java.math.BigDecimal;
+
 /**
  * Created by adriano on 25/08/15.
  */
@@ -10,10 +12,11 @@ public class Product extends DomainEntity {
     private Long id;
     private String name;
     private String description;
-    private String unit;
+    private Unit unit;
     private Manufacturer manufacturer;
     private Code code;
     private Category category;
+    private BigDecimal priceUnitary;
 
 
     public Product() {}
@@ -23,6 +26,14 @@ public class Product extends DomainEntity {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public void setPriceUnitary(BigDecimal price) {
+        this.priceUnitary = price;
+    }
+
+    public BigDecimal getPriceUnitary() {
+        return priceUnitary;
     }
 
     public void setId(Long id) {
@@ -40,11 +51,11 @@ public class Product extends DomainEntity {
         this.description = description;
     }
 
-    public String getUnit() {
+    public Unit getUnit() {
         return unit;
     }
 
-    public void setUnit(String unit) {
+    public void setUnit(Unit unit) {
         this.unit = unit;
     }
 
@@ -72,11 +83,12 @@ public class Product extends DomainEntity {
         this.category = category;
     }
 
-    enum Unit {
-        CAIXA("CX"),
-        UNIDADE("UN"),
+    public enum Unit {
+        BOX("CX"),
+        UNIT("UN"),
         METRO("MT"),
-        LITRO("LT");
+        LITRO("LT"),
+        KILO("KG");
 
         private String unit;
 

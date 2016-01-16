@@ -88,4 +88,14 @@
     <string name="finish">Finalizar</string>
     <string name="category">Categoria</string>
     <string name="delete_all_in_category">Tirar todos produtos desta categoria</string>
+    <string name="freight_type">Tipo de Frete</string>
+    <string name="express_freight">Frete Expresso</string>
+    <string name="scheduled_freight">Frete Agendado</string>
+    <string name="select_ship_address">Selecione o endereço de entrega</string>
+    <string name="address_name">Título do Endereço</string>
+    <string name="clear">Limpar</string>
+    <string name="address_saved_successfully">Endereço salvo com sucesso</string>
+    <string name="err_ocurred_attempting_save_address">Ocorreu um erro ao tentar salvar o endereço</string>
+    <string name="err_cep_not_found">CEP não encontrado</string>
+    <string name="err_invalid_cep">Cep inválido.</string>
 </resources>

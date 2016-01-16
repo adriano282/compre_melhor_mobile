@@ -56,7 +56,7 @@ public class ProfileActivity extends AppCompatActivity implements OnClickListene
                 Long result = dao.insertOrUpdate(getUserView());
 
                 SharedPreferences.Editor edit = preferences.edit();
-                edit.putLong(USER_ID, result != -1 ? result : 0);
+                edit.putLong(USER_ID_SHARED_PREFERENCE, result != -1 ? result : 0);
                 edit.commit();
 
                 intent = new Intent(this, DashboardActivity.class);
@@ -144,18 +144,19 @@ public class ProfileActivity extends AppCompatActivity implements OnClickListene
     }
 
     private void fillFields() {
-        id = preferences.getLong(USER_ID, 0);
+        id = preferences.getLong(USER_ID_SHARED_PREFERENCE, 0);
         User user = new DAOUser(this).getUserById(id);
-        if (user != null) {
-            id = user.getId() == null ? 0 : user.getId();
-            edName.setText(user.getName());
-            edEmail.setText(user.getEmail());
-            edDocument.setText(user.getDocument());
 
-            if (user.getTypeDocument() != null) {
-                rbCnpj.setChecked(user.getTypeDocument().getType().equals(TypeDocument.CNPJ.toString().toLowerCase()));
-                rbCpf.setChecked(user.getTypeDocument().getType().equals(TypeDocument.CPF.toString().toLowerCase()));
-            }
+        if (user == null) return;
+
+        id = user.getId() == null ? 0 : user.getId();
+        edName.setText(user.getName());
+        edEmail.setText(user.getEmail());
+        edDocument.setText(user.getDocument());
+
+        if (user.getTypeDocument() != null) {
+            rbCnpj.setChecked(user.getTypeDocument().getType().equals(TypeDocument.CNPJ.toString().toLowerCase()));
+            rbCpf.setChecked(user.getTypeDocument().getType().equals(TypeDocument.CPF.toString().toLowerCase()));
         }
     }
 

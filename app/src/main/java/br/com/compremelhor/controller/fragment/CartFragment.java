@@ -13,12 +13,20 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ExpandableListView;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 
 import br.com.compremelhor.R;
 import br.com.compremelhor.controller.adapter.ExpandableListAdapter;
+import br.com.compremelhor.model.Cart;
+import br.com.compremelhor.model.Category;
+import br.com.compremelhor.model.Code;
+import br.com.compremelhor.model.Manufacturer;
+import br.com.compremelhor.model.Product;
+import br.com.compremelhor.model.PurchaseLine;
 
 import static br.com.compremelhor.useful.Constants.CLIENT_SCANNER;
 import static br.com.compremelhor.useful.Constants.OTHERS_CODES;
@@ -153,32 +161,54 @@ public class CartFragment extends android.support.v4.app.Fragment {
         listDataHeader = new ArrayList<>();
         listDataChild = new HashMap<>();
 
-        listDataHeader.add("CATEGORIA CARNES/R$ 30,00");
-        listDataHeader.add("CATEGORIA BEBIDAS/R$ 30,00");
-        listDataHeader.add("CATEGORIA GULOSEIMAS/R$ 30,00");
+        Category meatCategory = new Category();
+
+
+
+        meatCategory.setName("Carnes");
+        Manufacturer m1 = new Manufacturer();
+        m1.setCompanyName("SEARA");
+
+        Category c2 = new Category();
+        c2.setName("Bebidas");
+
+        Category c3 = new Category();
+        c3.setName("Guloseimas");
+
+        Product p1 = new Product();
+        p1.setId(new Long(1));
+        p1.setName("Passarinho");
+        p1.setCategory(meatCategory);
+        Code code1 = new Code();
+        code1.setCode("123456");
+        code1.setType(Code.CodeType.BAR_CODE);
+        p1.setCode(code1);
+        p1.setDescription("Carne de Passarinho Sabia");
+        p1.setManufacturer(m1);
+        p1.setManufacturer(m1);
+        p1.setUnit(Product.Unit.KILO);
+        p1.setPriceUnitary(new BigDecimal(10.00));
+
+        PurchaseLine item = new PurchaseLine();
+        item.setProduct(p1);
+        item.setQuantity(new BigDecimal(1.5));
+        item.setSubTotal(p1.getPriceUnitary().multiply(item.getQuantity()));
+
+        Cart cart = new Cart();
+        cart.setItens(new ArrayList<>(Arrays.asList(item)));
+        cart.setId(Long.valueOf(1));
+
+
+        listDataHeader.add(meatCategory.getName() + "/ R$ " + (item.getSubTotal()));
 
         List<String> carnes = new ArrayList<>();
-        carnes.add("Passarinho - /2 und - /R$ 10,00");
-        carnes.add("Frango - /2 und - /R$ 10,00");
-        carnes.add("hamburguer - /2 und - /R$ 10,00");
-
-
-        List<String> drinks = new ArrayList<String>();
-        drinks.add("Coca-cola - /2 gar - /R$ 10,00");
-        drinks.add("Dell-Vale - /2 und - /R$ 10,00");
-        drinks.add("Guarana Antertica - /2 lt - /R$ 10,00");
-
-        List<String> sweets = new ArrayList<String>();
-        sweets.add("passa-tempo - /10 pct - /R$ 10,00");
-        sweets.add("passa-tempo - /10 pct - /R$ 10,00");
-        sweets.add("passa-tempo - /10 pct - /R$ 10,00");
-        sweets.add("passa-tempo - /10 pct - /R$ 10,00");
-        sweets.add("chocolate nestle - /2 und - /R$ 10,00");
-        sweets.add("sorvete - /2 und - /R$ 10,00");
+        carnes.add(formattedItem(item));
 
         listDataChild.put(listDataHeader.get(0), carnes);
-        listDataChild.put(listDataHeader.get(1), drinks);
-        listDataChild.put(listDataHeader.get(2), sweets);
+    }
+
+    private String formattedItem(PurchaseLine pl) {
+        return pl.getProduct().getName() + " / " + pl.getQuantity() + " / " + pl.getSubTotal();
     }
 
     private class OptionsDialogOnClickListener implements DialogInterface.OnClickListener {

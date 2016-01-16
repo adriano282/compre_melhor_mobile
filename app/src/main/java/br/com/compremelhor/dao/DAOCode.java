@@ -25,7 +25,7 @@ public class DAOCode extends DAO {
 
         values.put(DatabaseHelper.Code._ID, code.getId());
         values.put(DatabaseHelper.Code.CODE, code.getCode());
-        values.put(DatabaseHelper.Code.CODE_TYPE, code.getType());
+        values.put(DatabaseHelper.Code.CODE_TYPE, code.getType().toString());
 
         if (code.getId() == null)
             return getDB().insert(DatabaseHelper.Code.TABLE, null, values);

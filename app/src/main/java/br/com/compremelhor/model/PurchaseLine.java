@@ -5,9 +5,9 @@ import java.math.BigDecimal;
 /**
  * Created by adriano on 25/08/15.
  */
-public class PurchaseLine {
+public class PurchaseLine extends DomainEntity {
     private BigDecimal quantity;
-    private BigDecimal priceUnitary;
+    private BigDecimal subTotal;
     private Product product;
 
     public PurchaseLine() {}
@@ -28,11 +28,11 @@ public class PurchaseLine {
         this.quantity = quantity;
     }
 
-    public BigDecimal getPriceUnitary() {
-        return priceUnitary;
+    public BigDecimal getSubTotal() {
+        return subTotal;
     }
 
-    public void setPriceUnitary(BigDecimal priceUnitary) {
-        this.priceUnitary = priceUnitary;
+    public void setSubTotal(BigDecimal subTotal) {
+        this.subTotal = subTotal;
     }
 }

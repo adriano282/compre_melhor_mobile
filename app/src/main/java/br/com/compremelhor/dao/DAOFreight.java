@@ -26,7 +26,7 @@ public class DAOFreight extends DAO {
         values.put(DatabaseHelper.Freight.TOTAL_VALUE_DRIVE, f.getTotalValueDrive().doubleValue());
         values.put(DatabaseHelper.Freight._ADDRESS_ID, f.getAddress().getId());
         values.put(DatabaseHelper.Freight.DATE_CREATED, f.getDateCreated().getTimeInMillis());
-        values.put(DatabaseHelper.Freight.DATE_UPDATED, f.getLastUpdated().getTimeInMillis());
+        values.put(DatabaseHelper.Freight.LAST_UPDATED, f.getLastUpdated().getTimeInMillis());
 
         if (f.getId() == null)
             return getDB().insert(DatabaseHelper.Freight.TABLE, null, values);

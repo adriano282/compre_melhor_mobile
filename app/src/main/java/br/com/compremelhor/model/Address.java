@@ -10,6 +10,7 @@ public class Address extends DomainEntity {
     private String city;
     private String state;
     private String zipcode;
+    private String addressName;
     private Long userId;
 
     public Address() {
@@ -40,9 +41,30 @@ public class Address extends DomainEntity {
         this.userId = userId;
     }
 
+    public Address(Long id, String street, String number,
+                   String quarter, String city, String state,
+                   String zipcode, String addressName, Long userId) {
+        super(id);
+        this.street = street;
+        this.number = number;
+        this.quarter = quarter;
+        this.city = city;
+        this.state = state;
+        this.zipcode = zipcode;
+        this.userId = userId;
+        this.addressName = addressName;
+    }
+
     @Override
     public String toString() {
         return this.getZipcode() + " - " + this.getStreet();
+    }
+
+    public void setAddressName(String addressName) {
+        this.addressName = addressName;
+    }
+    public String getAddressName() {
+        return addressName;
     }
 
     public void setUserId(Long userId) {

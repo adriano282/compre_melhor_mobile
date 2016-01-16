@@ -42,6 +42,7 @@ public class DataBind {
             ad.setCity(getString(cursor, DatabaseHelper.Address.CITY));
             ad.setNumber(getString(cursor, DatabaseHelper.Address.NUMBER));
             ad.setUserId(getLong(cursor, DatabaseHelper.Address._USER_ID));
+            ad.setAddressName(getString(cursor, DatabaseHelper.Address.ADDRESS_NAME));
 
             return ad;
         } else if (objectModel instanceof User) {
@@ -71,7 +72,7 @@ public class DataBind {
             Code code = new DAOCode(context).getCodeById(getLong(cursor, DatabaseHelper.Product._CODE_ID));
             p.setCode(code);
 
-            p.setUnit(getString(cursor, DatabaseHelper.Product.UNIT));
+            p.setUnit(Product.Unit.valueOf(getString(cursor, DatabaseHelper.Product.UNIT)));
 
             return p;
         } else if (objectModel instanceof Manufacturer) {
@@ -87,7 +88,7 @@ public class DataBind {
 
             c.setId(getLong(cursor, DatabaseHelper.Code._ID));
             c.setCode(getString(cursor, DatabaseHelper.Code.CODE));
-            c.setType(getString(cursor, DatabaseHelper.Code.CODE_TYPE));
+            c.setType(Code.CodeType.valueOf(getString(cursor, DatabaseHelper.Code.CODE_TYPE)));
 
             return c;
         } else if (objectModel instanceof Establishment) {

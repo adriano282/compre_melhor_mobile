@@ -5,11 +5,11 @@ package br.com.compremelhor.model;
  */
 public class Code extends DomainEntity {
     private String code;
-    private String type;
+    private CodeType type;
 
     public Code() {}
 
-    public Code(String code, String type) {
+    public Code(String code, CodeType type) {
         this.code = code;
         this.type = type;
     }
@@ -18,7 +18,7 @@ public class Code extends DomainEntity {
         return code;
     }
 
-    public String getType() {
+    public CodeType getType() {
         return type;
     }
 
@@ -26,7 +26,7 @@ public class Code extends DomainEntity {
         this.code = code;
     }
 
-    public void setType(String type) {
+    public void setType(CodeType type) {
         this.type = type;
     }
 

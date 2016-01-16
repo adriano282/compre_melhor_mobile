@@ -21,7 +21,7 @@ import br.com.compremelhor.useful.function.MyConsumer;
 import br.com.compremelhor.useful.function.MyPredicate;
 
 import static br.com.compremelhor.useful.Constants.PREFERENCES;
-import static br.com.compremelhor.useful.Constants.USER_ID;
+import static br.com.compremelhor.useful.Constants.USER_ID_SHARED_PREFERENCE;
 
 public class PasswordActivity extends AppCompatActivity implements OnClickListener {
     private Button btnChangePassword;
@@ -93,7 +93,7 @@ public class PasswordActivity extends AppCompatActivity implements OnClickListen
 
 
     private boolean matcherPasswordOnDatabase() {
-        Long id = preferences.getLong(USER_ID, 0);
+        Long id = preferences.getLong(USER_ID_SHARED_PREFERENCE, 0);
         User user = daoUser.getUserById(id);
 
         if (id == 0) {
@@ -111,7 +111,7 @@ public class PasswordActivity extends AppCompatActivity implements OnClickListen
     }
 
     private boolean updatePassword() {
-        User user = daoUser.getUserById(preferences.getLong(USER_ID, 0));
+        User user = daoUser.getUserById(preferences.getLong(USER_ID_SHARED_PREFERENCE, 0));
 
         String newPassword = etNewPassword.getText().toString();
 
