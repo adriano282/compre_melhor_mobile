@@ -56,6 +56,8 @@ public class DAOUser extends DAO {
         values.put(DatabaseHelper.User.NAME, user.getName());
         values.put(DatabaseHelper.User.DOCUMENT, user.getDocument());
         values.put(DatabaseHelper.User.PASSWORD, user.getPassword());
+        values.put(DatabaseHelper.User.BYTES_PICTURE, user.getBytesPicture());
+
         if (user.getTypeDocument() != null) {
             values.put(DatabaseHelper.User.TYPE_DOCUMENT, user.getTypeDocument().toString());
         } else {

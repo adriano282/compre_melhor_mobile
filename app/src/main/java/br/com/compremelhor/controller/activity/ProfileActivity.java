@@ -15,11 +15,16 @@ import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.Toast;
 
+import com.facebook.login.widget.ProfilePictureView;
+
 import br.com.compremelhor.R;
 import br.com.compremelhor.dao.DAOUser;
 import br.com.compremelhor.model.TypeDocument;
 import br.com.compremelhor.model.User;
-import static br.com.compremelhor.useful.Constants.*;
+
+import static br.com.compremelhor.useful.Constants.FACEBOOK_USER_ID_SP;
+import static br.com.compremelhor.useful.Constants.PREFERENCES;
+import static br.com.compremelhor.useful.Constants.USER_ID_SHARED_PREFERENCE;
 
 public class ProfileActivity extends AppCompatActivity implements OnClickListener {
     private EditText edName;
@@ -34,6 +39,8 @@ public class ProfileActivity extends AppCompatActivity implements OnClickListene
     private Button btnUndone;
     private RadioButton rbCpf, rbCnpj;
     private RadioGroup rdGroup;
+
+    ProfilePictureView profilePictureView;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -122,6 +129,8 @@ public class ProfileActivity extends AppCompatActivity implements OnClickListene
 
         rdGroup = (RadioGroup) findViewById(R.id.profile_rd_group);
 
+        profilePictureView = (ProfilePictureView) findViewById(R.id.image);
+
         btnUndone.setOnClickListener(this);
         btnSave.setOnClickListener(this);
 
@@ -148,6 +157,9 @@ public class ProfileActivity extends AppCompatActivity implements OnClickListene
         User user = new DAOUser(this).getUserById(id);
 
         if (user == null) return;
+
+        String facebookId = preferences.getString(FACEBOOK_USER_ID_SP, "");
+        profilePictureView.setProfileId(facebookId);
 
         id = user.getId() == null ? 0 : user.getId();
         edName.setText(user.getName());

@@ -23,6 +23,10 @@ public class DAOCart extends DAO {
         return updateCart();
     }
 
+    public Cart getCart() {
+        return cart;
+    }
+
     public long removeItem(PurchaseLine item) {
         return getDB().delete(DatabaseHelper.CartPurchaseLine.TABLE,
                 DatabaseHelper.CartPurchaseLine._ID_PURCHASE_LINE + " = ?",

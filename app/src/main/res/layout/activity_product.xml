@@ -1,0 +1,141 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <android.support.v7.widget.Toolbar
+        android:id="@+id/my_toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="?attr/actionBarSize"
+        android:background="?attr/colorPrimary"
+        android:elevation="4dp"
+        android:theme="@style/ThemeOverlay.AppCompat.ActionBar"
+        app:popupTheme="@style/ThemeOverlay.AppCompat.Light"/>
+
+    <TableLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <TableRow>
+            <ImageView
+                android:id="@+id/iv_product"
+                android:padding="@dimen/margin_medium"
+                android:src="@drawable/logo"
+                android:layout_width="130dp"
+                android:layout_height="130dp" />
+
+            <TableLayout
+                android:padding="@dimen/margin_medium"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+                <TableRow>
+                    <TextView
+                        android:text="@string/label_name_product"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        />
+                    <TextView
+                        android:id="@+id/tv_product_name"
+                        android:paddingLeft="@dimen/margin_medium"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"/>
+                </TableRow>
+                <TableRow>
+                    <TextView
+                        android:text="@string/label_manufacturer_product"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        />
+                    <TextView
+                        android:id="@+id/tv_product_manufacturer"
+                        android:paddingLeft="@dimen/margin_medium"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1" />
+                </TableRow>
+
+                <TableRow>
+                    <TextView
+                        android:text="@string/label_unit_product"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"/>
+                    <TextView
+                        android:id="@+id/tv_product_unit"
+                        android:paddingLeft="@dimen/margin_medium"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"/>
+                </TableRow>
+
+                <TableRow>
+                    <TextView
+                        android:text="@string/label_unit_price"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content" />
+                    <TextView
+                        android:id="@+id/tv_product_price_unitary"
+                        android:paddingLeft="@dimen/margin_medium"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"/>
+                </TableRow>
+                <TableRow>
+                    <TextView
+                        android:text="@string/label_label_category_product"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content" />
+                    <TextView
+                        android:id="@+id/tv_product_category"
+                        android:paddingLeft="@dimen/margin_medium"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"/>
+                </TableRow>
+            </TableLayout>
+        </TableRow>
+    </TableLayout>
+    <TableLayout
+        android:padding="@dimen/margin_medium"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <TableRow>
+            <TableRow>
+                <TextView
+                    android:textSize="20dp"
+                    android:text="@string/label_sub_total_product"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"/>
+                <TextView
+                    android:paddingLeft="10dp"
+                    android:textSize="20dp"
+                    android:id="@+id/tv_sub_total_product"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"/>
+            </TableRow>
+        </TableRow>
+    </TableLayout>
+
+    <TextView
+        android:text="@string/select_quantity"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center_horizontal"/>
+
+    <NumberPicker
+        android:padding="@dimen/margin_medium"
+        android:id="@+id/np_quantity"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"/>
+
+    <Button
+        android:id="@+id/btn_put_on_cart"
+        android:text="@string/btn_label_add_item_to_cart"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:onClick="onClickPutOnCart"
+        style="?android:attr/buttonBarButtonStyle"/>
+</LinearLayout>

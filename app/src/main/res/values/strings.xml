@@ -98,4 +98,17 @@
     <string name="err_ocurred_attempting_save_address">Ocorreu um erro ao tentar salvar o endereço</string>
     <string name="err_cep_not_found">CEP não encontrado</string>
     <string name="err_invalid_cep">Cep inválido.</string>
+    <string name="without_freight">Sem Frete.</string>
+    <string name="day_of_ship">Dia da Entrega</string>
+    <string name="start_hour_range">A partir do horário:</string>
+    <string name="select">Selecione</string>
+    <string name="label_name_product">Nome</string>
+    <string name="label_manufacturer_product">Marca</string>
+    <string name="label_unit_product">Unidade</string>
+    <string name="label_unit_price">Preço Unidade</string>
+    <string name="label_label_category_product">Categoria</string>
+    <string name="label_sub_total_product">Sub Total</string>
+    <string name="select_quantity">Selecione Quantidade</string>
+    <string name="action_bar_cart_item_label">Item Carrinho</string>
+    <string name="btn_label_add_item_to_cart">Colocar no Carrinho</string>
 </resources>

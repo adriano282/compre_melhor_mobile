@@ -9,11 +9,20 @@ public class User  extends DomainEntity{
     private String document;
     private TypeDocument typeDocument;
     private String password;
+    private byte[] bytesPicture;
 
     public User() {}
     public User(String  name, String email) {
         this.name = name;
         this.email = email;
+    }
+
+    public void setPicture(byte[] bytes) {
+        this.bytesPicture = bytes;
+    }
+
+    public byte[] getBytesPicture() {
+        return bytesPicture;
     }
 
     public TypeDocument getTypeDocument() {

@@ -31,13 +31,15 @@
         <activity
             android:name=".controller.activity.DashboardActivity"
             android:theme="@android:style/Theme.NoTitleBar" />
-
         <activity
             android:name=".controller.activity.ProfileActivity"
             android:label="@string/action_bar_profile_label" />
         <activity
             android:name=".controller.activity.PasswordActivity"
             android:label="@string/action_bar_change_password_label" />
+        <activity
+            android:name=".controller.activity.ProductActivity"
+            android:label="@string/action_bar_cart_item_label" />
         <activity android:name=".controller.activity.RegisterActivity" />
         <activity
             android:name=".controller.activity.AddressListActivity"

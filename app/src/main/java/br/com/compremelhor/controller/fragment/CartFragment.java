@@ -13,25 +13,23 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ExpandableListView;
 
-import java.math.BigDecimal;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 
 import br.com.compremelhor.R;
+import br.com.compremelhor.controller.activity.ProductActivity;
 import br.com.compremelhor.controller.adapter.ExpandableListAdapter;
+import br.com.compremelhor.dao.DAOCart;
 import br.com.compremelhor.model.Cart;
-import br.com.compremelhor.model.Category;
-import br.com.compremelhor.model.Code;
-import br.com.compremelhor.model.Manufacturer;
-import br.com.compremelhor.model.Product;
 import br.com.compremelhor.model.PurchaseLine;
 
 import static br.com.compremelhor.useful.Constants.CLIENT_SCANNER;
 import static br.com.compremelhor.useful.Constants.OTHERS_CODES;
 import static br.com.compremelhor.useful.Constants.PRODUCT_MODE;
 import static br.com.compremelhor.useful.Constants.QR_CODE_MODE;
+import static br.com.compremelhor.useful.Constants.REQUEST_CODE_CART_ITEM_ADDED;
+import static br.com.compremelhor.useful.Constants.REQUEST_CODE_SCANNED_CODE;
 import static br.com.compremelhor.useful.Constants.SCAN_MODE;
 
 public class CartFragment extends android.support.v4.app.Fragment {
@@ -52,7 +50,6 @@ public class CartFragment extends android.support.v4.app.Fragment {
     public void onCreate(Bundle state) {
         super.onCreate(state);
         prepareListData();
-
     }
 
     @Override
@@ -76,19 +73,40 @@ public class CartFragment extends android.support.v4.app.Fragment {
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent intent) {
-        if (requestCode != 0)
-            return;
+        switch (requestCode) {
+            case REQUEST_CODE_SCANNED_CODE:
+                if (resultCode == Activity.RESULT_OK) {
 
-        if (resultCode == Activity.RESULT_OK) {
-            Log.v("SCRIP", intent.getStringExtra("SCAN_RESULT_FORMAT"));
-            Log.v("SCRIP", intent.getStringExtra("SCAN_RESULT"));
-        }
-        else if (resultCode == Activity.RESULT_CANCELED) {
-            Log.v("SCRIP", "Press a button to start a scan.");
-            Log.v("SCRIP", "Scan cancelled");
+                    String code = intent.getStringExtra("SCAN_RESULT");
+                    Intent intent1 = new Intent(getActivity(), ProductActivity.class);
+                    intent1.putExtra("codeResult", code);
+                    startActivityForResult(intent1, REQUEST_CODE_CART_ITEM_ADDED);
+                }
+                else if (resultCode == Activity.RESULT_CANCELED) {
+                    Log.v("SCRIP", "Press a button to start a scan.");
+                    Log.v("SCRIP", "Scan cancelled");
+                }
+                break;
+
+            case REQUEST_CODE_CART_ITEM_ADDED:
+                if (resultCode == Activity.RESULT_OK) {
+                    Log.v("RESULT", "SALVO CARRINHO");
+
+                    addItemToList();
+                }
+                break;
         }
     }
 
+    private void addItemToList() {
+        Cart c = new DAOCart(getActivity()).getCart();
+
+        List<PurchaseLine> items = c.getItens();
+
+
+        listDataHeader.
+
+    }
 
     private void registerViews() {
         optionsListener = new OptionsDialogOnClickListener();
@@ -161,50 +179,6 @@ public class CartFragment extends android.support.v4.app.Fragment {
         listDataHeader = new ArrayList<>();
         listDataChild = new HashMap<>();
 
-        Category meatCategory = new Category();
-
-
-
-        meatCategory.setName("Carnes");
-        Manufacturer m1 = new Manufacturer();
-        m1.setCompanyName("SEARA");
-
-        Category c2 = new Category();
-        c2.setName("Bebidas");
-
-        Category c3 = new Category();
-        c3.setName("Guloseimas");
-
-        Product p1 = new Product();
-        p1.setId(new Long(1));
-        p1.setName("Passarinho");
-        p1.setCategory(meatCategory);
-        Code code1 = new Code();
-        code1.setCode("123456");
-        code1.setType(Code.CodeType.BAR_CODE);
-        p1.setCode(code1);
-        p1.setDescription("Carne de Passarinho Sabia");
-        p1.setManufacturer(m1);
-        p1.setManufacturer(m1);
-        p1.setUnit(Product.Unit.KILO);
-        p1.setPriceUnitary(new BigDecimal(10.00));
-
-        PurchaseLine item = new PurchaseLine();
-        item.setProduct(p1);
-        item.setQuantity(new BigDecimal(1.5));
-        item.setSubTotal(p1.getPriceUnitary().multiply(item.getQuantity()));
-
-        Cart cart = new Cart();
-        cart.setItens(new ArrayList<>(Arrays.asList(item)));
-        cart.setId(Long.valueOf(1));
-
-
-        listDataHeader.add(meatCategory.getName() + "/ R$ " + (item.getSubTotal()));
-
-        List<String> carnes = new ArrayList<>();
-        carnes.add(formattedItem(item));
-
-        listDataChild.put(listDataHeader.get(0), carnes);
     }
 
     private String formattedItem(PurchaseLine pl) {
@@ -249,7 +223,7 @@ public class CartFragment extends android.support.v4.app.Fragment {
                     intent.putExtra(SCAN_MODE, OTHERS_CODES);
                     break;
             }
-            startActivityForResult(intent, 0);
+            startActivityForResult(intent, REQUEST_CODE_SCANNED_CODE);
         }
     }
 }

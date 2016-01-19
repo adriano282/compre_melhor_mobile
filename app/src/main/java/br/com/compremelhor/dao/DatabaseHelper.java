@@ -10,7 +10,7 @@ import android.database.sqlite.SQLiteOpenHelper;
 public class DatabaseHelper extends SQLiteOpenHelper {
 
     private static final String DATABASE = "CompreMelhor.db";
-    private static int DATABASE_VERSION = 12;
+    private static int DATABASE_VERSION = 13;
 
     private final String[] TABLES;
 
@@ -97,9 +97,10 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 NAME = "name",
                 DOCUMENT = "document",
                 TYPE_DOCUMENT = "type_document",
-                PASSWORD = "password";
+                PASSWORD = "password",
+                BYTES_PICTURE = "bytes_picture";
         String[] COLUMNS = new String[] {_ID, EMAIL, NAME,
-                DOCUMENT, TYPE_DOCUMENT, PASSWORD, DATE_CREATED, LAST_UPDATED};
+                DOCUMENT, TYPE_DOCUMENT, PASSWORD, BYTES_PICTURE, DATE_CREATED, LAST_UPDATED};
     }
 
     public interface Freight extends Domain {
@@ -150,7 +151,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 User.NAME + " VARCHAR(20), " +
                 User.DOCUMENT + " NUMERIC, " +
                 User.PASSWORD + " VARCHAR(10), " +
-                User.TYPE_DOCUMENT + " VARCHAR(5) NOT NULL," +
+                User.TYPE_DOCUMENT + " VARCHAR(5) NOT NULL, " +
+                User.BYTES_PICTURE + " BLOB, " +
                 User.DATE_CREATED + " TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP, " +
                 User.LAST_UPDATED + " TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP);");
 

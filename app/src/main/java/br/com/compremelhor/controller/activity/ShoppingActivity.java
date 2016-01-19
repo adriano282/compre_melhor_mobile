@@ -1,5 +1,6 @@
 package br.com.compremelhor.controller.activity;
 
+import android.support.v4.app.FragmentManager;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
@@ -7,6 +8,7 @@ import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarActivity;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 
 import br.com.compremelhor.R;
 import br.com.compremelhor.controller.fragment.CartFragment;
@@ -14,6 +16,7 @@ import br.com.compremelhor.controller.fragment.ClosePurchaseFragment;
 import br.com.compremelhor.controller.fragment.FreightFragment;
 
 public class ShoppingActivity extends ActionBarActivity {
+    private final String FREIGHT_FRAGMENT_TAG = "freight_fragment_tag";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -26,6 +29,17 @@ public class ShoppingActivity extends ActionBarActivity {
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.action_bars_menu, menu);
         return true;
+    }
+
+    public void onClickedDayOfShip(View v) {
+        FragmentManager fm = getSupportFragmentManager();
+        FreightFragment freightFragment = (FreightFragment) fm.getFragments().get(0);
+        freightFragment.onClickedDayOfShip(v);
+    }
+
+    public void onClickedStartHourRangeShip(View v) {
+        ((FreightFragment) getSupportFragmentManager().getFragments().get(0))
+                .onClickedStartHourRangeShip(v);
     }
 
     @Override
@@ -50,8 +64,10 @@ public class ShoppingActivity extends ActionBarActivity {
         ab.setDisplayShowHomeEnabled(true);
         ab.setDisplayHomeAsUpEnabled(true);
 
+        ab.setElevation(4);
+
         Fragment cartFragment = new CartFragment();
-        Fragment freightFragment = new FreightFragment();
+        Fragment freightFragment = FreightFragment.newInstance(FREIGHT_FRAGMENT_TAG);
         Fragment closePurchaseFragment = new ClosePurchaseFragment();
 
         ab.addTab(ab.newTab().setText(R.string.cart).setTabListener(new MyTabsListener(cartFragment)));
