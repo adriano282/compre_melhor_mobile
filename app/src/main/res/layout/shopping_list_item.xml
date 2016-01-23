@@ -6,6 +6,10 @@
     >
 
     <TextView
+        android:id="@+id/tv_purchase_line_id"
+        android:layout_width="0dp"
+        android:layout_height="0dp" />
+    <TextView
         android:id="@+id/lblItem"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"

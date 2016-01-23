@@ -126,6 +126,7 @@
 
     <NumberPicker
         android:padding="@dimen/margin_medium"
+
         android:id="@+id/np_quantity"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"

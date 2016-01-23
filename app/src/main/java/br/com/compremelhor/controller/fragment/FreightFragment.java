@@ -16,31 +16,40 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.CompoundButton;
 import android.widget.DatePicker;
 import android.widget.LinearLayout;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.TimePicker;
+import android.widget.Toast;
 
 import java.util.Calendar;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 import br.com.compremelhor.R;
 import br.com.compremelhor.controller.activity.AddressListActivity;
 import br.com.compremelhor.dao.DAOAddress;
 import br.com.compremelhor.model.Address;
 
+import static br.com.compremelhor.useful.Constants.MENU_OPTION_ID_MANAGE_ADDRESS;
 import static br.com.compremelhor.useful.Constants.PREFERENCES;
 import static br.com.compremelhor.useful.Constants.USER_ID_SHARED_PREFERENCE;
+import static br.com.compremelhor.useful.Constants.REQUEST_CODE_ADDRESS_EDITED_OR_ADDED;
+
 
 public class FreightFragment extends Fragment {
-    private final int manage_address_id = 1;
     private SharedPreferences preferences;
     private Button btnDateShip;
     private Button btnTimeStartShip;
 
     private RadioGroup radioGroup;
+
+    private boolean hasAddresses = false;
 
     public static FreightFragment newInstance(String mTag){
         FreightFragment freightFragment = new FreightFragment();
@@ -63,7 +72,7 @@ public class FreightFragment extends Fragment {
         btnTimeStartShip = (Button) view.findViewById(R.id.btn_picker_start_hour_range);
 
         radioGroup = (RadioGroup) view.findViewById(R.id.rg_type_freight);
-        radioGroup.setOnCheckedChangeListener(new OnCheckedChangeListener());
+        radioGroup.setOnCheckedChangeListener(new FreightTypeOnCheckedChangeListener());
 
         RadioGroup rgAddresses = new RadioGroup(getActivity());
 
@@ -74,9 +83,12 @@ public class FreightFragment extends Fragment {
         LinearLayout ll = (LinearLayout) view.findViewById(R.id.my_addresses);
         ll.removeViews(1, ll.getChildCount() -1);
 
+        hasAddresses = !addresses.isEmpty();
+
         for (Address ad : addresses) {
             RadioButton rb = new RadioButton(getActivity());
             rb.setText(ad.getAddressName() + " / " + ad.getZipcode());
+            rb.setOnCheckedChangeListener(new ShipAddressOnCheckedChangeListener());
             rgAddresses.addView(rb);
         }
 
@@ -85,7 +97,7 @@ public class FreightFragment extends Fragment {
 
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-        menu.add(0, manage_address_id, 0, R.string.manager_addresses)
+        menu.add(0, MENU_OPTION_ID_MANAGE_ADDRESS, 0, R.string.manager_addresses)
                 .setIcon(R.drawable.address)
                 .setShowAsAction(MenuItem.SHOW_AS_ACTION_IF_ROOM);
         inflater.inflate(R.menu.action_bars_menu, menu);
@@ -94,8 +106,8 @@ public class FreightFragment extends Fragment {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
-            case manage_address_id:
-                startActivityForResult(new Intent(getActivity(), AddressListActivity.class), 0);
+            case MENU_OPTION_ID_MANAGE_ADDRESS:
+                startActivityForResult(new Intent(getActivity(), AddressListActivity.class), REQUEST_CODE_ADDRESS_EDITED_OR_ADDED);
                 break;
         }
         return super.onOptionsItemSelected(item);
@@ -104,6 +116,11 @@ public class FreightFragment extends Fragment {
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         onViewCreated(getView(), null);
+        switch(requestCode) {
+            case REQUEST_CODE_ADDRESS_EDITED_OR_ADDED:
+                radioGroup.clearCheck();
+                break;
+        }
     }
 
     public void onClickedStartHourRangeShip(View view) {
@@ -156,13 +173,80 @@ public class FreightFragment extends Fragment {
         }
     }
 
-    private class OnCheckedChangeListener implements RadioGroup.OnCheckedChangeListener {
+    private void showViewsIfHasAddresses(Map<Integer, Integer> mapIdsAndStates) {
+        Iterator<Map.Entry<Integer, Integer>> it = mapIdsAndStates.entrySet().iterator();
+        if (hasAddresses) {
+            while (it.hasNext()) {
+                Map.Entry<Integer, Integer> pair = it.next();
+                int visibility;
+                switch (pair.getValue()) {
+                    case View.GONE:
+                        visibility = View.GONE;
+                        break;
+
+                    case View.VISIBLE:
+                        visibility = View.VISIBLE;
+                        break;
+
+                    case View.INVISIBLE:
+                        visibility = View.INVISIBLE;
+                        break;
+
+                    default:
+                        throw new IllegalArgumentException("Visibility state invalid. Only View.GONE, View.VISIBLE, View.INVISIBLE");
+                }
+                getView().findViewById(pair.getKey()).setVisibility(visibility);
+            }
+        }
+        else {
+            while (it.hasNext()) {
+                Map.Entry<Integer, Integer> pair = it.next();
+                getView().findViewById(pair.getKey()).setVisibility(View.GONE);
+            }
+            Toast.makeText(
+                    getActivity(),
+                    "Você ainda não possui nenhum endereço cadastrado.",
+                    Toast.LENGTH_SHORT)
+                    .show();
+            Toast.makeText(
+                    getActivity(),
+                    "Cadastre um endereço clicando na casinha no menu acima.",
+                    Toast.LENGTH_SHORT)
+                    .show();
+        }
+    }
+
+    private class ShipAddressOnCheckedChangeListener implements CompoundButton.OnCheckedChangeListener {
+        @Override
+        public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+            /*
+               Here will be implemented the consult on API for
+               verify if selected address is on Establishment's ship range
+            */
+            if (true) {
+            /*
+                Verify the price of ship for the address selected
+            */
+            } else {
+            /*
+                Inform for the user tha unfortunately the address
+                selected doesn't is included on ship range
+            */
+            }
+
+        }
+    }
+
+    private class FreightTypeOnCheckedChangeListener implements RadioGroup.OnCheckedChangeListener {
         @Override
         public void onCheckedChanged(RadioGroup group, int checkedId) {
+            Map<Integer, Integer> map;
             switch (checkedId) {
                 case R.id.rb_scheduled_freight:
-                    getView().findViewById(R.id.scheduled_freight_data).setVisibility(View.VISIBLE);
-                    getView().findViewById(R.id.my_addresses).setVisibility(View.VISIBLE);
+                    map = new HashMap<>();
+                    map.put(R.id.scheduled_freight_data, View.VISIBLE);
+                    map.put(R.id.my_addresses, View.VISIBLE);
+                    showViewsIfHasAddresses(map);
                     break;
 
                 case R.id.rb_without_freight:
@@ -171,8 +255,10 @@ public class FreightFragment extends Fragment {
                     break;
 
                 case R.id.rb_express_freight:
-                    getView().findViewById(R.id.scheduled_freight_data).setVisibility(View.GONE);
-                    getView().findViewById(R.id.my_addresses).setVisibility(View.VISIBLE);
+                    map = new HashMap<>();
+                    map.put(R.id.scheduled_freight_data, View.GONE);
+                    map.put(R.id.my_addresses, View.VISIBLE);
+                    showViewsIfHasAddresses(map);
                     break;
             }
         }

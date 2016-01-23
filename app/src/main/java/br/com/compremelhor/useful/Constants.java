@@ -19,6 +19,8 @@ public interface Constants {
     String CITY = "city";
     String STATE = "state";
     String ADDRESS_ID_EXTRA = "address_id";
+    String PURCHASE_ID_EXTRA = "purchase_id";
+    String CURRENT_QUANTITY_OF_ITEM_EXTRA = "current_quantity_of_item_selected";
 
     String USER_ID_SHARED_PREFERENCE = "user_id";
     String FACEBOOK_USER_ID_SP = "facebook_user_id";
@@ -30,6 +32,12 @@ public interface Constants {
     String PRODUCT_MODE = "PRODUCT_MODE";
     String OTHERS_CODES = "CODE_39,CODE_93,CODE_128,DATA_MATRIX,ITF";
 
+    // Constants for delegate tasks for Activities
     int REQUEST_CODE_SCANNED_CODE = 10;
     int REQUEST_CODE_CART_ITEM_ADDED = 11;
+    int REQUEST_CODE_CART_ITEM_EDITED = 12;
+    int REQUEST_CODE_ADDRESS_EDITED_OR_ADDED = 13;
+
+    // Constants for MENU OPTIONS on Action Bar
+    int MENU_OPTION_ID_MANAGE_ADDRESS = 1;
 }

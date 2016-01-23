@@ -93,7 +93,7 @@ public class ShoppingActivity extends ActionBarActivity {
 
         @Override
         public void onTabReselected(ActionBar.Tab tab, FragmentTransaction ft) {
-            ft.remove(fragment);
+//            ft.remove(fragment);
         }
     }
 

@@ -68,6 +68,7 @@
             />
 
         <TextView
+            android:id="@+id/tv_value_total_purchase"
             android:textSize="30dp"
             android:text="RS 90,00"
             android:textColor="#FFFFFF"

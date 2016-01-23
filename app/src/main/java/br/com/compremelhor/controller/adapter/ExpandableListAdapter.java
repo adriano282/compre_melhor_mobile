@@ -2,6 +2,7 @@ package br.com.compremelhor.controller.adapter;
 
 import android.content.Context;
 import android.graphics.Typeface;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -68,6 +69,7 @@ public class ExpandableListAdapter extends BaseExpandableListAdapter {
     @Override
     public View getGroupView(int groupPosition, boolean isExpanded, View convertView, ViewGroup parent) {
         String headerTitle = (String) getGroup(groupPosition);
+        Log.d("FORMATTED STRING", headerTitle);
         String title = headerTitle.split("/")[0];
         String value = headerTitle.split("/")[1];
 
@@ -91,9 +93,11 @@ public class ExpandableListAdapter extends BaseExpandableListAdapter {
     @Override
     public View getChildView(int groupPosition, int childPosition, boolean isLastChild, View convertView, ViewGroup parent) {
         String childText = (String) getChild(groupPosition, childPosition);
+        Log.d("FORMATTED STRING", childText);
         String name = childText.split("/")[0];
         String qtde = childText.split("/")[1];
         String value = childText.split("/")[2];
+        String itemId = childText.split("/")[3];
 
         if (convertView == null) {
             LayoutInflater inflater = (LayoutInflater) this._context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
@@ -109,6 +113,10 @@ public class ExpandableListAdapter extends BaseExpandableListAdapter {
         TextView tvValue = (TextView) convertView.findViewById(R.id.lblValueItem);
         tvValue.setText(value);
 
+        TextView tvItemId = (TextView) convertView.findViewById(R.id.tv_purchase_line_id);
+        tvItemId.setText(itemId);
+
+        Log.d("ITEM_ID", itemId);
         return convertView;
     }
 

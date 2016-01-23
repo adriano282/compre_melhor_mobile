@@ -4,6 +4,8 @@ import android.content.Context;
 import android.database.Cursor;
 
 import java.math.BigDecimal;
+import java.util.Calendar;
+import java.util.Date;
 
 import br.com.compremelhor.dao.DAOAddress;
 import br.com.compremelhor.dao.DAOCategory;
@@ -11,12 +13,14 @@ import br.com.compremelhor.dao.DAOCode;
 import br.com.compremelhor.dao.DAOManufacturer;
 import br.com.compremelhor.dao.DatabaseHelper;
 import br.com.compremelhor.model.Address;
+import br.com.compremelhor.model.Cart;
 import br.com.compremelhor.model.Category;
 import br.com.compremelhor.model.Code;
 import br.com.compremelhor.model.Establishment;
 import br.com.compremelhor.model.Freight;
 import br.com.compremelhor.model.Manufacturer;
 import br.com.compremelhor.model.Product;
+import br.com.compremelhor.model.PurchaseLine;
 import br.com.compremelhor.model.User;
 
 /**
@@ -107,6 +111,33 @@ public class DataBind {
             freight.setAddress(address);
 
             freight.setTotalValueDrive(getBigDecimal(cursor, DatabaseHelper.Freight.TOTAL_VALUE_DRIVE));
+
+            return freight;
+        }
+        else if (objectModel instanceof PurchaseLine) {
+            PurchaseLine pl = (PurchaseLine) objectModel;
+
+            pl.setId(getLong(cursor, DatabaseHelper.PurchaseLine._ID));
+            pl.setSubTotal(getBigDecimal(cursor, DatabaseHelper.PurchaseLine.SUB_TOTAL));
+            pl.setQuantity(getBigDecimal(cursor, DatabaseHelper.PurchaseLine.QUANTITY));
+            pl.setDateCreated(getCalendar(cursor, DatabaseHelper.PurchaseLine.DATE_CREATED));
+            pl.setDateCreated(getCalendar(cursor, DatabaseHelper.PurchaseLine.LAST_UPDATED));
+            pl.setCategory(getString(cursor, DatabaseHelper.PurchaseLine.CATEGORY));
+
+            Product p = new Product();
+            p.setId(getLong(cursor, DatabaseHelper.PurchaseLine._PRODUCT_ID));
+            pl.setProduct(p);
+
+            return pl;
+        }
+        else if (objectModel instanceof Cart) {
+            Cart c = (Cart) objectModel;
+
+            c.setId(getLong(cursor, DatabaseHelper.Cart._ID));
+            c.setDateCreated(getCalendar(cursor, DatabaseHelper.Cart.DATE_CREATED));
+            c.setLastUpdated(getCalendar(cursor, DatabaseHelper.Cart.LAST_UPDATED));
+
+            return c;
         }
 
         return null;
@@ -116,12 +147,19 @@ public class DataBind {
         return cursor.getString(cursor.getColumnIndex(column));
     }
 
+
     private Long getLong(Cursor cursor, String column) {
-        return cursor.getLong(cursor.getColumnIndex(column));
+         return cursor.getLong(cursor.getColumnIndex(column));
     }
 
     private Double getDouble(Cursor cursor, String column) {
         return cursor.getDouble(cursor.getColumnIndex(column));
+    }
+
+    private Calendar getCalendar(Cursor cursor, String column) {
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(new Date(getLong(cursor, DatabaseHelper.PurchaseLine.DATE_CREATED)));
+        return  calendar;
     }
 
     private BigDecimal getBigDecimal(Cursor cursor, String column) {

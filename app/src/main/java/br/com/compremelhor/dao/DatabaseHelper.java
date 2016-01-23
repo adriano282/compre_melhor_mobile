@@ -10,7 +10,7 @@ import android.database.sqlite.SQLiteOpenHelper;
 public class DatabaseHelper extends SQLiteOpenHelper {
 
     private static final String DATABASE = "CompreMelhor.db";
-    private static int DATABASE_VERSION = 13;
+    private static int DATABASE_VERSION = 16;
 
     private final String[] TABLES;
 
@@ -124,9 +124,12 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         String  TABLE = "purchase_line",
                 QUANTITY = "quantity",
                 UNITARY_PRICE = "unitary_price",
+                SUB_TOTAL = "sub_total",
+                CATEGORY = "category",
+                PRODUCT_NAME = "product_name",
                 _PRODUCT_ID = "_product_id",
                 _PURCHASE_ID = "_purchase_id";
-        String[] COLUMNS = {_ID, QUANTITY, UNITARY_PRICE, _PRODUCT_ID, _PURCHASE_ID, DATE_CREATED, LAST_UPDATED};
+        String[] COLUMNS = {_ID, QUANTITY, UNITARY_PRICE, SUB_TOTAL, CATEGORY, PRODUCT_NAME, _PRODUCT_ID, _PURCHASE_ID, DATE_CREATED, LAST_UPDATED};
     }
 
     public interface Cart extends Domain {
@@ -240,8 +243,11 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 PurchaseLine._ID + " INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, " +
                 PurchaseLine.QUANTITY + " DECIMAL(10,2) NOT NULL DEFAULT 0.0, " +
                 PurchaseLine.UNITARY_PRICE + " DECIMAL(10,2) NOT NULL DEFAULT 0.00, " +
-                PurchaseLine._PRODUCT_ID + " INTEGER NOT NULL, " +
-                PurchaseLine._PURCHASE_ID + " INTEGER NOT NULL, " +
+                PurchaseLine.SUB_TOTAL + " DECIMAL(10,2) NOT NULL DEFAULT 0.00, " +
+                PurchaseLine.CATEGORY + " VARCHAR(20), " +
+                PurchaseLine.PRODUCT_NAME + " VARCHAR(20), " +
+                PurchaseLine._PRODUCT_ID + " INTEGER, " +
+                PurchaseLine._PURCHASE_ID + " INTEGER, " +
                 PurchaseLine.DATE_CREATED + " TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP, " +
                 PurchaseLine.LAST_UPDATED + " TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP, " +
                 " FOREIGN KEY( " + PurchaseLine._PRODUCT_ID + ") " +

@@ -4,6 +4,7 @@ import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -13,8 +14,7 @@ import android.widget.NumberPicker;
 import android.widget.TextView;
 
 import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.Calendar;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -26,6 +26,9 @@ import br.com.compremelhor.model.Code;
 import br.com.compremelhor.model.Manufacturer;
 import br.com.compremelhor.model.Product;
 import br.com.compremelhor.model.PurchaseLine;
+
+import static br.com.compremelhor.useful.Constants.CURRENT_QUANTITY_OF_ITEM_EXTRA;
+import static br.com.compremelhor.useful.Constants.PURCHASE_ID_EXTRA;
 
 public class ProductActivity extends AppCompatActivity {
     private ImageView ivProduct;
@@ -41,6 +44,8 @@ public class ProductActivity extends AppCompatActivity {
 
     private Button btnPutInCart;
     private PurchaseLine item;
+
+    private Long itemId;
 
     private static Map<String, Product> productsForTest;
     private static void startMap() {
@@ -106,15 +111,29 @@ public class ProductActivity extends AppCompatActivity {
     public void onClickPutOnCart(View view) {
         item.setQuantity(new BigDecimal(npQuantity.getValue()));
         item.setSubTotal(item.getQuantity().multiply(item.getProduct().getPriceUnitary()));
-        item.setId(new Long(1));
 
-        DAOCart dao = new DAOCart(this);
+        item.setDateCreated(Calendar.getInstance());
 
-        Cart c = new Cart();
-        c.setItens(new ArrayList<>(Arrays.asList(item)));
-        c.setId(new Long(1));
+        item.setLastUpdated(Calendar.getInstance());
+        item.setUnitaryPrice(item.getProduct().getPriceUnitary());
+        item.setCategory(item.getProduct().getCategory().getName());
+        item.setId(itemId);
+
+
+        DAOCart dao = DAOCart.getInstance(this);
+
+        Cart c = dao.getCart();
+
+        if (c == null) {
+            c = new Cart();
+            c.setDateCreated(Calendar.getInstance());
+        }
+
+
+        c.setLastUpdated(Calendar.getInstance());
 
         dao.insertOrUpdate(c);
+        dao.addItem(item);
 
         this.setResult(RESULT_OK);
         finish();
@@ -150,10 +169,22 @@ public class ProductActivity extends AppCompatActivity {
         tvUnit = (TextView) findViewById(R.id.tv_product_unit);
 
         btnPutInCart = (Button) findViewById(R.id.btn_put_on_cart);
+
+        String stringId = getIntent().getStringExtra(PURCHASE_ID_EXTRA);
+
+        itemId = stringId == null || stringId.isEmpty() ? null : Long.valueOf(stringId);
+
+        if (itemId != null)
+            btnPutInCart.setText("ALTERAR QUANTIDADE");
+
+        String quantity = getIntent().getStringExtra(CURRENT_QUANTITY_OF_ITEM_EXTRA);
+        Log.d("ID", "FROM PRODUCT Activity " + quantity);
         npQuantity = (NumberPicker) findViewById(R.id.np_quantity);
-        npQuantity.setValue(20);
         npQuantity.setMinValue(0);
         npQuantity.setMaxValue(20);
+        npQuantity.setValue(quantity == null || quantity.isEmpty() ? 0 : Integer.valueOf(quantity));
+
+
     }
 
     private void registerListeners() {

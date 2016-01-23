@@ -1,7 +1,11 @@
 package br.com.compremelhor.dao;
 
+import android.annotation.TargetApi;
 import android.content.ContentValues;
 import android.content.Context;
+import android.database.Cursor;
+import android.os.Build;
+import android.util.Log;
 
 import java.text.DateFormat;
 import java.util.Locale;
@@ -12,7 +16,17 @@ import br.com.compremelhor.model.PurchaseLine;
 
 public class DAOCart extends DAO {
     private Cart cart;
-    public DAOCart(Context context) {super(context);}
+    private static DAOCart instance;
+
+    public static DAOCart getInstance(Context context) {
+        if (instance == null)
+            return new DAOCart(context);
+
+        return instance;
+    }
+
+
+    private DAOCart(Context context) {super(context);}
 
     @Override
     public long insertOrUpdate(DomainEntity o) {
@@ -23,14 +37,60 @@ public class DAOCart extends DAO {
         return updateCart();
     }
 
+    @TargetApi(Build.VERSION_CODES.KITKAT)
     public Cart getCart() {
-        return cart;
+        try (Cursor cursor = getDB().query(DatabaseHelper.Cart.TABLE,
+                DatabaseHelper.Cart.COLUMNS,
+                DatabaseHelper.Cart._ID + " = ?",
+                new String[] {"1"}, null, null,null)) {
+
+
+            Cart cart = null;
+            if (cursor.moveToFirst()) {
+                cart = (Cart) getBind().bind(new Cart(), cursor);
+            }
+
+            cursor.close();
+
+            Cursor items = getDB()
+                    .rawQuery("SELECT pl." + DatabaseHelper.PurchaseLine._ID  + ", "
+                        + "pl."+ DatabaseHelper.PurchaseLine.UNITARY_PRICE + ", "
+                        + "pl."+ DatabaseHelper.PurchaseLine.QUANTITY + ", "
+                        + "pl."+ DatabaseHelper.PurchaseLine.SUB_TOTAL + ", "
+                        + "pl."+ DatabaseHelper.PurchaseLine.CATEGORY + ", "
+                        + "pl." + DatabaseHelper.PurchaseLine._PRODUCT_ID + ", "
+                        + "pl." + DatabaseHelper.PurchaseLine.DATE_CREATED + ", "
+                        + "pl." + DatabaseHelper.PurchaseLine.LAST_UPDATED + " "
+                    + "FROM " + DatabaseHelper.PurchaseLine.TABLE + " as pl "
+                    + "INNER JOIN " + DatabaseHelper.CartPurchaseLine.TABLE + " as cl "
+                    + " ON cl." + DatabaseHelper.CartPurchaseLine._ID_PURCHASE_LINE
+                            + " = pl." + DatabaseHelper.PurchaseLine._ID + " "
+                    + " WHERE cl." + DatabaseHelper.CartPurchaseLine._ID_CART + " = ?",
+                    new String[]{"1"});
+
+
+            items.moveToFirst();
+
+            while (!items.isAfterLast()) {
+                cart.addItem((PurchaseLine) getBind().bind(new PurchaseLine(), items));
+                items.moveToNext();
+            }
+
+            items.close();
+            return cart;
+        }
     }
 
     public long removeItem(PurchaseLine item) {
-        return getDB().delete(DatabaseHelper.CartPurchaseLine.TABLE,
-                DatabaseHelper.CartPurchaseLine._ID_PURCHASE_LINE + " = ?",
-                new String[]{item.getId().toString()});
+        if (getDB().delete(DatabaseHelper.PurchaseLine.TABLE,
+                DatabaseHelper.PurchaseLine._ID + " = ?",
+                new String[] {item.getId().toString()}) != -1) {
+
+            return getDB().delete(DatabaseHelper.CartPurchaseLine.TABLE,
+                    DatabaseHelper.CartPurchaseLine._ID_PURCHASE_LINE + " = ?",
+                    new String[]{item.getId().toString()});
+        }
+        return -1;
     }
 
     public long addItem(PurchaseLine item) {
@@ -41,19 +101,45 @@ public class DAOCart extends DAO {
     }
 
     private long insertItem(PurchaseLine item) {
-        return getDB().insert(DatabaseHelper.CartPurchaseLine.TABLE, null, getItemValues(item));
+        long resultInserPurchaseLine = getDB().insert(DatabaseHelper.PurchaseLine.TABLE, null, getPurchaseLineValues(item));
+        item.setId(resultInserPurchaseLine);
+        long resultItem =  getDB().insert(DatabaseHelper.CartPurchaseLine.TABLE, null, getItemValues(item));
+
+        Log.d("DATABASE", "Result from insert purchase line: " + resultInserPurchaseLine);
+        Log.d("DATABASE", "Result from insert item on cart: " + resultItem);
+        return resultItem;
+    }
+
+    private ContentValues getPurchaseLineValues(PurchaseLine item) {
+        ContentValues content = new ContentValues();
+        content.put(DatabaseHelper.PurchaseLine._PRODUCT_ID, item.getProduct() == null ? 0 : item.getProduct().getId());
+        content.put(DatabaseHelper.PurchaseLine.QUANTITY, item.getQuantity().toString());
+        content.put(DatabaseHelper.PurchaseLine.UNITARY_PRICE, item.getUnitaryPrice().toString());
+        content.put(DatabaseHelper.PurchaseLine.SUB_TOTAL, item.getSubTotal().toString());
+        content.put(DatabaseHelper.PurchaseLine.CATEGORY, item.getCategory());
+
+        DateFormat format = DateFormat.getDateInstance(DateFormat.LONG, new Locale("BR"));
+        content.put(DatabaseHelper.PurchaseLine.DATE_CREATED, format.format(item.getDateCreated().getTime()));
+        content.put(DatabaseHelper.PurchaseLine.LAST_UPDATED, format.format(item.getLastUpdated().getTime()));
+
+        return content;
     }
 
     private long updateItem(PurchaseLine item) {
-        return getDB().update(DatabaseHelper.CartPurchaseLine.TABLE, getItemValues(item),
-                DatabaseHelper.CartPurchaseLine._ID_CART + " = ? and " +
-                        DatabaseHelper.CartPurchaseLine._ID_PURCHASE_LINE + " = ?",
-                new String[]{cart.getId().toString(), item.getId().toString()});
+        long result = getDB().update(DatabaseHelper.PurchaseLine.TABLE, getPurchaseLineValues(item),
+                DatabaseHelper.PurchaseLine._ID + " = ?",
+                new String[]{item.getId().toString()});
+
+        Log.d("DATABASE", "Result from updateItem: " + result);
+        return result;
     }
 
     private long updateCart() {
-        return getDB().update(DatabaseHelper.Cart.TABLE, getCartValues(cart),
+        long result = getDB().update(DatabaseHelper.Cart.TABLE, getCartValues(cart),
                 DatabaseHelper.Cart._ID + " = ?", new String[] {cart.getId().toString()});
+
+        Log.d("DATABASE", "Result from updateCart: " + result);
+        return result;
     }
 
     private long insertCart() {
@@ -69,6 +155,7 @@ public class DAOCart extends DAO {
         ContentValues values = new ContentValues();
         values.put(DatabaseHelper.CartPurchaseLine._ID_CART, cart.getId());
         values.put(DatabaseHelper.CartPurchaseLine._ID_PURCHASE_LINE, item.getId());
+        Log.d("DATABASE", "Content values: " + values);
         return values;
     }
 

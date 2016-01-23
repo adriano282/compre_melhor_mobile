@@ -111,4 +111,8 @@
     <string name="select_quantity">Selecione Quantidade</string>
     <string name="action_bar_cart_item_label">Item Carrinho</string>
     <string name="btn_label_add_item_to_cart">Colocar no Carrinho</string>
+    <string name="loading_current_cart_dialog">Carregando atual carrinho</string>
+    <string name="wait_header_dialog">Aguarde</string>
+    <string name="removed_item_success_msg">Item removido do carrinho</string>
+    <string name="removed_item_error_msg">Ocorreu um erro ao tentar remover o item do carrinho.</string>
 </resources>

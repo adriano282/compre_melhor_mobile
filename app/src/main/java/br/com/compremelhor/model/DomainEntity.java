@@ -1,7 +1,6 @@
 package br.com.compremelhor.model;
 
 import java.util.Calendar;
-import java.util.GregorianCalendar;
 
 
 /**
@@ -9,8 +8,8 @@ import java.util.GregorianCalendar;
  */
 public class DomainEntity {
     private Long id;
-    private GregorianCalendar dateCreated;
-    private GregorianCalendar lastUpdated;
+    private Calendar dateCreated;
+    private Calendar lastUpdated;
 
     public DomainEntity() {}
     public DomainEntity(Long id) {
@@ -29,15 +28,15 @@ public class DomainEntity {
         return dateCreated;
     }
 
-    public void setDateCreated(GregorianCalendar dateCreated) {
+    public void setDateCreated(Calendar dateCreated) {
         this.dateCreated = dateCreated;
     }
 
-    public GregorianCalendar getLastUpdated() {
+    public Calendar getLastUpdated() {
         return lastUpdated;
     }
 
-    public void setLastUpdated(GregorianCalendar lastUpdated) {
+    public void setLastUpdated(Calendar lastUpdated) {
         this.lastUpdated = lastUpdated;
     }
 }
