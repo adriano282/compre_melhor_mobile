@@ -1,4 +1,4 @@
-package br.com.compremelhor.activity;
+package br.com.compremelhor.controller.activity;
 
 import android.app.Activity;
 import android.content.Context;
@@ -65,8 +65,8 @@ public class LoginActivity extends Activity {
 
         preferences = getSharedPreferences(PREFERENCES, Context.MODE_PRIVATE);
 
-        if (isAlreadyLogged())
-            initDashboard();
+        /*if (isAlreadyLogged())
+            initDashboard();*/
 
         dao = new DAOUser(LoginActivity.this);
 

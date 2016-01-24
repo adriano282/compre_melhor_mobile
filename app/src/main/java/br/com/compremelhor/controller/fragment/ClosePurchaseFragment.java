@@ -1,10 +1,6 @@
-package br.com.compremelhor.fragment;
+package br.com.compremelhor.controller.fragment;
 
-import android.app.Activity;
-import android.app.AlertDialog;
 import android.content.Context;
-import android.content.DialogInterface;
-import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -13,18 +9,15 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import java.text.NumberFormat;
 
 import br.com.compremelhor.R;
-import br.com.compremelhor.activity.PaymentActivity;
 import br.com.compremelhor.dao.DAOCart;
 import br.com.compremelhor.model.Cart;
 import br.com.compremelhor.model.PurchaseLine;
 
 import static br.com.compremelhor.useful.Constants.PREFERENCES;
-import static br.com.compremelhor.useful.Constants.REQUEST_CODE_PAYMENT_DONE;
 import static br.com.compremelhor.useful.Constants.SP_FREIGHT_VALUE;
 
 public class ClosePurchaseFragment extends Fragment {
@@ -68,41 +61,5 @@ public class ClosePurchaseFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                                 Bundle state) {
         return inflater.inflate(R.layout.fragment_close_purchase, container, false);
-    }
-
-    public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        switch (requestCode) {
-            case REQUEST_CODE_PAYMENT_DONE:
-                if (requestCode == Activity.RESULT_OK) {
-                    Toast.makeText(getActivity(), "Compra finalizada e paga com sucesso", Toast.LENGTH_SHORT).show();
-                    getActivity().finish();
-                }
-                break;
-        }
-    }
-
-    public void onClickedClosePurchaseButton(View view) {
-        OnClickListener listener = new OnClickListener();
-        new AlertDialog.Builder(getActivity())
-                .setTitle("Finalizar compra")
-                .setMessage("Deseja realmente fechar a compra?")
-                .setPositiveButton(R.string.yes,listener)
-                .setNegativeButton(R.string.no, listener)
-                .create()
-                .show();
-    }
-
-    private class OnClickListener implements DialogInterface.OnClickListener {
-        public void onClick(DialogInterface dialog, int item) {
-            switch (item) {
-                case DialogInterface.BUTTON_POSITIVE:
-                    startActivityForResult(new Intent(getActivity(), PaymentActivity.class), REQUEST_CODE_PAYMENT_DONE);
-                    break;
-
-                case DialogInterface.BUTTON_NEGATIVE:
-                    Toast.makeText(getActivity(), "Operação cancelada", Toast.LENGTH_SHORT).show();
-                    break;
-            }
-        }
     }
 }
