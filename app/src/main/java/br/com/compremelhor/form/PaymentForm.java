@@ -1,4 +1,4 @@
-package br.com.compremelhor;
+package br.com.compremelhor.form;
 
 public interface PaymentForm {
     String getCardNumber();

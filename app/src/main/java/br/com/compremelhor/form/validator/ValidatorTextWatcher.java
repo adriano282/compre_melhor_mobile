@@ -1,4 +1,4 @@
-package br.com.compremelhor.form;
+package br.com.compremelhor.form.validator;
 
 import android.content.Context;
 import android.text.Editable;
