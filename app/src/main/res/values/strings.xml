@@ -116,4 +116,23 @@
     <string name="removed_item_success_msg">Item removido do carrinho</string>
     <string name="removed_item_error_msg">Ocorreu um erro ao tentar remover o item do carrinho.</string>
     <string name="cart_is_empty">Você não possui nenhum produto em seu carrinho.</string>
+
+
+    <string name="addPayment">Add Payment Method</string>
+    <string name="paymentMethods">Payment Methods</string>
+
+    <string name="endingIn">Card ending in</string>
+    <string name="progressMessage">Creating Token&#8230;</string>
+    <string name="validationErrors">Validation Errors</string>
+
+    <string name="cardNumber">Card Number</string>
+    <string name="cvc">CVC</string>
+
+    <string name="ok">OK</string>
+
+    <string-array name="currency_array">
+        <item>Currency (optional)</item>
+        <item>Unspecified</item>
+        <item>USD</item>
+    </string-array>
 </resources>
