@@ -15,10 +15,10 @@ import android.widget.Toast;
 import br.com.compremelhor.R;
 import br.com.compremelhor.dao.DAOUser;
 import br.com.compremelhor.model.User;
-import br.com.compremelhor.useful.form.ActionTextWatcher;
-import br.com.compremelhor.useful.form.ValidatorTextWatcher;
-import br.com.compremelhor.useful.function.MyConsumer;
-import br.com.compremelhor.useful.function.MyPredicate;
+import br.com.compremelhor.form.ActionTextWatcher;
+import br.com.compremelhor.form.ValidatorTextWatcher;
+import br.com.compremelhor.function.MyConsumer;
+import br.com.compremelhor.function.MyPredicate;
 
 import static br.com.compremelhor.useful.Constants.PREFERENCES;
 import static br.com.compremelhor.useful.Constants.SP_USER_ID;

@@ -4,7 +4,7 @@ import android.content.Context;
 import android.widget.EditText;
 
 import br.com.compremelhor.R;
-import br.com.compremelhor.useful.function.MyPredicate;
+import br.com.compremelhor.function.MyPredicate;
 
 public class Validation {
     private Context ctx;
