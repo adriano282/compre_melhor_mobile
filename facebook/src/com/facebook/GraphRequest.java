@@ -49,7 +49,7 @@ import java.util.zip.GZIPOutputStream;
 /**
  * <p>
  * A single request to be sent to the Facebook Platform through the <a
- * href="https://developers.facebook.com/docs/reference/api/">Graph API</a>. The Request class
+ * href="https://developers.facebook.com/docs/reference/api/">Graph API</a>. The Requestc class
  * provides functionality relating to serializing and deserializing requests and responses, making
  * calls in batches (with a single round-trip to the service) and making calls asynchronously.
  * </p>

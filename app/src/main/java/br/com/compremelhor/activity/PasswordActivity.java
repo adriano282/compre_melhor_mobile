@@ -15,8 +15,8 @@ import android.widget.Toast;
 import br.com.compremelhor.R;
 import br.com.compremelhor.dao.DAOUser;
 import br.com.compremelhor.model.User;
-import br.com.compremelhor.form.ActionTextWatcher;
-import br.com.compremelhor.form.ValidatorTextWatcher;
+import br.com.compremelhor.form.validator.ActionTextWatcher;
+import br.com.compremelhor.form.validator.ValidatorTextWatcher;
 import br.com.compremelhor.function.MyConsumer;
 import br.com.compremelhor.function.MyPredicate;
 

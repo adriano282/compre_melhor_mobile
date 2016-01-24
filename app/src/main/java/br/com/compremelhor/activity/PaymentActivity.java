@@ -4,13 +4,16 @@ import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.FragmentActivity;
 
-import com.google.android.gms.common.ErrorDialogFragment;
-import com.stripe.Stripe;
+import com.stripe.android.Stripe;
 import com.stripe.android.TokenCallback;
 import com.stripe.android.model.Card;
-import com.stripe.model.Token;
+import com.stripe.android.model.Token;
 
 import br.com.compremelhor.R;
+import br.com.compremelhor.TokenList;
+import br.com.compremelhor.dialog.ErrorDialogFragment;
+import br.com.compremelhor.dialog.ProgressDialogFragment;
+import br.com.compremelhor.form.PaymentForm;
 
 public class PaymentActivity extends FragmentActivity {
 
@@ -21,7 +24,7 @@ public static final String PUBLISHABLE_KEY = "pk_test_6pRNASCoBOKtIshFeQd4XMUh";
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.payment_activity);
+        setContentView(R.layout.activity_payment);
 
         progressFragment = ProgressDialogFragment.newInstance(R.string.progressMessage);
     }
@@ -38,16 +41,19 @@ public static final String PUBLISHABLE_KEY = "pk_test_6pRNASCoBOKtIshFeQd4XMUh";
         boolean validation = card.validateCard();
         if (validation) {
             startProgress();
+
             new Stripe().createToken(
                     card,
                     PUBLISHABLE_KEY,
                     new TokenCallback() {
-                        public void onSuccess(Token token) {
-                            getTokenList().addToList(token);
-                            finishProgress();
-                        }
                         public void onError(Exception error) {
                             handleError(error.getLocalizedMessage());
+                            finishProgress();
+                        }
+
+                        @Override
+                        public void onSuccess(Token token) {
+                            getTokenList().addToList(token);
                             finishProgress();
                         }
                     });
