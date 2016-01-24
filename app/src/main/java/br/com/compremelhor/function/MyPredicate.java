@@ -1,4 +1,4 @@
-package br.com.compremelhor.useful.function;
+package br.com.compremelhor.function;
 
 public interface MyPredicate {
     boolean test();
