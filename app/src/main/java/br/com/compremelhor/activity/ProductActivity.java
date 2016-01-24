@@ -1,4 +1,4 @@
-package br.com.compremelhor.controller.activity;
+package br.com.compremelhor.activity;
 
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
@@ -51,7 +51,7 @@ public class ProductActivity extends AppCompatActivity {
         productsForTest = new HashMap<>();
 
         Product p1 = new Product();
-        p1.setId(new Long(1));
+        p1.setId(Long.valueOf(1));
         p1.setName("Maionese");
         p1.setDescription("Maionese");
         p1.setPriceUnitary(new BigDecimal(4.50));

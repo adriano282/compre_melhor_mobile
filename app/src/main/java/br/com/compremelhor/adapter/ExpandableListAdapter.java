@@ -1,4 +1,4 @@
-package br.com.compremelhor.controller.adapter;
+package br.com.compremelhor.adapter;
 
 import android.content.Context;
 import android.graphics.Typeface;

@@ -1,4 +1,4 @@
-package br.com.compremelhor.controller.activity;
+package br.com.compremelhor.activity;
 
 import android.content.Intent;
 import android.content.SharedPreferences;
