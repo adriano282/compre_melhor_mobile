@@ -1,4 +1,4 @@
-package br.com.compremelhor.controller.activity;
+package br.com.compremelhor.activity;
 
 import android.graphics.BitmapFactory;
 import android.os.Bundle;

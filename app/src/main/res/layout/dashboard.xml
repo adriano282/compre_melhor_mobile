@@ -5,7 +5,7 @@
         android:layout_height="match_parent"
         android:background="#333333"
         android:orientation="vertical"
-        tools:contetxt="br.com.compremelhor.controller.activity.DashboardActivity">
+        tools:contetxt="br.com.compremelhor.activity.DashboardActivity">
 
         <TextView
             android:layout_width="wrap_content"

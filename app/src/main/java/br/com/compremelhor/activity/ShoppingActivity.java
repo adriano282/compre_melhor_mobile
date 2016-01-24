@@ -1,4 +1,4 @@
-package br.com.compremelhor.controller.activity;
+package br.com.compremelhor.activity;
 
 import android.support.v4.app.FragmentManager;
 import android.os.Bundle;
@@ -11,9 +11,9 @@ import android.view.MenuItem;
 import android.view.View;
 
 import br.com.compremelhor.R;
-import br.com.compremelhor.controller.fragment.CartFragment;
-import br.com.compremelhor.controller.fragment.ClosePurchaseFragment;
-import br.com.compremelhor.controller.fragment.FreightFragment;
+import br.com.compremelhor.fragment.CartFragment;
+import br.com.compremelhor.fragment.ClosePurchaseFragment;
+import br.com.compremelhor.fragment.FreightFragment;
 
 public class ShoppingActivity extends ActionBarActivity {
     private final String FREIGHT_FRAGMENT_TAG = "freight_fragment_tag";
@@ -29,6 +29,11 @@ public class ShoppingActivity extends ActionBarActivity {
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.action_bars_menu, menu);
         return true;
+    }
+
+    public void onClickButtonClosePurchase(View v) {
+        ((ClosePurchaseFragment)getSupportFragmentManager().getFragments().get(0))
+                .onClickButtonClosePurchase(v);
     }
 
     public void onClickedDayOfShip(View v) {

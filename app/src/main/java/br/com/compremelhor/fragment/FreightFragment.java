@@ -1,4 +1,4 @@
-package br.com.compremelhor.controller.fragment;
+package br.com.compremelhor.fragment;
 
 import android.app.DatePickerDialog;
 import android.app.TimePickerDialog;
@@ -30,7 +30,7 @@ import java.util.List;
 import java.util.Map;
 
 import br.com.compremelhor.R;
-import br.com.compremelhor.controller.activity.AddressListActivity;
+import br.com.compremelhor.activity.AddressListActivity;
 import br.com.compremelhor.dao.DAOAddress;
 import br.com.compremelhor.model.Address;
 

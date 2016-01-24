@@ -1,4 +1,4 @@
-package br.com.compremelhor.controller.fragment;
+package br.com.compremelhor.fragment;
 
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -27,8 +27,8 @@ import java.util.List;
 import java.util.Map;
 
 import br.com.compremelhor.R;
-import br.com.compremelhor.controller.activity.ProductActivity;
-import br.com.compremelhor.controller.adapter.ExpandableListAdapter;
+import br.com.compremelhor.activity.ProductActivity;
+import br.com.compremelhor.adapter.ExpandableListAdapter;
 import br.com.compremelhor.dao.DAOCart;
 import br.com.compremelhor.model.Cart;
 import br.com.compremelhor.model.PurchaseLine;

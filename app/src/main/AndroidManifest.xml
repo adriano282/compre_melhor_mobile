@@ -12,7 +12,7 @@
         </meta-data>
 
         <activity
-            android:name=".controller.activity.LoginActivity" >
+            android:name=".activity.LoginActivity" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
@@ -20,7 +20,7 @@
         </activity>
 
         <activity
-            android:name=".controller.activity.ShoppingActivity"
+            android:name=".activity.ShoppingActivity"
             android:theme="@style/Theme.Example"
             android:label="@string/purchase_label">
             <meta-data
@@ -29,22 +29,25 @@
         </activity>
 
         <activity
-            android:name=".controller.activity.DashboardActivity"
+            android:name=".activity.DashboardActivity"
             android:theme="@android:style/Theme.NoTitleBar" />
         <activity
-            android:name=".controller.activity.ProfileActivity"
+            android:name=".activity.ProfileActivity"
             android:label="@string/action_bar_profile_label" />
         <activity
-            android:name=".controller.activity.PasswordActivity"
+            android:name=".activity.PasswordActivity"
             android:label="@string/action_bar_change_password_label" />
         <activity
-            android:name=".controller.activity.ProductActivity"
+            android:name=".activity.ProductActivity"
             android:label="@string/action_bar_cart_item_label" />
-        <activity android:name=".controller.activity.RegisterActivity" />
+        <activity android:name=".activity.RegisterActivity" />
+
+        <activity android:name=".activity.PaymentActivity"
+            />
         <activity
-            android:name=".controller.activity.AddressListActivity"
+            android:name=".activity.AddressListActivity"
             android:label="@string/title_my_addresses" />
-        <activity android:name=".controller.activity.AddressActivity" />
+        <activity android:name=".activity.AddressActivity" />
 
         <activity android:name="com.facebook.FacebookActivity" />
 

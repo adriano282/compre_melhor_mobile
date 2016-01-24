@@ -2,10 +2,11 @@ package br.com.compremelhor.fragment;
 
 import android.os.Bundle;
 import android.support.v4.app.ListFragment;
+import android.util.Log;
 import android.view.View;
 import android.widget.SimpleAdapter;
 
-import com.stripe.model.Token;
+import com.stripe.android.model.Token;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -39,9 +40,13 @@ public class TokenListFragment extends ListFragment implements TokenList {
     public void addToList(Token token) {
         String endingIn = getResources().getString(R.string.endingIn);
         Map<String, String> map = new HashMap<>();
+
         map.put("last4", endingIn + " " + token.getCard().getLast4());
         map.put("tokenId", token.getId());
+        Log.d("TOKEN_ID", token.getId());
+
         listItems.add(map);
         adapter.notifyDataSetChanged();
     }
+
 }

@@ -1,6 +1,7 @@
-package br.com.compremelhor.controller.fragment;
+package br.com.compremelhor.fragment;
 
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -13,12 +14,14 @@ import android.widget.TextView;
 import java.text.NumberFormat;
 
 import br.com.compremelhor.R;
+import br.com.compremelhor.activity.PaymentActivity;
 import br.com.compremelhor.dao.DAOCart;
 import br.com.compremelhor.model.Cart;
 import br.com.compremelhor.model.PurchaseLine;
 
 import static br.com.compremelhor.useful.Constants.PREFERENCES;
 import static br.com.compremelhor.useful.Constants.SP_FREIGHT_VALUE;
+import static br.com.compremelhor.useful.Constants.REQUEST_CODE_PAYMENT_PURCHASE_PAID;
 
 public class ClosePurchaseFragment extends Fragment {
     private TextView tvSubTotalPurchase;
@@ -55,6 +58,18 @@ public class ClosePurchaseFragment extends Fragment {
         Double dValueTotal = dSubTotalPurchase + fValueFreight;
         tvTotalPurchase.setText(nf.format(dValueTotal));
 
+    }
+
+    public void onClickButtonClosePurchase(View v) {
+        startActivityForResult(new Intent(getActivity(), PaymentActivity.class), REQUEST_CODE_PAYMENT_PURCHASE_PAID);
+    }
+
+    public void onActivityResult(int requestCode, int requestResult, Intent data) {
+        switch(requestCode) {
+            case REQUEST_CODE_PAYMENT_PURCHASE_PAID:
+                getActivity().finish();
+                break;
+        }
     }
 
     @Override

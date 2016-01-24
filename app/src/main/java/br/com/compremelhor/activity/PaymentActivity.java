@@ -17,7 +17,7 @@ import br.com.compremelhor.form.PaymentForm;
 
 public class PaymentActivity extends FragmentActivity {
 
-public static final String PUBLISHABLE_KEY = "pk_test_6pRNASCoBOKtIshFeQd4XMUh";
+public static final String PUBLISHABLE_KEY = "pk_test_Jfkx2ypaif7fZpCZ3RLf45ZF";
 
     private ProgressDialogFragment progressFragment;
 
