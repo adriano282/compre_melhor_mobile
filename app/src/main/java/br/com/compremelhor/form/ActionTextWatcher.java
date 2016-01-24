@@ -1,4 +1,4 @@
-package br.com.compremelhor.useful.form;
+package br.com.compremelhor.form;
 
 import android.text.Editable;
 import android.text.TextWatcher;

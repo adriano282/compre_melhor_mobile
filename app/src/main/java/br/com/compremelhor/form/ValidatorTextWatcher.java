@@ -1,4 +1,4 @@
-package br.com.compremelhor.useful.form;
+package br.com.compremelhor.form;
 
 import android.content.Context;
 import android.text.Editable;
