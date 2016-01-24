@@ -97,7 +97,6 @@ public class CartFragment extends android.support.v4.app.Fragment {
         switch (requestCode) {
             case REQUEST_CODE_SCANNED_CODE:
                 if (resultCode == Activity.RESULT_OK) {
-
                     String code = intent.getStringExtra("SCAN_RESULT");
                     Intent intent1 = new Intent(getActivity(), ProductActivity.class);
                     intent1.putExtra("codeResult", code);
@@ -112,7 +111,7 @@ public class CartFragment extends android.support.v4.app.Fragment {
             case REQUEST_CODE_CART_ITEM_ADDED:
                 if (resultCode == Activity.RESULT_OK) {
                     Log.d("ASYNC TASK", "CartFragment.OnActivityResult");
-                    new LoadCurrentCart().execute();
+                 //   new LoadCurrentCart().execute();
                 }
                 break;
         }
@@ -132,7 +131,6 @@ public class CartFragment extends android.support.v4.app.Fragment {
                                         int groupPosition, int childPosition, long id) {
                 itemIdSelected = ((TextView)((LinearLayout) v).getChildAt(0)).getText().toString();
                 currentQuantityOfItemSelected = ((TextView)((LinearLayout) v).getChildAt(2)).getText().toString();
-
                 Log.d("ID", "ITEM ID " + itemIdSelected);
                 Log.d("ID", "QUANTITY " + currentQuantityOfItemSelected);
                 actionsProduct.show();
@@ -196,12 +194,10 @@ public class CartFragment extends android.support.v4.app.Fragment {
 
             switch (item) {
                 case 0:
-
                     intent = new Intent(getActivity(), ProductActivity.class);
                     intent.putExtra(PURCHASE_ID_EXTRA, itemIdSelected);
                     intent.putExtra(CURRENT_QUANTITY_OF_ITEM_EXTRA, currentQuantityOfItemSelected);
                     startActivityForResult(intent, REQUEST_CODE_CART_ITEM_EDITED);
-
                     break;
 
                 case 1:
@@ -225,7 +221,7 @@ public class CartFragment extends android.support.v4.app.Fragment {
 
     private boolean removeItemFromCart() {
         PurchaseLine line = new PurchaseLine();
-        line.setId(new Long(itemIdSelected));
+        line.setId(Long.valueOf(itemIdSelected));
         if (DAOCart.getInstance(getActivity()).removeItem(line) == -1)
             return false;
 
@@ -291,6 +287,12 @@ public class CartFragment extends android.support.v4.app.Fragment {
 
             listDataChild = new HashMap<>();
             listDataHeader = new ArrayList<>();
+
+            if (items.size() == 0) {
+                getView().findViewById(R.id.tv_empty_cart_message).setVisibility(View.VISIBLE);
+            } else {
+                getView().findViewById(R.id.tv_empty_cart_message).setVisibility(View.GONE);
+            }
 
             Map<String, Double> sumByCategoryMap = new HashMap<>();
             List<String> listChild = new ArrayList<>();

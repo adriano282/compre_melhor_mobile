@@ -115,4 +115,5 @@
     <string name="wait_header_dialog">Aguarde</string>
     <string name="removed_item_success_msg">Item removido do carrinho</string>
     <string name="removed_item_error_msg">Ocorreu um erro ao tentar remover o item do carrinho.</string>
+    <string name="cart_is_empty">Você não possui nenhum produto em seu carrinho.</string>
 </resources>

@@ -1,6 +1,5 @@
 package br.com.compremelhor.controller.fragment;
 
-
 import android.app.DatePickerDialog;
 import android.app.TimePickerDialog;
 import android.content.Context;
@@ -16,7 +15,6 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.CompoundButton;
 import android.widget.DatePicker;
 import android.widget.LinearLayout;
 import android.widget.RadioButton;
@@ -38,8 +36,9 @@ import br.com.compremelhor.model.Address;
 
 import static br.com.compremelhor.useful.Constants.MENU_OPTION_ID_MANAGE_ADDRESS;
 import static br.com.compremelhor.useful.Constants.PREFERENCES;
-import static br.com.compremelhor.useful.Constants.USER_ID_SHARED_PREFERENCE;
 import static br.com.compremelhor.useful.Constants.REQUEST_CODE_ADDRESS_EDITED_OR_ADDED;
+import static br.com.compremelhor.useful.Constants.SP_SELECTED_ADDRESS_ID;
+import static br.com.compremelhor.useful.Constants.SP_USER_ID;
 
 
 public class FreightFragment extends Fragment {
@@ -67,7 +66,14 @@ public class FreightFragment extends Fragment {
     }
 
     @Override
+    public void onStart() {
+        super.onStart();
+    }
+
+    @Override
     public void onViewCreated(View view, Bundle state) {
+        preferences = getActivity().getSharedPreferences(PREFERENCES, Context.MODE_PRIVATE);
+
         btnDateShip = (Button) view.findViewById(R.id.btn_picker_day_of_ship);
         btnTimeStartShip = (Button) view.findViewById(R.id.btn_picker_start_hour_range);
 
@@ -75,10 +81,10 @@ public class FreightFragment extends Fragment {
         radioGroup.setOnCheckedChangeListener(new FreightTypeOnCheckedChangeListener());
 
         RadioGroup rgAddresses = new RadioGroup(getActivity());
+        rgAddresses.setOnCheckedChangeListener(new AddressOnCheckedChangeListener());
 
-        preferences = getActivity().getSharedPreferences(PREFERENCES, Context.MODE_PRIVATE);
-        Long userId = preferences.getLong(USER_ID_SHARED_PREFERENCE, 0);
-        List<Address> addresses = new DAOAddress(getActivity()).getAddressesByUserId(userId);
+        Long userId = preferences.getLong(SP_USER_ID, 0);
+        List<Address> addresses = DAOAddress.getInstance(getActivity()).getAddressesByUserId(userId);
 
         LinearLayout ll = (LinearLayout) view.findViewById(R.id.my_addresses);
         ll.removeViews(1, ll.getChildCount() -1);
@@ -87,8 +93,8 @@ public class FreightFragment extends Fragment {
 
         for (Address ad : addresses) {
             RadioButton rb = new RadioButton(getActivity());
+            rb.setId(ad.getId().intValue());
             rb.setText(ad.getAddressName() + " / " + ad.getZipcode());
-            rb.setOnCheckedChangeListener(new ShipAddressOnCheckedChangeListener());
             rgAddresses.addView(rb);
         }
 
@@ -216,9 +222,13 @@ public class FreightFragment extends Fragment {
         }
     }
 
-    private class ShipAddressOnCheckedChangeListener implements CompoundButton.OnCheckedChangeListener {
-        @Override
-        public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+    private class AddressOnCheckedChangeListener implements RadioGroup.OnCheckedChangeListener {
+        public void onCheckedChanged(RadioGroup group, int checkedId) {
+            preferences
+                    .edit()
+                    .putLong(SP_SELECTED_ADDRESS_ID, checkedId)
+                    .apply();
+
             /*
                Here will be implemented the consult on API for
                verify if selected address is on Establishment's ship range
@@ -233,7 +243,6 @@ public class FreightFragment extends Fragment {
                 selected doesn't is included on ship range
             */
             }
-
         }
     }
 
@@ -252,6 +261,7 @@ public class FreightFragment extends Fragment {
                 case R.id.rb_without_freight:
                     getView().findViewById(R.id.scheduled_freight_data).setVisibility(View.GONE);
                     getView().findViewById(R.id.my_addresses).setVisibility(View.GONE);
+                    preferences.edit().putLong(SP_SELECTED_ADDRESS_ID, 0);
                     break;
 
                 case R.id.rb_express_freight:

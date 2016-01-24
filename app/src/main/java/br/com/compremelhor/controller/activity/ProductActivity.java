@@ -4,7 +4,6 @@ import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -118,7 +117,7 @@ public class ProductActivity extends AppCompatActivity {
         item.setUnitaryPrice(item.getProduct().getPriceUnitary());
         item.setCategory(item.getProduct().getCategory().getName());
         item.setId(itemId);
-
+        item.setProductName(item.getProduct().getName());
 
         DAOCart dao = DAOCart.getInstance(this);
 
@@ -178,7 +177,6 @@ public class ProductActivity extends AppCompatActivity {
             btnPutInCart.setText("ALTERAR QUANTIDADE");
 
         String quantity = getIntent().getStringExtra(CURRENT_QUANTITY_OF_ITEM_EXTRA);
-        Log.d("ID", "FROM PRODUCT Activity " + quantity);
         npQuantity = (NumberPicker) findViewById(R.id.np_quantity);
         npQuantity.setMinValue(0);
         npQuantity.setMaxValue(20);

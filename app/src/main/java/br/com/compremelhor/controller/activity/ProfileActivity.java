@@ -22,9 +22,9 @@ import br.com.compremelhor.dao.DAOUser;
 import br.com.compremelhor.model.TypeDocument;
 import br.com.compremelhor.model.User;
 
-import static br.com.compremelhor.useful.Constants.FACEBOOK_USER_ID_SP;
+import static br.com.compremelhor.useful.Constants.SP_FACEBOOK_USER_ID;
 import static br.com.compremelhor.useful.Constants.PREFERENCES;
-import static br.com.compremelhor.useful.Constants.USER_ID_SHARED_PREFERENCE;
+import static br.com.compremelhor.useful.Constants.SP_USER_ID;
 
 public class ProfileActivity extends AppCompatActivity implements OnClickListener {
     private EditText edName;
@@ -63,7 +63,7 @@ public class ProfileActivity extends AppCompatActivity implements OnClickListene
                 Long result = dao.insertOrUpdate(getUserView());
 
                 SharedPreferences.Editor edit = preferences.edit();
-                edit.putLong(USER_ID_SHARED_PREFERENCE, result != -1 ? result : 0);
+                edit.putLong(SP_USER_ID, result != -1 ? result : 0);
                 edit.commit();
 
                 intent = new Intent(this, DashboardActivity.class);
@@ -153,12 +153,12 @@ public class ProfileActivity extends AppCompatActivity implements OnClickListene
     }
 
     private void fillFields() {
-        id = preferences.getLong(USER_ID_SHARED_PREFERENCE, 0);
+        id = preferences.getLong(SP_USER_ID, 0);
         User user = new DAOUser(this).getUserById(id);
 
         if (user == null) return;
 
-        String facebookId = preferences.getString(FACEBOOK_USER_ID_SP, "");
+        String facebookId = preferences.getString(SP_FACEBOOK_USER_ID, "");
         profilePictureView.setProfileId(facebookId);
 
         id = user.getId() == null ? 0 : user.getId();

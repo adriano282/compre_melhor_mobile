@@ -4,11 +4,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.content.pm.PackageInfo;
-import android.content.pm.PackageManager;
 import android.os.Bundle;
-import android.util.Base64;
-import android.util.Log;
 import android.view.View;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
@@ -29,19 +25,17 @@ import com.facebook.login.widget.LoginButton;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
 import java.util.Arrays;
 
 import br.com.compremelhor.R;
 import br.com.compremelhor.dao.DAOUser;
 import br.com.compremelhor.model.User;
 
-import static br.com.compremelhor.useful.Constants.FACEBOOK_USER_ID_SP;
 import static br.com.compremelhor.useful.Constants.KEEP_CONNECT_SP;
-import static br.com.compremelhor.useful.Constants.LOGGED_ON_FACEBOOK_SP;
 import static br.com.compremelhor.useful.Constants.PREFERENCES;
-import static br.com.compremelhor.useful.Constants.USER_ID_SHARED_PREFERENCE;
+import static br.com.compremelhor.useful.Constants.SP_FACEBOOK_USER_ID;
+import static br.com.compremelhor.useful.Constants.SP_LOGGED_ON_FACEBOOK;
+import static br.com.compremelhor.useful.Constants.SP_USER_ID;
 
 public class LoginActivity extends Activity {
 
@@ -56,7 +50,7 @@ public class LoginActivity extends Activity {
         FacebookSdk.sdkInitialize(getApplicationContext());
         setContentView(R.layout.login);
 
-        try {
+        /*try {
             PackageInfo info =     getPackageManager().getPackageInfo("br.com.compremelhor",     PackageManager.GET_SIGNATURES);
             for (android.content.pm.Signature signature : info.signatures) {
                 MessageDigest md = MessageDigest.getInstance("SHA");
@@ -67,12 +61,12 @@ public class LoginActivity extends Activity {
             }
         } catch (PackageManager.NameNotFoundException e) {
         } catch (NoSuchAlgorithmException e) {
-        }
+        }*/
 
         preferences = getSharedPreferences(PREFERENCES, Context.MODE_PRIVATE);
 
-        if (isAlreadyLogged())
-            initDashboard();
+        /*if (isAlreadyLogged())
+            initDashboard();*/
 
         dao = new DAOUser(LoginActivity.this);
 
@@ -82,12 +76,12 @@ public class LoginActivity extends Activity {
     }
 
     private boolean isAlreadyLogged() {
-        if (preferences.getBoolean(LOGGED_ON_FACEBOOK_SP, false)
+        if (preferences.getBoolean(SP_LOGGED_ON_FACEBOOK, false)
                 && preferences.getBoolean(KEEP_CONNECT_SP, false))
             return true;
 
         if (!preferences.getBoolean(KEEP_CONNECT_SP, false) &&
-                preferences.getBoolean(LOGGED_ON_FACEBOOK_SP, false))
+                preferences.getBoolean(SP_LOGGED_ON_FACEBOOK, false))
             LoginManager.getInstance().logOut();
 
         return false;
@@ -154,7 +148,7 @@ public class LoginActivity extends Activity {
 
     private void putUserId(User user) {
         if (user != null)
-            preferences.edit().putLong(USER_ID_SHARED_PREFERENCE, user.getId()).apply();
+            preferences.edit().putLong(SP_USER_ID, user.getId()).apply();
     }
 
     private void initDashboard() {
@@ -187,8 +181,8 @@ public class LoginActivity extends Activity {
                                 user.setName(object.getString("name"));
                                 user.setEmail(object.getString("email"));
                                 String userId = object.getString("id");
-                                preferences.edit().putString(FACEBOOK_USER_ID_SP, userId).apply();
-                                preferences.edit().putBoolean(LOGGED_ON_FACEBOOK_SP, true).apply();
+                                preferences.edit().putString(SP_FACEBOOK_USER_ID, userId).apply();
+                                preferences.edit().putBoolean(SP_LOGGED_ON_FACEBOOK, true).apply();
 
                             } catch (JSONException e) {
                                 e.printStackTrace();
@@ -218,7 +212,7 @@ public class LoginActivity extends Activity {
         @Override
         public void onError(FacebookException error) {
             Toast.makeText(LoginActivity.this, R.string.err_login_facebook, Toast.LENGTH_LONG).show();
-            preferences.edit().putBoolean(LOGGED_ON_FACEBOOK_SP, false).apply();
+            preferences.edit().putBoolean(SP_LOGGED_ON_FACEBOOK, false).apply();
         }
     }
 

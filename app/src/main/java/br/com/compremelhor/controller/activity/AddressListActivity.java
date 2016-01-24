@@ -29,7 +29,7 @@ import br.com.compremelhor.model.Address;
 
 import static br.com.compremelhor.useful.Constants.ADDRESS_ID_EXTRA;
 import static br.com.compremelhor.useful.Constants.PREFERENCES;
-import static br.com.compremelhor.useful.Constants.USER_ID_SHARED_PREFERENCE;
+import static br.com.compremelhor.useful.Constants.SP_USER_ID;
 
 public class AddressListActivity extends AppCompatActivity {
     private SharedPreferences preferences;
@@ -170,8 +170,8 @@ public class AddressListActivity extends AppCompatActivity {
     private List<Map<String, Object>> listAddress() {
         addresses = new ArrayList<>();
 
-        Long userId = preferences.getLong(USER_ID_SHARED_PREFERENCE, 0);
-        List<Address> listAddress = new DAOAddress(this).getAddressesByUserId(userId);
+        Long userId = preferences.getLong(SP_USER_ID, 0);
+        List<Address> listAddress = DAOAddress.getInstance(this).getAddressesByUserId(userId);
         Map<String, Object> item;
 
         for (Address d: listAddress) {
@@ -195,7 +195,7 @@ public class AddressListActivity extends AppCompatActivity {
         Map<String, Object> attributes = addresses.get(addressSelect);
         Long currentAddressId = (Long) attributes.get(DatabaseHelper.Address._ID);
 
-        new DAOAddress(AddressListActivity.this).delete(currentAddressId, DatabaseHelper.Address.TABLE);
+        DAOAddress.getInstance(AddressListActivity.this).delete(currentAddressId, DatabaseHelper.Address.TABLE);
 
         addresses.remove(addressSelect);
         listView.invalidateViews();

@@ -12,7 +12,7 @@ import br.com.compremelhor.dao.DAOUser;
 import br.com.compremelhor.model.User;
 
 import static br.com.compremelhor.useful.Constants.PREFERENCES;
-import static br.com.compremelhor.useful.Constants.USER_ID_SHARED_PREFERENCE;
+import static br.com.compremelhor.useful.Constants.SP_USER_ID;
 /**
  * Created by adriano on 21/08/15.
  */
@@ -42,7 +42,7 @@ public class DashboardActivity extends Activity implements View.OnClickListener 
 
                 User user = new DAOUser(this).getUserById(new Long(1));
                 SharedPreferences.Editor edit = preferences.edit();
-                edit.putLong(USER_ID_SHARED_PREFERENCE, user != null? user.getId() : 0);
+                edit.putLong(SP_USER_ID, user != null? user.getId() : 0);
                 edit.commit();
 
                 startActivity(intent);

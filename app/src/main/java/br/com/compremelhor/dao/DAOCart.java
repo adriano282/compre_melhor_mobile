@@ -20,11 +20,9 @@ public class DAOCart extends DAO {
 
     public static DAOCart getInstance(Context context) {
         if (instance == null)
-            return new DAOCart(context);
-
+            instance = new DAOCart(context);
         return instance;
     }
-
 
     private DAOCart(Context context) {super(context);}
 
@@ -59,6 +57,7 @@ public class DAOCart extends DAO {
                         + "pl."+ DatabaseHelper.PurchaseLine.SUB_TOTAL + ", "
                         + "pl."+ DatabaseHelper.PurchaseLine.CATEGORY + ", "
                         + "pl." + DatabaseHelper.PurchaseLine._PRODUCT_ID + ", "
+                        + "pl." + DatabaseHelper.PurchaseLine.PRODUCT_NAME + ", "
                         + "pl." + DatabaseHelper.PurchaseLine.DATE_CREATED + ", "
                         + "pl." + DatabaseHelper.PurchaseLine.LAST_UPDATED + " "
                     + "FROM " + DatabaseHelper.PurchaseLine.TABLE + " as pl "
@@ -117,6 +116,7 @@ public class DAOCart extends DAO {
         content.put(DatabaseHelper.PurchaseLine.UNITARY_PRICE, item.getUnitaryPrice().toString());
         content.put(DatabaseHelper.PurchaseLine.SUB_TOTAL, item.getSubTotal().toString());
         content.put(DatabaseHelper.PurchaseLine.CATEGORY, item.getCategory());
+        content.put(DatabaseHelper.PurchaseLine.PRODUCT_NAME, item.getProductName());
 
         DateFormat format = DateFormat.getDateInstance(DateFormat.LONG, new Locale("BR"));
         content.put(DatabaseHelper.PurchaseLine.DATE_CREATED, format.format(item.getDateCreated().getTime()));

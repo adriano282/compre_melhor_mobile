@@ -107,7 +107,7 @@ public class DataBind {
 
             freight.setId(getLong(cursor, DatabaseHelper.Freight._ID));
 
-            Address address = new DAOAddress(context).getAddressById(getLong(cursor, DatabaseHelper.Freight._ADDRESS_ID));
+            Address address = DAOAddress.getInstance(context).getAddressById(getLong(cursor, DatabaseHelper.Freight._ADDRESS_ID));
             freight.setAddress(address);
 
             freight.setTotalValueDrive(getBigDecimal(cursor, DatabaseHelper.Freight.TOTAL_VALUE_DRIVE));
@@ -123,6 +123,7 @@ public class DataBind {
             pl.setDateCreated(getCalendar(cursor, DatabaseHelper.PurchaseLine.DATE_CREATED));
             pl.setDateCreated(getCalendar(cursor, DatabaseHelper.PurchaseLine.LAST_UPDATED));
             pl.setCategory(getString(cursor, DatabaseHelper.PurchaseLine.CATEGORY));
+            pl.setProductName(getString(cursor, DatabaseHelper.PurchaseLine.PRODUCT_NAME));
 
             Product p = new Product();
             p.setId(getLong(cursor, DatabaseHelper.PurchaseLine._PRODUCT_ID));

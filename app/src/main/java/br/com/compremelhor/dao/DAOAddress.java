@@ -18,7 +18,16 @@ import br.com.compremelhor.model.DomainEntity;
 
 @TargetApi(Build.VERSION_CODES.KITKAT)
 public class DAOAddress extends DAO {
-    public DAOAddress(Context context) {
+    private static DAOAddress instance;
+
+    public static DAOAddress getInstance(Context context) {
+        if (instance == null) {
+            instance = new DAOAddress(context);
+        }
+        return instance;
+    }
+
+    private DAOAddress(Context context) {
         super(context);
     }
 

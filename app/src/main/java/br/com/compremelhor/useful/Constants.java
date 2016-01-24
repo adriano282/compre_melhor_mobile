@@ -22,9 +22,11 @@ public interface Constants {
     String PURCHASE_ID_EXTRA = "purchase_id";
     String CURRENT_QUANTITY_OF_ITEM_EXTRA = "current_quantity_of_item_selected";
 
-    String USER_ID_SHARED_PREFERENCE = "user_id";
-    String FACEBOOK_USER_ID_SP = "facebook_user_id";
-    String LOGGED_ON_FACEBOOK_SP = "is_logged_on_facebook";
+    String SP_SELECTED_ADDRESS_ID = "selected_address_id_sp";
+    String SP_USER_ID = "user_id";
+    String SP_FACEBOOK_USER_ID = "facebook_user_id";
+    String SP_LOGGED_ON_FACEBOOK = "is_logged_on_facebook";
+    String SP_FREIGHT_VALUE = "sp_freight_value";
 
     String CLIENT_SCANNER = "com.google.zxing.client.android.SCAN";
     String SCAN_MODE = "SCAN_MODE";
@@ -37,6 +39,7 @@ public interface Constants {
     int REQUEST_CODE_CART_ITEM_ADDED = 11;
     int REQUEST_CODE_CART_ITEM_EDITED = 12;
     int REQUEST_CODE_ADDRESS_EDITED_OR_ADDED = 13;
+
 
     // Constants for MENU OPTIONS on Action Bar
     int MENU_OPTION_ID_MANAGE_ADDRESS = 1;

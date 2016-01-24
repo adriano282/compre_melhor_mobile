@@ -29,7 +29,7 @@ import br.com.compremelhor.model.Address;
 
 import static br.com.compremelhor.useful.Constants.ADDRESS_ID_EXTRA;
 import static br.com.compremelhor.useful.Constants.PREFERENCES;
-import static br.com.compremelhor.useful.Constants.USER_ID_SHARED_PREFERENCE;
+import static br.com.compremelhor.useful.Constants.SP_USER_ID;
 
 public class AddressActivity extends AppCompatActivity {
 
@@ -128,7 +128,7 @@ public class AddressActivity extends AppCompatActivity {
         if (getIntent().hasExtra(ADDRESS_ID_EXTRA)) {
 
             Long id = getIntent().getLongExtra(ADDRESS_ID_EXTRA, 0);
-            Address ad = new DAOAddress(this).getAddressById(id);
+            Address ad = DAOAddress.getInstance(this).getAddressById(id);
 
             etZipcode.setText(ad.getZipcode());
             etStreet.setText(ad.getStreet());
@@ -160,7 +160,7 @@ public class AddressActivity extends AppCompatActivity {
                 etCity.getText().toString(),
                 null, etZipcode.getText().toString(),
                 etNameAddress.getText().toString(),
-                preferences.getLong(USER_ID_SHARED_PREFERENCE, 0)
+                preferences.getLong(SP_USER_ID, 0)
         );
 
     }
@@ -248,7 +248,7 @@ public class AddressActivity extends AppCompatActivity {
                     break;
 
                 case R.id.btn_address_submit:
-                    DAOAddress dao = new DAOAddress(AddressActivity.this);
+                    DAOAddress dao = DAOAddress.getInstance(AddressActivity.this);
                     if (dao.insertOrUpdate(getAddressView()) == -1) {
                         showMessage(getString(R.string.err_ocurred_attempting_save_address));
                     } else {
