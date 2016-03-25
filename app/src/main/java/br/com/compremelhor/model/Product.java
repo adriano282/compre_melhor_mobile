@@ -8,7 +8,7 @@ import java.math.BigDecimal;
  * Created by adriano on 25/08/15.
  */
 @DatabaseTable(tableName = "product")
-public class Product extends DomainEntity {
+public class Product extends EntityModel {
     private Long id;
     private String name;
     private String description;

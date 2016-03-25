@@ -6,7 +6,7 @@ import android.content.Context;
 import android.database.Cursor;
 import android.os.Build;
 
-import br.com.compremelhor.model.DomainEntity;
+import br.com.compremelhor.model.EntityModel;
 import br.com.compremelhor.model.Establishment;
 
 /**
@@ -15,7 +15,7 @@ import br.com.compremelhor.model.Establishment;
 @TargetApi(Build.VERSION_CODES.KITKAT)
 public class DAOEstablishment extends DAO {
     @Override
-    public long insertOrUpdate(DomainEntity o) {
+    public long insertOrUpdate(EntityModel o) {
         ContentValues values = new ContentValues();
         Establishment est = (Establishment) o;
 

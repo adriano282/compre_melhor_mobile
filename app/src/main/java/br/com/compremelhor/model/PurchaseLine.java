@@ -5,7 +5,7 @@ import java.math.BigDecimal;
 /**
  * Created by adriano on 25/08/15.
  */
-public class PurchaseLine extends DomainEntity {
+public class PurchaseLine extends EntityModel {
     private BigDecimal quantity;
     private BigDecimal subTotal;
     private BigDecimal unitaryPrice;

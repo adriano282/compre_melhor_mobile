@@ -3,7 +3,7 @@ package br.com.compremelhor.model;
 /**
  * Created by adriano on 29/09/15.
  */
-public class User  extends DomainEntity{
+public class User  extends EntityModel {
     private String name;
     private String email;
     private String document;

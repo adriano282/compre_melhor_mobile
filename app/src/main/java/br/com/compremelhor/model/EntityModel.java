@@ -6,13 +6,13 @@ import java.util.Calendar;
 /**
  * Created by adriano on 25/08/15.
  */
-public class DomainEntity {
+public class EntityModel {
     private Long id;
     private Calendar dateCreated;
     private Calendar lastUpdated;
 
-    public DomainEntity() {}
-    public DomainEntity(Long id) {
+    public EntityModel() {}
+    public EntityModel(Long id) {
         this.id = id;
     }
 

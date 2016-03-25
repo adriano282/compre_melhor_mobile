@@ -10,7 +10,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import br.com.compremelhor.model.Address;
-import br.com.compremelhor.model.DomainEntity;
+import br.com.compremelhor.model.EntityModel;
 
 /**
  * Created by adriano on 13/09/15.
@@ -61,7 +61,7 @@ public class DAOAddress extends DAO {
     }
 
     @Override
-    public long insertOrUpdate(DomainEntity ad) {
+    public long insertOrUpdate(EntityModel ad) {
         ContentValues values = new ContentValues();
         Address address = (Address) ad;
 

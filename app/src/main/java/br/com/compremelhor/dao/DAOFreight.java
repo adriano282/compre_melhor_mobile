@@ -6,7 +6,7 @@ import android.content.Context;
 import android.database.Cursor;
 import android.os.Build;
 
-import br.com.compremelhor.model.DomainEntity;
+import br.com.compremelhor.model.EntityModel;
 import br.com.compremelhor.model.Freight;
 
 /**
@@ -18,7 +18,7 @@ public class DAOFreight extends DAO {
         super(context);
     }
 
-    public long insertOrUpdate(DomainEntity o) {
+    public long insertOrUpdate(EntityModel o) {
         Freight f = (Freight) o;
         ContentValues values = new ContentValues();
 

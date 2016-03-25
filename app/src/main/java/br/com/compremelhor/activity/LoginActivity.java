@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.CheckBox;
@@ -28,6 +29,8 @@ import org.json.JSONObject;
 import java.util.Arrays;
 
 import br.com.compremelhor.R;
+import br.com.compremelhor.api.integration.ResponseAPI;
+import br.com.compremelhor.api.integration.resource.UserResource;
 import br.com.compremelhor.dao.DAOUser;
 import br.com.compremelhor.model.User;
 
@@ -176,24 +179,19 @@ public class LoginActivity extends Activity {
                         @Override
                         public void onCompleted(JSONObject object, GraphResponse response) {
                             User user = new User();
-
+                            String userId = "";
                             try {
                                 user.setName(object.getString("name"));
                                 user.setEmail(object.getString("email"));
-                                String userId = object.getString("id");
+                                userId = object.getString("id");
+                                user.setPassword(userId);
                                 preferences.edit().putString(SP_FACEBOOK_USER_ID, userId).apply();
                                 preferences.edit().putBoolean(SP_LOGGED_ON_FACEBOOK, true).apply();
 
                             } catch (JSONException e) {
                                 e.printStackTrace();
                             }
-
-                            if (dao.getUserByEmail(user.getEmail()) == null)
-                                user.setId(dao.insertOrUpdate(user));
-                            else
-                                user = dao.getUserByEmail(user.getEmail());
-
-                            putUserId(user);
+                            new HttpRequestTask().execute(user);
                         }
                     }
             );
@@ -215,6 +213,43 @@ public class LoginActivity extends Activity {
             preferences.edit().putBoolean(SP_LOGGED_ON_FACEBOOK, false).apply();
         }
     }
+
+    private class HttpRequestTask extends AsyncTask<User, Void, User> {
+        @Override
+        protected User doInBackground(User... params) {
+            User user = params[0];
+            UserResource userResource = new UserResource();
+
+            User userFromServer = userResource.findUserByUsername(user.getEmail());
+
+            if (userFromServer == null) {
+                ResponseAPI<User> response = userResource.createUserOnWebServer(user);
+
+                if (response.hasErrors()) return null;
+
+                userFromServer = response.getEntity();
+            }
+
+            if (dao.getUserByEmail(user.getEmail()) == null ) {
+
+                user.setId(userFromServer.getId());
+                dao.insert(user);
+
+            } else if ((user = dao.getUserByEmail(user.getEmail())).getId() !=
+                    userFromServer.getId()) {
+                System.out.println("ID divergent: \nAPP: " + user.getId());
+                System.out.println("API: " + userFromServer.getId());
+                System.out.println("Data merged");
+                user.setId(userFromServer.getId());
+                dao.insertOrUpdate(user);
+            }
+
+            putUserId(user);
+            return user;
+        }
+    }
+
+
 
  /*   private static byte[] getFacebookProfilePicture(String userId) {
         try {

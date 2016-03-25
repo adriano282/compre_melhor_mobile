@@ -6,7 +6,7 @@ import java.util.List;
 /**
  * Created by adriano on 25/08/15.
  */
-public class Cart extends DomainEntity {
+public class Cart extends EntityModel {
     private List<PurchaseLine> items;
 
     public List<PurchaseLine> getItems() {

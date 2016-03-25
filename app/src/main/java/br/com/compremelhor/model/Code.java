@@ -3,7 +3,7 @@ package br.com.compremelhor.model;
 /**
  * Created by adriano on 25/08/15.
  */
-public class Code extends DomainEntity {
+public class Code extends EntityModel {
     private String code;
     private CodeType type;
 

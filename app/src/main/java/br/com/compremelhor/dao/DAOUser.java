@@ -6,7 +6,7 @@ import android.content.Context;
 import android.database.Cursor;
 import android.os.Build;
 
-import br.com.compremelhor.model.DomainEntity;
+import br.com.compremelhor.model.EntityModel;
 import br.com.compremelhor.model.User;
 
 /**
@@ -48,7 +48,26 @@ public class DAOUser extends DAO {
         }
     }
 
-    public long insertOrUpdate(DomainEntity o) {
+    public long insert(EntityModel o) {
+        User user = (User) o;
+        ContentValues values = new ContentValues();
+
+        values.put(DatabaseHelper.User.EMAIL, user.getEmail());
+        values.put(DatabaseHelper.User.NAME, user.getName());
+        values.put(DatabaseHelper.User.DOCUMENT, user.getDocument());
+        values.put(DatabaseHelper.User.PASSWORD, user.getPassword());
+        values.put(DatabaseHelper.User.BYTES_PICTURE, user.getBytesPicture());
+
+        if (user.getTypeDocument() != null) {
+            values.put(DatabaseHelper.User.TYPE_DOCUMENT, user.getTypeDocument().toString());
+        } else {
+            values.put(DatabaseHelper.User.TYPE_DOCUMENT, "");
+        }
+
+        return getDB().insert(DatabaseHelper.User.TABLE, null, values);
+    }
+
+    public long insertOrUpdate(EntityModel o) {
         User user = (User) o;
         ContentValues values = new ContentValues();
 

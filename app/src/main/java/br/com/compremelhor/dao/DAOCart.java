@@ -11,7 +11,7 @@ import java.text.DateFormat;
 import java.util.Locale;
 
 import br.com.compremelhor.model.Cart;
-import br.com.compremelhor.model.DomainEntity;
+import br.com.compremelhor.model.EntityModel;
 import br.com.compremelhor.model.PurchaseLine;
 
 public class DAOCart extends DAO {
@@ -27,7 +27,7 @@ public class DAOCart extends DAO {
     private DAOCart(Context context) {super(context);}
 
     @Override
-    public long insertOrUpdate(DomainEntity o) {
+    public long insertOrUpdate(EntityModel o) {
         cart = (Cart) o;
         if (cart.getId() == null)
             return insertCart();

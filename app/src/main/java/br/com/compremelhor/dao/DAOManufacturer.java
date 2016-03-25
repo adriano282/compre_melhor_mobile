@@ -6,7 +6,7 @@ import android.content.Context;
 import android.database.Cursor;
 import android.os.Build;
 
-import br.com.compremelhor.model.DomainEntity;
+import br.com.compremelhor.model.EntityModel;
 import br.com.compremelhor.model.Manufacturer;
 
 /**
@@ -19,7 +19,7 @@ public class DAOManufacturer extends DAO {
     }
 
     @Override
-    public long insertOrUpdate(DomainEntity manufacturer) {
+    public long insertOrUpdate(EntityModel manufacturer) {
         ContentValues values = new ContentValues();
         Manufacturer m = (Manufacturer) manufacturer;
 

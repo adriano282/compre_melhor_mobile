@@ -7,7 +7,7 @@ import java.util.List;
 /**
  * Created by adriano on 24/08/15.
  */
-public class Purchase extends DomainEntity {
+public class Purchase extends EntityModel {
     private BigDecimal totalValue;
     private Status status;
     private Collection<PurchaseLine> items;

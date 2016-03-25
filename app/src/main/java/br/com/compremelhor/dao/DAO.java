@@ -3,7 +3,7 @@ package br.com.compremelhor.dao;
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 
-import br.com.compremelhor.model.DomainEntity;
+import br.com.compremelhor.model.EntityModel;
 import br.com.compremelhor.useful.DataBind;
 
 /**
@@ -14,7 +14,7 @@ public abstract class DAO {
     private SQLiteDatabase db;
     private DataBind dataBind;
 
-    public abstract long insertOrUpdate(DomainEntity o);
+    public abstract long insertOrUpdate(EntityModel o);
 
     public DAO(Context context) {
         helper = new DatabaseHelper(context);

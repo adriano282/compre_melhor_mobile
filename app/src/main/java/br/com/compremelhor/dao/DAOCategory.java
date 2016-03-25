@@ -7,7 +7,7 @@ import android.database.Cursor;
 import android.os.Build;
 
 import br.com.compremelhor.model.Category;
-import br.com.compremelhor.model.DomainEntity;
+import br.com.compremelhor.model.EntityModel;
 
 /**
  * Created by adriano on 19/10/15.
@@ -51,7 +51,7 @@ public class DAOCategory extends DAO {
     }
 
     @Override
-    public long insertOrUpdate(DomainEntity o) {
+    public long insertOrUpdate(EntityModel o) {
         Category c = (Category) o;
         ContentValues values = new ContentValues();
 

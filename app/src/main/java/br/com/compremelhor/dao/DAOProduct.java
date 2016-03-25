@@ -8,7 +8,7 @@ import android.os.Build;
 import java.util.ArrayList;
 import java.util.List;
 
-import br.com.compremelhor.model.DomainEntity;
+import br.com.compremelhor.model.EntityModel;
 import br.com.compremelhor.model.Product;
 
 /**
@@ -18,7 +18,7 @@ import br.com.compremelhor.model.Product;
 public class DAOProduct extends DAO {
 
     @Override
-    public long insertOrUpdate(DomainEntity o) {
+    public long insertOrUpdate(EntityModel o) {
         return 0;
     }
 

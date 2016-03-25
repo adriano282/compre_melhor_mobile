@@ -7,7 +7,7 @@ import android.database.Cursor;
 import android.os.Build;
 
 import br.com.compremelhor.model.Code;
-import br.com.compremelhor.model.DomainEntity;
+import br.com.compremelhor.model.EntityModel;
 
 /**
  * Created by adriano on 19/10/15.
@@ -19,7 +19,7 @@ public class DAOCode extends DAO {
     }
 
     @Override
-    public long insertOrUpdate(DomainEntity o) {
+    public long insertOrUpdate(EntityModel o) {
         Code code = (Code) o;
         ContentValues values = new ContentValues();
 

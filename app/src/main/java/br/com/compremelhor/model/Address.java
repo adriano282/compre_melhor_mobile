@@ -3,7 +3,7 @@ package br.com.compremelhor.model;
 /**
  * Created by adriano on 25/08/15.
  */
-public class Address extends DomainEntity {
+public class Address extends EntityModel {
     private String street;
     private String number;
     private String quarter;
