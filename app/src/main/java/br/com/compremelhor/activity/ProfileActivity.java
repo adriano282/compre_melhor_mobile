@@ -22,8 +22,8 @@ import br.com.compremelhor.dao.DAOUser;
 import br.com.compremelhor.model.TypeDocument;
 import br.com.compremelhor.model.User;
 
-import static br.com.compremelhor.useful.Constants.SP_FACEBOOK_USER_ID;
 import static br.com.compremelhor.useful.Constants.PREFERENCES;
+import static br.com.compremelhor.useful.Constants.SP_FACEBOOK_USER_ID;
 import static br.com.compremelhor.useful.Constants.SP_USER_ID;
 
 public class ProfileActivity extends AppCompatActivity implements OnClickListener {
@@ -59,9 +59,7 @@ public class ProfileActivity extends AppCompatActivity implements OnClickListene
         switch (view.getId()) {
             case R.id.profile_btn_save:
                 DAOUser dao = new DAOUser(this);
-
                 Long result = dao.insertOrUpdate(getUserView());
-
                 SharedPreferences.Editor edit = preferences.edit();
                 edit.putLong(SP_USER_ID, result != -1 ? result : 0);
                 edit.commit();

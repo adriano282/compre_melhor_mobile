@@ -63,10 +63,32 @@ public class UserResource extends AbstractResource<User> {
         }
     }
 
-    public ResponseAPI<User> createUserOnWebServer(User user) {
+    public ResponseAPI<User> createUserOnServer(User user) {
         String requestBody = "{\"username\": \"" +user.getEmail() + "\", " +
                 "\"password\": \""+ user.getPassword() +"\"}";
         return createResource(requestBody);
+    }
+
+    public ResponseAPI<User> updateUserOnServer(User user) {
+        StringBuilder sb = new StringBuilder();
+        sb.append("{");
+
+        if (user.getPassword() != null) {sb.append("\"password\" : \"" + user.getPassword() + "\"");}
+        if (user.getDocument() != null) {
+            if (sb.length() == 1) sb.append(",");
+            sb.append("\"document\" : \"" + user.getDocument() + "\"");
+        }
+        if (user.getTypeDocument() != null) {
+            if (sb.length() == 1) sb.append(",");
+            sb.append("\"typeDocument\" : \"" + user.getTypeDocument() + "\"");
+        }
+        if (user.getEmail() != null) {
+            if (sb.length() == 1) sb.append(",");
+            sb.append("\"username\" : \"" + user.getEmail() + "\"");
+        }
+        sb.append("}");
+
+        return updateResource(sb.toString());
     }
 
     @Override

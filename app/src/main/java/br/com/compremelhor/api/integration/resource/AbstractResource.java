@@ -29,38 +29,12 @@ public abstract class AbstractResource<T extends EntityModel>{
 
     public abstract T bindResourceFromJson(JsonObject jsonObject);
 
+    public ResponseAPI<T> updateResource(String requestBody) {
+        return pushOnServer(requestBody, HTTPMethods.PUT);
+    }
+
     public ResponseAPI<T> createResource(String requestBody) {
-        try {
-            URL url = new URL(APPLICATION_ROOT.concat(RESOURCE_ROOT));
-            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-            connection.setDoOutput(true);
-            connection.setInstanceFollowRedirects(false);
-            connection.setRequestMethod(HTTPMethods.POST.toString());
-            connection.setRequestProperty("Content-Type", "application/json");
-            OutputStream os = connection.getOutputStream();
-
-            if (requestBody == null || requestBody.isEmpty())
-                throw new RuntimeException("RequestBody null in a request Push on Server");
-
-            os.write(requestBody.getBytes());
-            os.flush();
-
-            ResponseAPI<T> responseApi = new ResponseAPI<>();
-            responseApi.setStatusCode(connection.getResponseCode());
-
-            if (connection.getResponseCode() != HttpURLConnection.HTTP_CREATED) {
-                String errors = connection.getHeaderField("errors");
-                if (errors != null)
-                    responseApi.setErrors(Arrays.asList(errors.split("#")));
-            }
-
-            responseApi.setLocation(connection.getHeaderField("Location"));
-            connection.disconnect();
-            responseApi.setEntity(getResourceFromLocation(responseApi.getLocation()));
-            return responseApi;
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
+        return pushOnServer(requestBody, HTTPMethods.PUT);
     }
 
     public T getResourceById(Long id) {
@@ -93,6 +67,43 @@ public abstract class AbstractResource<T extends EntityModel>{
             T t = bindResourceFromJson(jsonObject);
             connection.disconnect();
             return t;
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    private ResponseAPI<T> pushOnServer(String requestBody, HTTPMethods method) {
+        if (method == HTTPMethods.GET || method == HTTPMethods.DELETE)
+            throw new RuntimeException("GET || DELETE Method on method for push Data on Server");
+
+        try {
+            URL url = new URL(APPLICATION_ROOT.concat(RESOURCE_ROOT));
+            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+            connection.setDoOutput(true);
+            connection.setInstanceFollowRedirects(false);
+            connection.setRequestMethod(method.toString());
+            connection.setRequestProperty("Content-Type", "application/json");
+            OutputStream os = connection.getOutputStream();
+
+            if (requestBody == null || requestBody.isEmpty())
+                throw new RuntimeException("RequestBody null in a request Push on Server");
+
+            os.write(requestBody.getBytes());
+            os.flush();
+
+            ResponseAPI<T> responseApi = new ResponseAPI<>();
+            responseApi.setStatusCode(connection.getResponseCode());
+
+            if (connection.getResponseCode() != HttpURLConnection.HTTP_CREATED) {
+                String errors = connection.getHeaderField("errors");
+                if (errors != null)
+                    responseApi.setErrors(Arrays.asList(errors.split("#")));
+            }
+
+            responseApi.setLocation(connection.getHeaderField("Location"));
+            connection.disconnect();
+            responseApi.setEntity(getResourceFromLocation(responseApi.getLocation()));
+            return responseApi;
         } catch (Exception e) {
             throw new RuntimeException(e);
         }

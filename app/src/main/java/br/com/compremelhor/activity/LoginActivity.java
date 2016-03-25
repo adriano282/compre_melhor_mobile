@@ -223,7 +223,7 @@ public class LoginActivity extends Activity {
             User userFromServer = userResource.findUserByUsername(user.getEmail());
 
             if (userFromServer == null) {
-                ResponseAPI<User> response = userResource.createUserOnWebServer(user);
+                ResponseAPI<User> response = userResource.createUserOnServer(user);
 
                 if (response.hasErrors()) return null;
 
