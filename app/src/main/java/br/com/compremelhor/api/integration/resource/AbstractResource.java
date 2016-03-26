@@ -19,8 +19,7 @@ import br.com.compremelhor.model.EntityModel;
 /**
  * Created by adriano on 25/03/16.
  */
-public abstract class AbstractResource<T extends EntityModel>{
-    protected final String APPLICATION_ROOT = "http://10.0.2.2:8080/compre_melhor_ws/rest/";
+public abstract class AbstractResource<T extends EntityModel> implements Resource<T> {
     protected final String RESOURCE_ROOT;
 
     public AbstractResource(String RESOURCE_ROOT) {
@@ -37,7 +36,7 @@ public abstract class AbstractResource<T extends EntityModel>{
         return pushOnServer(requestBody, HTTPMethods.PUT);
     }
 
-    public T getResourceById(Long id) {
+    public T getResource(Long id) {
         try {
             URL url = new URL(APPLICATION_ROOT.concat(RESOURCE_ROOT).concat("/").concat(String.valueOf(id)));
             HttpURLConnection connection = (HttpURLConnection) url.openConnection();
@@ -102,16 +101,16 @@ public abstract class AbstractResource<T extends EntityModel>{
 
             responseApi.setLocation(connection.getHeaderField("Location"));
             connection.disconnect();
-            responseApi.setEntity(getResourceFromLocation(responseApi.getLocation()));
+            responseApi.setEntity(getResource(responseApi.getLocation()));
             return responseApi;
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
     }
 
-    public T getResourceFromLocation(String location) {
+    public T getResource(String location) {
         Long id = extractIdFromLocation(location);
-        return getResourceById(id);
+        return getResource(id);
     }
 
     private Long extractIdFromLocation(String location) {
