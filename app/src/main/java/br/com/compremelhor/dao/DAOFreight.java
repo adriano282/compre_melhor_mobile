@@ -28,12 +28,12 @@ public class DAOFreight extends DAO {
         values.put(DatabaseHelper.Freight.DATE_CREATED, f.getDateCreated().getTimeInMillis());
         values.put(DatabaseHelper.Freight.LAST_UPDATED, f.getLastUpdated().getTimeInMillis());
 
-        if (f.getId() == null)
+        if (f.getId() == 0)
             return getDB().insert(DatabaseHelper.Freight.TABLE, null, values);
 
         return getDB().update(DatabaseHelper.Freight.TABLE, values,
                 DatabaseHelper.Freight._ID + " = ?",
-                new String[] {f.getId().toString()});
+                new String[] {String.valueOf(f.getId())});
     }
 
     public Freight getFreightById(Long id) {

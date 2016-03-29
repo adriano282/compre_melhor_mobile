@@ -27,11 +27,11 @@ public class DAOManufacturer extends DAO {
         values.put(DatabaseHelper.Manufacturer.COMPANY_NAME, m.getCompanyName());
         values.put(DatabaseHelper.Manufacturer.DATE_CREATED, "now");
 
-        if (m.getId() == null || m.getId() == 0)
+        if (m.getId() == 0)
             return (int) getDB().insert(DatabaseHelper.Manufacturer.TABLE, null, values);
 
         return getDB().update(DatabaseHelper.Manufacturer.TABLE, values,
-                DatabaseHelper.Manufacturer._ID + " = ?", new String[] {m.getId().toString()});
+                DatabaseHelper.Manufacturer._ID + " = ?", new String[] {String.valueOf(m.getId())});
     }
 
     public Manufacturer getManufacturerByCompanyName(String name) {
@@ -50,14 +50,11 @@ public class DAOManufacturer extends DAO {
         }
     }
 
-    public Manufacturer getManufacturerById(Long id) {
-        if (id == null)
-            return null;
-
+    public Manufacturer getManufacturerById(int id) {
         try (Cursor cursor = getDB().query(DatabaseHelper.Manufacturer.TABLE,
                 DatabaseHelper.Manufacturer.COLUMNS,
                 DatabaseHelper.Manufacturer._ID + " = ?",
-                new String[] {id.toString()}, null, null, null)) {
+                new String[] {String.valueOf(id)}, null, null, null)) {
 
             if (cursor.moveToNext()) {
                 return (Manufacturer) getBind().bind(new Manufacturer(), cursor);

@@ -11,12 +11,12 @@ public class Address extends EntityModel {
     private String state;
     private String zipcode;
     private String addressName;
-    private Long userId;
+    private int userId;
 
     public Address() {
     }
 
-    public Address(Long id, String street, String number,
+    public Address(int id, String street, String number,
                    String quarter, String city, String state,
                    String zipcode) {
         super(id);
@@ -28,9 +28,9 @@ public class Address extends EntityModel {
         this.zipcode = zipcode;
     }
 
-    public Address(Long id, String street, String number,
+    public Address(int id, String street, String number,
                    String quarter, String city, String state,
-                   String zipcode, Long userId) {
+                   String zipcode, int userId) {
         super(id);
         this.street = street;
         this.number = number;
@@ -41,9 +41,9 @@ public class Address extends EntityModel {
         this.userId = userId;
     }
 
-    public Address(Long id, String street, String number,
+    public Address(int id, String street, String number,
                    String quarter, String city, String state,
-                   String zipcode, String addressName, Long userId) {
+                   String zipcode, String addressName, int userId) {
         super(id);
         this.street = street;
         this.number = number;
@@ -67,11 +67,11 @@ public class Address extends EntityModel {
         return addressName;
     }
 
-    public void setUserId(Long userId) {
+    public void setUserId(int userId) {
         this.userId = userId;
     }
 
-    public Long getUserId()  {
+    public int getUserId()  {
         return this.userId;
     }
 

@@ -22,11 +22,11 @@ public class DAOEstablishment extends DAO {
         values.put(DatabaseHelper.Establishment._ID, est.getId());
         values.put(DatabaseHelper.Establishment.NAME, est.getName());
 
-        if (est.getId() == null)
+        if (est.getId() == 0)
             return getDB().insert(DatabaseHelper.Establishment.TABLE, null, values);
 
         return getDB().update(DatabaseHelper.Establishment.TABLE, values,
-                DatabaseHelper.Establishment._ID + " = ?", new String[] {est.getId().toString()});
+                DatabaseHelper.Establishment._ID + " = ?", new String[] {String.valueOf(est.getId())});
     }
 
 

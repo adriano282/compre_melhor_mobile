@@ -93,7 +93,7 @@ public class FreightFragment extends Fragment {
 
         for (Address ad : addresses) {
             RadioButton rb = new RadioButton(getActivity());
-            rb.setId(ad.getId().intValue());
+            rb.setId(ad.getId());
             rb.setText(ad.getAddressName() + " / " + ad.getZipcode());
             rgAddresses.addView(rb);
         }

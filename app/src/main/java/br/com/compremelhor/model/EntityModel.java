@@ -7,20 +7,20 @@ import java.util.Calendar;
  * Created by adriano on 25/08/15.
  */
 public class EntityModel {
-    private Long id;
+    private int id;
     private Calendar dateCreated;
     private Calendar lastUpdated;
 
     public EntityModel() {}
-    public EntityModel(Long id) {
+    public EntityModel(int id) {
         this.id = id;
     }
 
-    public Long getId() {
+    public int getId() {
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(int id) {
         this.id = id;
     }
 

@@ -44,14 +44,14 @@ public class ProductActivity extends AppCompatActivity {
     private Button btnPutInCart;
     private PurchaseLine item;
 
-    private Long itemId;
+    private int itemId;
 
     private static Map<String, Product> productsForTest;
     private static void startMap() {
         productsForTest = new HashMap<>();
 
         Product p1 = new Product();
-        p1.setId(new Long(1));
+        p1.setId(1);
         p1.setName("Maionese");
         p1.setDescription("Maionese");
         p1.setPriceUnitary(new BigDecimal(4.50));
@@ -116,7 +116,7 @@ public class ProductActivity extends AppCompatActivity {
         item.setLastUpdated(Calendar.getInstance());
         item.setUnitaryPrice(item.getProduct().getPriceUnitary());
         item.setCategory(item.getProduct().getCategory().getName());
-        item.setId(itemId);
+        item.setId(Integer.valueOf(itemId));
         item.setProductName(item.getProduct().getName());
 
         DAOCart dao = DAOCart.getInstance(this);
@@ -171,9 +171,9 @@ public class ProductActivity extends AppCompatActivity {
 
         String stringId = getIntent().getStringExtra(PURCHASE_ID_EXTRA);
 
-        itemId = stringId == null || stringId.isEmpty() ? null : Long.valueOf(stringId);
+        itemId = stringId == null || stringId.isEmpty() ? null : Integer.valueOf(stringId);
 
-        if (itemId != null)
+        if (itemId != 0)
             btnPutInCart.setText("ALTERAR QUANTIDADE");
 
         String quantity = getIntent().getStringExtra(CURRENT_QUANTITY_OF_ITEM_EXTRA);

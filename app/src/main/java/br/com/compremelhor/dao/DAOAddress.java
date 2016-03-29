@@ -31,11 +31,11 @@ public class DAOAddress extends DAO {
         super(context);
     }
 
-    public Address getAddressById(Long id) {
+    public Address getAddressById(int id) {
         try(Cursor cursor = getDB().query(DatabaseHelper.Address.TABLE,
                 DatabaseHelper.Address.COLUMNS,
                 DatabaseHelper.Address._ID + " = ?",
-                new String[] {id.toString()}, null, null, null)) {
+                new String[] {String.valueOf(id)}, null, null, null)) {
             if (cursor.moveToNext()) {
                 Address address = (Address) getBind().bind(new Address(), cursor);
                 cursor.close();
@@ -74,10 +74,10 @@ public class DAOAddress extends DAO {
         values.put(DatabaseHelper.Address.ADDRESS_NAME, address.getAddressName());
         values.put(DatabaseHelper.Address._USER_ID, address.getUserId());
 
-        if (address.getId() == null || address.getId() == 0)
+        if (address.getId() == 0 || address.getId() == 0)
             return getDB().insert(DatabaseHelper.Address.TABLE, null, values);
 
         return getDB().update(DatabaseHelper.Address.TABLE, values,
-                DatabaseHelper.Address._ID + " = ?", new String[] {address.getId().toString()});
+                DatabaseHelper.Address._ID + " = ?", new String[] {String.valueOf(address.getId())});
     }
 }

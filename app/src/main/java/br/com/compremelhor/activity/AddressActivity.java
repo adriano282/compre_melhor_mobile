@@ -127,7 +127,7 @@ public class AddressActivity extends AppCompatActivity {
     private void fillFields() {
         if (getIntent().hasExtra(ADDRESS_ID_EXTRA)) {
 
-            Long id = getIntent().getLongExtra(ADDRESS_ID_EXTRA, 0);
+            int id = getIntent().getIntExtra(ADDRESS_ID_EXTRA, 0);
             Address ad = DAOAddress.getInstance(this).getAddressById(id);
 
             etZipcode.setText(ad.getZipcode());
@@ -154,13 +154,13 @@ public class AddressActivity extends AppCompatActivity {
     private Address getAddressView() {
 
         return new Address(
-                getIntent().getLongExtra(ADDRESS_ID_EXTRA, 0), etStreet.getText().toString(),
+                getIntent().getIntExtra(ADDRESS_ID_EXTRA, 0), etStreet.getText().toString(),
                 etNumber.getText().toString(),
                 etQuarter.getText().toString(),
                 etCity.getText().toString(),
                 null, etZipcode.getText().toString(),
                 etNameAddress.getText().toString(),
-                preferences.getLong(SP_USER_ID, 0)
+                preferences.getInt(SP_USER_ID, 0)
         );
 
     }

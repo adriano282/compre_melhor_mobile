@@ -10,11 +10,20 @@ public class User  extends EntityModel {
     private TypeDocument typeDocument;
     private String password;
     private byte[] bytesPicture;
+    private boolean loggedByFacebook;
 
     public User() {}
     public User(String  name, String email) {
         this.name = name;
         this.email = email;
+    }
+
+    public boolean isLoggedByFacebook() {
+        return loggedByFacebook;
+    }
+
+    public void setLoggedByFacebook(boolean loggedByFacebook) {
+        this.loggedByFacebook = loggedByFacebook;
     }
 
     public void setPicture(byte[] bytes) {

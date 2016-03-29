@@ -19,12 +19,12 @@ public class DAOUser extends DAO {
         super(context);
     }
 
-    public User getUserById(Long id) {
+    public User getUserById(int id) {
         try(Cursor cursor = getDB().query(
                 DatabaseHelper.User.TABLE,
                 DatabaseHelper.User.COLUMNS,
                 DatabaseHelper.User._ID + " = ?" ,
-                new String[] {id.toString()}, null, null, null)) {
+                new String[] {String.valueOf(id)}, null, null, null)) {
 
             User user = null;
             if (cursor.moveToFirst()) {
@@ -52,11 +52,13 @@ public class DAOUser extends DAO {
         User user = (User) o;
         ContentValues values = new ContentValues();
 
+        values.put(DatabaseHelper.User._ID, user.getId());
         values.put(DatabaseHelper.User.EMAIL, user.getEmail());
         values.put(DatabaseHelper.User.NAME, user.getName());
         values.put(DatabaseHelper.User.DOCUMENT, user.getDocument());
         values.put(DatabaseHelper.User.PASSWORD, user.getPassword());
         values.put(DatabaseHelper.User.BYTES_PICTURE, user.getBytesPicture());
+        values.put(DatabaseHelper.User.LOGGED_BY_FACEBOOK, user.isLoggedByFacebook());
 
         if (user.getTypeDocument() != null) {
             values.put(DatabaseHelper.User.TYPE_DOCUMENT, user.getTypeDocument().toString());
@@ -76,6 +78,7 @@ public class DAOUser extends DAO {
         values.put(DatabaseHelper.User.DOCUMENT, user.getDocument());
         values.put(DatabaseHelper.User.PASSWORD, user.getPassword());
         values.put(DatabaseHelper.User.BYTES_PICTURE, user.getBytesPicture());
+        values.put(DatabaseHelper.User.LOGGED_BY_FACEBOOK, user.isLoggedByFacebook() ? 1 : 0);
 
         if (user.getTypeDocument() != null) {
             values.put(DatabaseHelper.User.TYPE_DOCUMENT, user.getTypeDocument().toString());
@@ -83,11 +86,32 @@ public class DAOUser extends DAO {
             values.put(DatabaseHelper.User.TYPE_DOCUMENT, "");
         }
 
-        if ((user.getId() == null || user.getId() == 0))
+        if ((user.getId() == 0 || user.getId() == 0))
             return getDB().insert(DatabaseHelper.User.TABLE, null, values);
 
         return new Long(getDB().update(DatabaseHelper.User.TABLE, values,
-                DatabaseHelper.User._ID + " = ?", new String[] {user.getId().toString()}));
+                DatabaseHelper.User._ID + " = ?", new String[] {String.valueOf(user.getId())}));
+    }
+
+    public long updateByEmail(EntityModel o) {
+        User user = (User) o;
+        ContentValues values = new ContentValues();
+
+        values.put(DatabaseHelper.User._ID, user.getId());
+        values.put(DatabaseHelper.User.NAME, user.getName());
+        values.put(DatabaseHelper.User.DOCUMENT, user.getDocument());
+        values.put(DatabaseHelper.User.PASSWORD, user.getPassword());
+        values.put(DatabaseHelper.User.BYTES_PICTURE, user.getBytesPicture());
+        values.put(DatabaseHelper.User.LOGGED_BY_FACEBOOK, user.isLoggedByFacebook() ? 1 : 0);
+
+        if (user.getTypeDocument() != null) {
+            values.put(DatabaseHelper.User.TYPE_DOCUMENT, user.getTypeDocument().toString());
+        } else {
+            values.put(DatabaseHelper.User.TYPE_DOCUMENT, "");
+        }
+
+        return new Long(getDB().update(DatabaseHelper.User.TABLE, values,
+                DatabaseHelper.User.EMAIL + " = ?", new String[] {user.getEmail()}));
     }
 
     private boolean userAlreadyRegistered(User user) {

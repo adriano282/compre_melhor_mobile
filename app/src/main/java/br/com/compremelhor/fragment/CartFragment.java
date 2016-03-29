@@ -221,7 +221,7 @@ public class CartFragment extends android.support.v4.app.Fragment {
 
     private boolean removeItemFromCart() {
         PurchaseLine line = new PurchaseLine();
-        line.setId(Long.valueOf(itemIdSelected));
+        line.setId(Integer.valueOf(itemIdSelected));
         if (DAOCart.getInstance(getActivity()).removeItem(line) == -1)
             return false;
 

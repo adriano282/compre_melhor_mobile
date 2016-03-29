@@ -7,7 +7,7 @@ import br.com.compremelhor.model.EntityModel;
 /**
  * Created by adriano on 25/03/16.
  */
-public class ResponseAPI<T extends EntityModel> {
+public class ResponseServer<T extends EntityModel> {
     private String location;
     private T entity;
     private Integer statusCode;

@@ -8,9 +8,8 @@ import android.database.sqlite.SQLiteOpenHelper;
  * Created by adriano on 25/08/15.
  */
 public class DatabaseHelper extends SQLiteOpenHelper {
-
     private static final String DATABASE = "CompreMelhor.db";
-    private static int DATABASE_VERSION = 16;
+    private static int DATABASE_VERSION = 21;
 
     private final String[] TABLES;
 
@@ -98,9 +97,10 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 DOCUMENT = "document",
                 TYPE_DOCUMENT = "type_document",
                 PASSWORD = "password",
-                BYTES_PICTURE = "bytes_picture";
+                BYTES_PICTURE = "bytes_picture",
+                LOGGED_BY_FACEBOOK = "logged_by_facebook";
         String[] COLUMNS = new String[] {_ID, EMAIL, NAME,
-                DOCUMENT, TYPE_DOCUMENT, PASSWORD, BYTES_PICTURE, DATE_CREATED, LAST_UPDATED};
+                DOCUMENT, TYPE_DOCUMENT, PASSWORD, BYTES_PICTURE, LOGGED_BY_FACEBOOK, DATE_CREATED, LAST_UPDATED};
     }
 
     public interface Freight extends Domain {
@@ -156,6 +156,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 User.PASSWORD + " VARCHAR(10), " +
                 User.TYPE_DOCUMENT + " VARCHAR(5) NOT NULL, " +
                 User.BYTES_PICTURE + " BLOB, " +
+                User.LOGGED_BY_FACEBOOK + " INT(1), " +
                 User.DATE_CREATED + " TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP, " +
                 User.LAST_UPDATED + " TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP);");
 

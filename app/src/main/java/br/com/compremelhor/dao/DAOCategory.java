@@ -34,14 +34,11 @@ public class DAOCategory extends DAO {
         }
     }
 
-    public Category getCategoryById(Long id) {
-        if (id == null)
-            return null;
-
+    public Category getCategoryById(int id) {
         try (Cursor cursor = getDB().query(DatabaseHelper.Category.TABLE,
                 DatabaseHelper.Category.COLUMNS,
                 DatabaseHelper.Category._ID + " = ?",
-                new String[] {id.toString()}, null, null, null)) {
+                new String[] {String.valueOf(id)}, null, null, null)) {
 
             if (cursor.moveToNext()) {
                 return (Category) getBind().bind(new Category(), cursor);
@@ -58,10 +55,10 @@ public class DAOCategory extends DAO {
         values.put(DatabaseHelper.Category._ID, c.getId());
         values.put(DatabaseHelper.Category.NAME, c.getName());
 
-        if (c.getId() == null)
+        if (c.getId() == 0)
             return getDB().insert(DatabaseHelper.Category.TABLE, null, values);
 
         return getDB().update(DatabaseHelper.Category.TABLE, values,
-                DatabaseHelper.Category._ID + " = ?", new String[]{c.getId().toString()});
+                DatabaseHelper.Category._ID + " = ?", new String[]{String.valueOf(c.getId())});
     }
 }

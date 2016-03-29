@@ -1,6 +1,8 @@
 package br.com.compremelhor.api.integration.resource;
 
-import br.com.compremelhor.api.integration.ResponseAPI;
+import java.util.Map;
+
+import br.com.compremelhor.api.integration.ResponseServer;
 import br.com.compremelhor.model.EntityModel;
 
 /**
@@ -9,8 +11,10 @@ import br.com.compremelhor.model.EntityModel;
 public interface Resource<T extends EntityModel> {
     String APPLICATION_ROOT = "http://10.0.2.2:8080/compre_melhor_ws/rest/";
 
-    ResponseAPI<T> updateResource(String requestBody);
-    ResponseAPI<T> createResource(String requestBody);
-    T getResource(Long id);
+    ResponseServer<T> updateResource(T entity);
+    ResponseServer<T> createResource(T entity);
+    T getResource(String attributeName, String attributeValue);
+    T getResource(Map<String, String> params);
+    T getResource(int id);
     T getResource(String location);
 }

@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
@@ -23,13 +24,15 @@ import com.facebook.login.LoginManager;
 import com.facebook.login.LoginResult;
 import com.facebook.login.widget.LoginButton;
 
+import junit.framework.Assert;
+
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.Arrays;
 
 import br.com.compremelhor.R;
-import br.com.compremelhor.api.integration.ResponseAPI;
+import br.com.compremelhor.api.integration.ResponseServer;
 import br.com.compremelhor.api.integration.resource.UserResource;
 import br.com.compremelhor.dao.DAOUser;
 import br.com.compremelhor.model.User;
@@ -52,19 +55,6 @@ public class LoginActivity extends Activity {
         super.onCreate(savedInstanceState);
         FacebookSdk.sdkInitialize(getApplicationContext());
         setContentView(R.layout.login);
-
-        /*try {
-            PackageInfo info =     getPackageManager().getPackageInfo("br.com.compremelhor",     PackageManager.GET_SIGNATURES);
-            for (android.content.pm.Signature signature : info.signatures) {
-                MessageDigest md = MessageDigest.getInstance("SHA");
-                md.update(signature.toByteArray());
-                String sign=Base64.encodeToString(md.digest(), Base64.DEFAULT);
-                Log.e("MY KEY HASH:", sign);
-                //  Toast.makeText(getApplicationContext(),sign,     Toast.LENGTH_LONG).show();
-            }
-        } catch (PackageManager.NameNotFoundException e) {
-        } catch (NoSuchAlgorithmException e) {
-        }*/
 
         preferences = getSharedPreferences(PREFERENCES, Context.MODE_PRIVATE);
 
@@ -123,7 +113,6 @@ public class LoginActivity extends Activity {
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         callbackManager.onActivityResult(requestCode, resultCode, data);
-
     }
 
     public void onLogin(View view) {
@@ -150,8 +139,10 @@ public class LoginActivity extends Activity {
     }
 
     private void putUserId(User user) {
-        if (user != null)
-            preferences.edit().putLong(SP_USER_ID, user.getId()).apply();
+        if (user != null) {
+            preferences.edit().putInt(SP_USER_ID, user.getId()).apply();
+            Log.d("PREFERENCES_CHANGE", "USER_ID -> " + user.getId());
+        }
     }
 
     private void initDashboard() {
@@ -170,7 +161,6 @@ public class LoginActivity extends Activity {
         }
     }
 
-
     private class FaceCallback implements FacebookCallback<LoginResult> {
         @Override
         public void onSuccess(LoginResult loginResult) {
@@ -179,18 +169,17 @@ public class LoginActivity extends Activity {
                         @Override
                         public void onCompleted(JSONObject object, GraphResponse response) {
                             User user = new User();
-                            String userId = "";
                             try {
                                 user.setName(object.getString("name"));
                                 user.setEmail(object.getString("email"));
-                                userId = object.getString("id");
-                                user.setPassword(userId);
-                                preferences.edit().putString(SP_FACEBOOK_USER_ID, userId).apply();
+                                user.setPassword(object.getString("id"));
+                                preferences.edit().putString(SP_FACEBOOK_USER_ID, user.getPassword()).apply();
                                 preferences.edit().putBoolean(SP_LOGGED_ON_FACEBOOK, true).apply();
 
                             } catch (JSONException e) {
                                 e.printStackTrace();
                             }
+
                             new HttpRequestTask().execute(user);
                         }
                     }
@@ -218,51 +207,38 @@ public class LoginActivity extends Activity {
         @Override
         protected User doInBackground(User... params) {
             User user = params[0];
-            UserResource userResource = new UserResource();
+            user.setLoggedByFacebook(true);
+            UserResource userResource = new UserResource(LoginActivity.this);
 
-            User userFromServer = userResource.findUserByUsername(user.getEmail());
+            User userFromServer = userResource.getResource("username", user.getEmail());
 
             if (userFromServer == null) {
-                ResponseAPI<User> response = userResource.createUserOnServer(user);
+                ResponseServer<User> response = userResource.createResource(user);
 
                 if (response.hasErrors()) return null;
 
                 userFromServer = response.getEntity();
             }
 
-            if (dao.getUserByEmail(user.getEmail()) == null ) {
+            if (dao.getUserByEmail(user.getEmail()) == null) {
 
                 user.setId(userFromServer.getId());
                 dao.insert(user);
 
             } else if ((user = dao.getUserByEmail(user.getEmail())).getId() !=
                     userFromServer.getId()) {
-                System.out.println("ID divergent: \nAPP: " + user.getId());
-                System.out.println("API: " + userFromServer.getId());
-                System.out.println("Data merged");
                 user.setId(userFromServer.getId());
-                dao.insertOrUpdate(user);
+
+                int fbId = preferences.getInt(SP_FACEBOOK_USER_ID, 0);
+                user.setLoggedByFacebook(user.getPassword().equals(fbId));
+                dao.updateByEmail(user);
+
+                Assert.assertNotNull(dao.getUserById(user.getId()));
+                Assert.assertEquals(dao.getUserById(user.getId()).getId(), user.getId());
             }
 
             putUserId(user);
             return user;
         }
     }
-
-
-
- /*   private static byte[] getFacebookProfilePicture(String userId) {
-        try {
-            URL imageURL = new URL("https://graph.facebook.com/"+userId+"/picture?type=large");
-            Bitmap image = BitmapFactory.decodeStream(imageURL.openConnection().getInputStream());
-
-            ByteArrayOutputStream bos = new ByteArrayOutputStream();
-            image.compress(Bitmap.CompressFormat.PNG, 100, bos);
-            return bos.toByteArray();
-        } catch (IOException e) {
-            e.printStackTrace();
-            return null;
-        }
-    }
-*/
 }

@@ -116,7 +116,7 @@
     <string name="removed_item_success_msg">Item removido do carrinho</string>
     <string name="removed_item_error_msg">Ocorreu um erro ao tentar remover o item do carrinho.</string>
     <string name="cart_is_empty">Você não possui nenhum produto em seu carrinho.</string>
-
+    <string name="user_document_is_null_message_error">Documento não informado</string>
 
     <string name="addPayment">Add Payment Method</string>
     <string name="paymentMethods">Payment Methods</string>
@@ -135,4 +135,6 @@
         <item>Unspecified</item>
         <item>USD</item>
     </string-array>
+
+    <string name="token_api">token_app DG4OjT9ciuPtHk1p7Fi/kg==</string>
 </resources>

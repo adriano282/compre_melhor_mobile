@@ -10,10 +10,15 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import br.com.compremelhor.R;
+import br.com.compremelhor.api.integration.RequestAsync;
+import br.com.compremelhor.api.integration.ResponseServer;
+import br.com.compremelhor.api.integration.resource.UserResource;
 import br.com.compremelhor.dao.DAOUser;
+import br.com.compremelhor.function.MyFunction;
 import br.com.compremelhor.model.User;
 import br.com.compremelhor.form.validator.ActionTextWatcher;
 import br.com.compremelhor.form.validator.ValidatorTextWatcher;
@@ -31,6 +36,12 @@ public class PasswordActivity extends AppCompatActivity implements OnClickListen
     private EditText etNewPassword;
     private EditText etOldPassword;
 
+    private TextView tvOldPassword;
+    private TextView tvNewPassword;
+    private TextView tvRepeatPassword;
+
+    private int userId;
+
     private DAOUser daoUser;
 
     private SharedPreferences preferences;
@@ -44,6 +55,8 @@ public class PasswordActivity extends AppCompatActivity implements OnClickListen
 
         daoUser = new DAOUser(this);
         preferences = getSharedPreferences(PREFERENCES, MODE_PRIVATE);
+
+        userId = preferences.getInt(SP_USER_ID, 0);
 
         setToolbar();
         setWidgets();
@@ -93,34 +106,43 @@ public class PasswordActivity extends AppCompatActivity implements OnClickListen
 
 
     private boolean matcherPasswordOnDatabase() {
-        Long id = preferences.getLong(SP_USER_ID, 0);
-        User user = daoUser.getUserById(id);
-
-        if (id == 0) {
-            Toast.makeText(this, R.string.err_expired_session, Toast.LENGTH_SHORT).show();
-            return false;
-        }
-
-        if (user == null) {
-            etOldPassword.setError(getString(R.string.err_wrong_password));
-            return false;
-        }
-
+        User user = daoUser.getUserById(userId);
         String password = etOldPassword.getText().toString();
-        return user.getPassword() == null || user.getPassword().equals(password);
+        return user.isLoggedByFacebook() ||
+                user.getPassword() == null
+                || user.getPassword().equals(password);
     }
 
     private boolean updatePassword() {
-        User user = daoUser.getUserById(preferences.getLong(SP_USER_ID, 0));
+        User user = daoUser.getUserById(userId);
 
         String newPassword = etNewPassword.getText().toString();
 
         user.setPassword(newPassword);
+        user.setLoggedByFacebook(false);
+        boolean res = daoUser.insertOrUpdate(user) != -1;
 
-        return daoUser.insertOrUpdate(user) != -1;
+        if (res) {
+            final UserResource resource = new UserResource(this);
+            if (resource.isConnectedOnInternet()) {
+                MyFunction<User, ResponseServer<User>> function = new MyFunction<User, ResponseServer<User>>() {
+                    @Override
+                    public ResponseServer<User> apply(User user) {
+                        return resource.updateResource(user);
+                    }
+                };
+                RequestAsync<User, ResponseServer<User>> requestAsync = new RequestAsync<>(function);
+                requestAsync.execute(user);
+            }
+        }
+        return res;
     }
 
     private void setWidgets() {
+        tvRepeatPassword = (TextView) findViewById(R.id.tv_new_password_confirmation);
+        tvNewPassword = (TextView) findViewById(R.id.tv_new_password);
+        tvOldPassword = (TextView) findViewById(R.id.tv_old_password);
+
         etRepeatPassword = (EditText) findViewById(R.id.et_new_password_confirmation);
         etNewPassword = (EditText) findViewById(R.id.et_new_password);
         etOldPassword = (EditText) findViewById(R.id.et_old_password);
@@ -128,6 +150,21 @@ public class PasswordActivity extends AppCompatActivity implements OnClickListen
         btnCancelOperation = (Button) findViewById(R.id.btn_cancel);
         btnChangePassword = (Button) findViewById(R.id.btn_change_password);
         btnChangePassword.setEnabled(false);
+
+        if (daoUser.getUserById(userId).isLoggedByFacebook()) {
+            tvOldPassword.setVisibility(View.GONE);
+            etOldPassword.setVisibility(View.GONE);
+            tvNewPassword.setText(getString(R.string.password));
+            tvRepeatPassword.setText("Repita a senha");
+            btnChangePassword.setText("Salvar Senha");
+
+        } else {
+            tvOldPassword.setVisibility(View.VISIBLE);
+            etOldPassword.setVisibility(View.VISIBLE);
+            tvNewPassword.setText("Nova Senha");
+            tvRepeatPassword.setText("Repita a nova Senha");
+            btnChangePassword.setText("Alterar Senha");
+        }
     }
 
     private void registerViews() {

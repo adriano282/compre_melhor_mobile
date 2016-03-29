@@ -18,7 +18,11 @@ import android.widget.Toast;
 import com.facebook.login.widget.ProfilePictureView;
 
 import br.com.compremelhor.R;
+import br.com.compremelhor.api.integration.RequestAsync;
+import br.com.compremelhor.api.integration.ResponseServer;
+import br.com.compremelhor.api.integration.resource.UserResource;
 import br.com.compremelhor.dao.DAOUser;
+import br.com.compremelhor.function.MyFunction;
 import br.com.compremelhor.model.TypeDocument;
 import br.com.compremelhor.model.User;
 
@@ -32,13 +36,14 @@ public class ProfileActivity extends AppCompatActivity implements OnClickListene
     private EditText edDocument;
 
     private SharedPreferences preferences;
-    private Long id;
+    private int id;
     private final int change_password_id = 0;
 
     private Button btnSave;
     private Button btnUndone;
     private RadioButton rbCpf, rbCnpj;
     private RadioGroup rdGroup;
+    private DAOUser dao;
 
     ProfilePictureView profilePictureView;
 
@@ -48,7 +53,9 @@ public class ProfileActivity extends AppCompatActivity implements OnClickListene
         setContentView(R.layout.view_profile);
 
         preferences = getSharedPreferences(PREFERENCES, MODE_PRIVATE);
+        id = preferences.getInt(SP_USER_ID, 0);
 
+        dao = new DAOUser(this);
         setToolbar();
         setWidgets();
     }
@@ -58,12 +65,20 @@ public class ProfileActivity extends AppCompatActivity implements OnClickListene
         Intent intent;
         switch (view.getId()) {
             case R.id.profile_btn_save:
-                DAOUser dao = new DAOUser(this);
-                Long result = dao.insertOrUpdate(getUserView());
-                SharedPreferences.Editor edit = preferences.edit();
-                edit.putLong(SP_USER_ID, result != -1 ? result : 0);
-                edit.commit();
 
+                User user = getUserView();
+
+                if (!user.getDocument().isEmpty() && user.getTypeDocument() == null ) {
+                    rbCnpj.setError("!?");
+                    rbCpf.setError("!?");
+                    break;
+                } else if (user.getDocument().isEmpty() && user.getTypeDocument() != null) {
+                    edDocument.setError(getString(R.string.user_document_is_null_message_error));
+                    edDocument.requestFocus();
+                    break;
+                }
+
+                int result = (int) dao.insertOrUpdate(getUserView());
                 intent = new Intent(this, DashboardActivity.class);
                 startActivity(intent);
 
@@ -71,8 +86,20 @@ public class ProfileActivity extends AppCompatActivity implements OnClickListene
                     showMessage("Seus dados nao foram salvos.");
                 } else {
                     showMessage("Seus dados foram salvos com sucesso!");
+
+                    final UserResource resource = new UserResource(this);
+                    if (resource.isConnectedOnInternet()) {
+                        MyFunction<User, ResponseServer<User>> function = new MyFunction<User, ResponseServer<User>>() {
+                            @Override
+                            public ResponseServer<User> apply(User user) {
+                                return resource.updateResource(user);
+                            }
+                        };
+                        RequestAsync<User, ResponseServer<User>> requestAsync = new RequestAsync<>(function);
+                        requestAsync.execute(user);
+                    }
                 }
-                break;
+              break;
         }
     }
 
@@ -136,22 +163,24 @@ public class ProfileActivity extends AppCompatActivity implements OnClickListene
     }
 
     private User getUserView() {
-        User user = new User();
-        user.setId(this.id);
+        User user = dao.getUserById(id);
+
+        if (user == null) throw new RuntimeException("User wouldn't be null here");
+
         user.setName(edName.getText().toString());
         user.setDocument(edDocument.getText().toString());
         user.setEmail(edEmail.getText().toString());
 
         if (rdGroup.getCheckedRadioButtonId() == R.id.profile_rbCnpj) {
             user.setTypeDocument(TypeDocument.CNPJ.toString());
-        } else {
+        } else if (rdGroup.getCheckedRadioButtonId() == R.id.profile_rbCpf) {
             user.setTypeDocument(TypeDocument.CPF.toString());
         }
         return user;
     }
 
     private void fillFields() {
-        id = preferences.getLong(SP_USER_ID, 0);
+        id = preferences.getInt(SP_USER_ID, 0);
         User user = new DAOUser(this).getUserById(id);
 
         if (user == null) return;
@@ -159,7 +188,7 @@ public class ProfileActivity extends AppCompatActivity implements OnClickListene
         String facebookId = preferences.getString(SP_FACEBOOK_USER_ID, "");
         profilePictureView.setProfileId(facebookId);
 
-        id = user.getId() == null ? 0 : user.getId();
+        id = user.getId();
         edName.setText(user.getName());
         edEmail.setText(user.getEmail());
         edDocument.setText(user.getDocument());
@@ -167,6 +196,12 @@ public class ProfileActivity extends AppCompatActivity implements OnClickListene
         if (user.getTypeDocument() != null) {
             rbCnpj.setChecked(user.getTypeDocument().getType().equals(TypeDocument.CNPJ.toString().toLowerCase()));
             rbCpf.setChecked(user.getTypeDocument().getType().equals(TypeDocument.CPF.toString().toLowerCase()));
+        }
+
+        if (user.isLoggedByFacebook()) {
+            Toast.makeText(this,
+                    "Você está logado por meio do Facebook. Complete seu cadastro e cadastre uma " +
+                            "senha para que você consiga acessar sua conta mesmo OFFLINE", Toast.LENGTH_LONG).show();
         }
     }
 

@@ -29,7 +29,7 @@ public class DAOCart extends DAO {
     @Override
     public long insertOrUpdate(EntityModel o) {
         cart = (Cart) o;
-        if (cart.getId() == null)
+        if (cart.getId() == 0)
             return insertCart();
 
         return updateCart();
@@ -83,17 +83,17 @@ public class DAOCart extends DAO {
     public long removeItem(PurchaseLine item) {
         if (getDB().delete(DatabaseHelper.PurchaseLine.TABLE,
                 DatabaseHelper.PurchaseLine._ID + " = ?",
-                new String[] {item.getId().toString()}) != -1) {
+                new String[] {String.valueOf(item.getId())}) != -1) {
 
             return getDB().delete(DatabaseHelper.CartPurchaseLine.TABLE,
                     DatabaseHelper.CartPurchaseLine._ID_PURCHASE_LINE + " = ?",
-                    new String[]{item.getId().toString()});
+                    new String[]{String.valueOf(item.getId())});
         }
         return -1;
     }
 
     public long addItem(PurchaseLine item) {
-        if (item.getId() == null)
+        if (item.getId() == 0)
             return insertItem(item);
 
         return updateItem(item);
@@ -101,7 +101,7 @@ public class DAOCart extends DAO {
 
     private long insertItem(PurchaseLine item) {
         long resultInserPurchaseLine = getDB().insert(DatabaseHelper.PurchaseLine.TABLE, null, getPurchaseLineValues(item));
-        item.setId(resultInserPurchaseLine);
+        item.setId((int)resultInserPurchaseLine);
         long resultItem =  getDB().insert(DatabaseHelper.CartPurchaseLine.TABLE, null, getItemValues(item));
 
         Log.d("DATABASE", "Result from insert purchase line: " + resultInserPurchaseLine);
@@ -128,7 +128,7 @@ public class DAOCart extends DAO {
     private long updateItem(PurchaseLine item) {
         long result = getDB().update(DatabaseHelper.PurchaseLine.TABLE, getPurchaseLineValues(item),
                 DatabaseHelper.PurchaseLine._ID + " = ?",
-                new String[]{item.getId().toString()});
+                new String[]{String.valueOf(item.getId())});
 
         Log.d("DATABASE", "Result from updateItem: " + result);
         return result;
@@ -136,7 +136,7 @@ public class DAOCart extends DAO {
 
     private long updateCart() {
         long result = getDB().update(DatabaseHelper.Cart.TABLE, getCartValues(cart),
-                DatabaseHelper.Cart._ID + " = ?", new String[] {cart.getId().toString()});
+                DatabaseHelper.Cart._ID + " = ?", new String[] {String.valueOf(cart.getId())});
 
         Log.d("DATABASE", "Result from updateCart: " + result);
         return result;
@@ -147,7 +147,7 @@ public class DAOCart extends DAO {
         if (r == -1)
             return r;
 
-        cart.setId(r);
+        cart.setId((int)r);
         return r;
     }
 

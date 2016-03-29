@@ -1,17 +1,18 @@
 package br.com.compremelhor.api.integration.resource;
 
+import android.content.Context;
 import android.util.Log;
 
-import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
 
-import java.io.BufferedReader;
-import java.io.InputStreamReader;
-import java.net.HttpURLConnection;
+import java.io.IOException;
+import java.net.MalformedURLException;
 import java.net.URL;
+import java.net.URLEncoder;
+import java.util.Arrays;
+import java.util.Map;
+import java.util.Set;
 
-import br.com.compremelhor.api.integration.ResponseAPI;
 import br.com.compremelhor.model.User;
 
 /**
@@ -19,82 +20,14 @@ import br.com.compremelhor.model.User;
  */
 public class UserResource extends AbstractResource<User> {
 
-    public UserResource() {
-        super("users");
-    }
-
-    public User findUserByUsername(String username) {
-        try {
-            URL url = new URL(APPLICATION_ROOT.concat(RESOURCE_ROOT)
-                    .concat("?")
-                    .concat("attributeName=").concat("username")
-                    .concat("&")
-                    .concat("attributeValue=").concat(username));
-
-            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-            connection.setInstanceFollowRedirects(false);
-            connection.setRequestMethod(HTTPMethods.GET.toString());
-            connection.setRequestProperty("Content-Type", "application/json");
-
-            if (connection.getResponseCode() != HttpURLConnection.HTTP_OK) {
-                Log.d("REST API", "GET " + RESOURCE_ROOT + url.getQuery() + " - Failed");
-                Log.d("REST API", "Response Code: " + connection.getResponseCode());
-                return null;
-            }
-
-            BufferedReader br =
-                    new BufferedReader(new InputStreamReader(connection.getInputStream()));
-
-            String line;
-            StringBuilder sb = new StringBuilder();
-
-            while ((line = br.readLine()) != null) {
-                sb.append(line);
-            }
-
-            JsonElement json =  new JsonParser().parse(sb.toString());
-            JsonObject jsonObject = json.getAsJsonObject();
-
-            User t = bindResourceFromJson(jsonObject);
-            connection.disconnect();
-            return t;
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    public ResponseAPI<User> createUserOnServer(User user) {
-        String requestBody = "{\"username\": \"" +user.getEmail() + "\", " +
-                "\"password\": \""+ user.getPassword() +"\"}";
-        return createResource(requestBody);
-    }
-
-    public ResponseAPI<User> updateUserOnServer(User user) {
-        StringBuilder sb = new StringBuilder();
-        sb.append("{");
-
-        if (user.getPassword() != null) {sb.append("\"password\" : \"" + user.getPassword() + "\"");}
-        if (user.getDocument() != null) {
-            if (sb.length() == 1) sb.append(",");
-            sb.append("\"document\" : \"" + user.getDocument() + "\"");
-        }
-        if (user.getTypeDocument() != null) {
-            if (sb.length() == 1) sb.append(",");
-            sb.append("\"typeDocument\" : \"" + user.getTypeDocument() + "\"");
-        }
-        if (user.getEmail() != null) {
-            if (sb.length() == 1) sb.append(",");
-            sb.append("\"username\" : \"" + user.getEmail() + "\"");
-        }
-        sb.append("}");
-
-        return updateResource(sb.toString());
+    public UserResource(Context context) {
+        super("users", context);
     }
 
     @Override
     public User bindResourceFromJson(JsonObject jsonObject) {
         User user = new User();
-        user.setId(jsonObject.get("id").getAsLong());
+        user.setId(jsonObject.get("id").getAsInt());
         user.setEmail(jsonObject.get("username").getAsString());
 
         if (jsonObject.has("document") && !jsonObject.get("document").toString().equals("null")) {
@@ -103,4 +36,82 @@ public class UserResource extends AbstractResource<User> {
         }
         return user;
     }
+
+    @Override
+    public String bindJsonFromEntity(User user) {
+        StringBuilder sb = new StringBuilder();
+        sb.append("{");
+
+        if (user.getPassword() != null) {
+            sb.append("\"password\" : \"" + user.getPassword() + "\"");
+        }
+        if (user.getDocument() != null) {
+            if (sb.length() > 1) sb.append(",");
+            sb.append("\"document\" : \"" + user.getDocument() + "\"");
+        }
+        if (user.getTypeDocument() != null) {
+            if (sb.length() > 1) sb.append(",");
+            sb.append("\"documentType\" : \"" + user.getTypeDocument() + "\"");
+        }
+        if (user.getEmail() != null) {
+            if (sb.length() > 1) sb.append(",");
+            sb.append("\"username\" : \"" + user.getEmail() + "\"");
+        }
+        sb.append("}");
+
+        return sb.toString();
+    }
+
+    @Override
+    public User getResource(String attributeName, String attributeValue) {
+        if (!Arrays.asList(columns).contains(attributeName.trim()))
+            throw new IllegalArgumentException("Unknown attribute name for User entity: " + attributeName);
+
+        try {
+            URL url = new URL(APPLICATION_ROOT.concat(RESOURCE_ROOT)
+                    .concat("?")
+                    .concat(attributeName)
+                    .concat("=")
+                    .concat(attributeValue));
+
+            return doGET(url);
+        } catch (MalformedURLException e) {
+            throw new RuntimeException(e);
+        } catch (IOException e) {
+            Log.d("REST_API", e.getMessage());
+            return null;
+        }
+    }
+
+    @Override
+    public User getResource(Map<String, String> params) {
+        StringBuilder sb = new StringBuilder();
+        Set<Map.Entry<String, String>> entries = params.entrySet();
+        for (Map.Entry<String, String> pair : entries) {
+
+            if (!Arrays.asList(columns).contains(pair.getKey().trim()))
+                throw new IllegalArgumentException(
+                        "Unknown attribute name for User entity: " + pair.getKey().trim());
+
+            if (sb.length() == 0) sb.append("?");
+            else sb.append("&");
+
+            sb.append(pair.getKey().trim())
+                    .append("=").append(pair.getValue());
+        }
+
+        try {
+            URL url = new URL(APPLICATION_ROOT.concat(RESOURCE_ROOT)
+                    .concat(URLEncoder.encode(sb.toString(), "UTF-8")));
+
+            return doGET(url);
+        } catch (MalformedURLException e) {
+            throw new RuntimeException(e);
+        } catch (IOException e1) {
+            Log.d("REST_API", e1.getMessage());
+            return null;
+        }
+    }
+
+    private String[] columns = {"username", "typeDocument", "id"};
 }

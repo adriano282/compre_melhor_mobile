@@ -27,22 +27,19 @@ public class DAOCode extends DAO {
         values.put(DatabaseHelper.Code.CODE, code.getCode());
         values.put(DatabaseHelper.Code.CODE_TYPE, code.getType().toString());
 
-        if (code.getId() == null)
+        if (code.getId() == 0)
             return getDB().insert(DatabaseHelper.Code.TABLE, null, values);
 
         return getDB().update(DatabaseHelper.Code.TABLE, values,
-                DatabaseHelper.Code._ID + " = ?", new String[]{code.getId().toString()});
+                DatabaseHelper.Code._ID + " = ?", new String[]{String.valueOf(code.getId())});
     }
 
 
-    public Code getCodeById(Long id) {
-        if (id == null)
-            return null;
-
+    public Code getCodeById(int id) {
         try (Cursor cursor = getDB().query(DatabaseHelper.Code.TABLE,
                 DatabaseHelper.Code.COLUMNS,
                 DatabaseHelper.Code._ID + " = ?",
-                new String[] {id.toString()}, null, null, null)) {
+                new String[] {String.valueOf(id)}, null, null, null)) {
             if (cursor.moveToNext()) {
                 return (Code) getBind().bind(new Code(), cursor);
             }
