@@ -52,7 +52,7 @@ public class DAOUser extends DAO {
         User user = (User) o;
         ContentValues values = new ContentValues();
 
-        values.put(DatabaseHelper.User._ID, user.getId());
+        if (user.getId() != 0) {values.put(DatabaseHelper.User._ID, user.getId());}
         values.put(DatabaseHelper.User.EMAIL, user.getEmail());
         values.put(DatabaseHelper.User.NAME, user.getName());
         values.put(DatabaseHelper.User.DOCUMENT, user.getDocument());
@@ -66,7 +66,12 @@ public class DAOUser extends DAO {
             values.put(DatabaseHelper.User.TYPE_DOCUMENT, "");
         }
 
-        return getDB().insert(DatabaseHelper.User.TABLE, null, values);
+        long result = getDB().insert(DatabaseHelper.User.TABLE, null, values);
+
+        if (result != -1) {
+            o.setId(getUserByEmail(user.getEmail()).getId());
+        }
+        return result;
     }
 
     public long insertOrUpdate(EntityModel o) {

@@ -75,7 +75,7 @@
     <string name="btn_change_password_cancel_operation">Cancelar Operação</string>
     <string name="btn_change_password_commit_changes">Alterar senha</string>
     <string name="err_field_not_filled">Campo necessário não preenchido</string>
-    <string name="err_differents_password">Senha divergentes</string>
+    <string name="err_differents_password">Senhas divergentes</string>
     <string name="err_invalid_password_cannot_contain_space">Senha inválida. Não pode possuir espaços</string>
     <string name="err_wrong_password">Senha informada incorreta</string>
     <string name="err_expired_session">Sessão expirada. Por favor realize login novamente.</string>
@@ -137,4 +137,9 @@
     </string-array>
 
     <string name="token_api">token_app DG4OjT9ciuPtHk1p7Fi/kg==</string>
+    <string name="err_cpf_document_invalid">Documento CPF inválido</string>
+    <string name="err_cnpj_document_invalid">Documento CNPJ inválido</string>
+    <string name="register_label">Cadastro</string>
+    <string name="header_dialog_error_message_without_internet">Sem Conexão</string>
+    <string name="doing_register">Realizando Cadastro...</string>
 </resources>

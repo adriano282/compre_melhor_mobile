@@ -49,9 +49,9 @@ public class ValidatorTextWatcher implements TextWatcher {
     @Override
     public void afterTextChanged(Editable s) {
 
-        if (isPasswordField && !validator.isValidPassword(editText))
+        if (isPasswordField && !validator.isValidPassword(editText)) {
             return;
-
+        }
         else if (predicate != null) {
             validator.isValid(editText, predicate, errMsg, true);
         }

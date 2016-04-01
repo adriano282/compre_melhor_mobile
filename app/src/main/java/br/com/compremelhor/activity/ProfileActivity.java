@@ -1,15 +1,21 @@
 package br.com.compremelhor.activity;
 
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.text.TextWatcher;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
+import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
@@ -18,11 +24,12 @@ import android.widget.Toast;
 import com.facebook.login.widget.ProfilePictureView;
 
 import br.com.compremelhor.R;
-import br.com.compremelhor.api.integration.RequestAsync;
 import br.com.compremelhor.api.integration.ResponseServer;
 import br.com.compremelhor.api.integration.resource.UserResource;
 import br.com.compremelhor.dao.DAOUser;
-import br.com.compremelhor.function.MyFunction;
+import br.com.compremelhor.form.validator.ActionTextWatcher;
+import br.com.compremelhor.function.MyConsumer;
+import br.com.compremelhor.function.MyPredicate;
 import br.com.compremelhor.model.TypeDocument;
 import br.com.compremelhor.model.User;
 
@@ -40,10 +47,12 @@ public class ProfileActivity extends AppCompatActivity implements OnClickListene
     private final int change_password_id = 0;
 
     private Button btnSave;
-    private Button btnUndone;
     private RadioButton rbCpf, rbCnpj;
     private RadioGroup rdGroup;
     private DAOUser dao;
+    private UserResource resource;
+    private Handler handler;
+    private ProgressDialog progressDialog;
 
     ProfilePictureView profilePictureView;
 
@@ -54,52 +63,175 @@ public class ProfileActivity extends AppCompatActivity implements OnClickListene
 
         preferences = getSharedPreferences(PREFERENCES, MODE_PRIVATE);
         id = preferences.getInt(SP_USER_ID, 0);
-
+        resource = new UserResource(this);
+        handler = new Handler();
         dao = new DAOUser(this);
         setToolbar();
         setWidgets();
+        registerViews();
+    }
+
+    private void showProgressDialog(String message) {
+        progressDialog = ProgressDialog
+                .show(ProfileActivity.this,
+                        getString(R.string.wait_header_dialog), message, true, false);
+    }
+
+    private boolean validForm() {
+        boolean valid = true;
+        if (edName.getText().toString().isEmpty()) {
+            edName.setError(getString(R.string.err_field_not_filled));
+            valid = false;
+        }
+
+        String document = edDocument.getText().toString();
+
+        if (document.isEmpty()) {
+            edDocument.setError(getString(R.string.err_field_not_filled));
+            valid = false;
+        }
+
+        if (rbCpf.isChecked()) {
+            String regex = "([0-9]{3}[\\.]?[0-9]{3}[\\.]?[0-9]{3}[-]?[0-9]{2})";
+
+            if (!document.isEmpty() && !document.matches(regex)) {
+                edDocument.setError(getString(R.string.err_cpf_document_invalid));
+                valid = false;
+            }
+        } else if (rbCnpj.isChecked()) {
+            String regex = "([0-9]{2}[\\.]?[0-9]{3}[\\.]?[0-9]{3}[\\/]?[0-9]{4}[-]?[0-9]{2})";
+
+            if (!document.isEmpty() && !document.matches(regex)) {
+                edDocument.setError(getString(R.string.err_cnpj_document_invalid));
+                valid = false;
+            }
+        } else {
+            rbCnpj.setError("!?");
+            rbCpf.setError("!?");
+            valid = false;
+        }
+
+        if (edEmail.getText().toString().isEmpty()) {
+            edEmail.setError(getString(R.string.err_field_not_filled));
+            valid = false;
+        }
+
+        return valid;
+    }
+
+    private void registerViews() {
+        final MyPredicate predicate = new MyPredicate() {
+            public boolean test() {
+                return !edEmail.getText().toString().isEmpty() &&
+                        !edDocument.getText().toString().isEmpty() &&
+                        !edName.getText().toString().isEmpty() &&
+                        (rbCnpj.isChecked() || rbCpf.isChecked());
+
+            }
+        };
+
+        MyConsumer<MyPredicate> consumer = new MyConsumer<MyPredicate>() {
+            public void accept(MyPredicate myPredicate) {
+                btnSave.setEnabled(myPredicate.test() && validForm());
+            }
+        };
+
+        TextWatcher tw = new ActionTextWatcher(consumer, predicate);
+        edName.addTextChangedListener(tw);
+        edDocument.addTextChangedListener(tw);
+        edEmail.addTextChangedListener(tw);
+        rbCnpj.addTextChangedListener(tw);
+        rbCpf.addTextChangedListener(tw);
+
+        rbCnpj.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                btnSave.setEnabled(predicate.test() && validForm());
+            }
+        });
+
+        rbCpf.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                btnSave.setEnabled(predicate.test() && validForm());
+            }
+        });
+        btnSave.setOnClickListener(this);
     }
 
     @Override
     public void onClick(View view) {
-        Intent intent;
+        final Intent intent = new Intent(ProfileActivity.this, DashboardActivity.class);
         switch (view.getId()) {
             case R.id.profile_btn_save:
+                if (!validForm()) return;
+                final User user = getUserView();
 
-                User user = getUserView();
+                showProgressDialog("Validando Dados no Servidor...");
 
-                if (!user.getDocument().isEmpty() && user.getTypeDocument() == null ) {
-                    rbCnpj.setError("!?");
-                    rbCpf.setError("!?");
-                    break;
-                } else if (user.getDocument().isEmpty() && user.getTypeDocument() != null) {
-                    edDocument.setError(getString(R.string.user_document_is_null_message_error));
-                    edDocument.requestFocus();
-                    break;
-                }
+                AsyncTask<Void, Void, Void> query = new AsyncTask<Void, Void, Void>() {
+                    @Override
+                    protected Void doInBackground(Void... params) {
+                        User userByUsername = resource.getResource("username", user.getEmail());
+                        if (userByUsername != null && user.getId() != userByUsername.getId()) {
+                            handler.post(new Runnable() {
+                                @Override
+                                public void run() {
+                                    edEmail.setError("Este e-mail já está cadastrado");
+                                    progressDialog.dismiss();
+                                }
+                            });
+                            return null;
+                        }
 
-                int result = (int) dao.insertOrUpdate(getUserView());
-                intent = new Intent(this, DashboardActivity.class);
-                startActivity(intent);
+                        User userByDocument = resource.getResource("document", user.getDocument());
+                        if ( userByDocument != null && user.getId() != userByDocument.getId()) {
+                            handler.post(new Runnable() {
+                                @Override
+                                public void run() {
+                                    edDocument.setError("Este documento já está cadastrado");
+                                    progressDialog.dismiss();
+                                }
+                            });
+                            return null;
+                        }
 
-                if (result == -1) {
-                    showMessage("Seus dados nao foram salvos.");
-                } else {
-                    showMessage("Seus dados foram salvos com sucesso!");
-
-                    final UserResource resource = new UserResource(this);
-                    if (resource.isConnectedOnInternet()) {
-                        MyFunction<User, ResponseServer<User>> function = new MyFunction<User, ResponseServer<User>>() {
+                        handler.post(new Runnable() {
                             @Override
-                            public ResponseServer<User> apply(User user) {
-                                return resource.updateResource(user);
+                            public void run() {
+                                showProgressDialog("Registrando alterações...");
                             }
-                        };
-                        RequestAsync<User, ResponseServer<User>> requestAsync = new RequestAsync<>(function);
-                        requestAsync.execute(user);
+                        });
+
+                        ResponseServer<User> response = resource.updateResource(user);
+                        if (!response.hasErrors()) {
+                            if (dao.insertOrUpdate(user) == -1) throw new RuntimeException("Exception during saving user in Database");
+                            progressDialog.dismiss();
+
+                            handler.post(new Runnable() {
+                                @Override
+                                public void run() {
+                                    Toast.makeText(ProfileActivity.this, "Seus dados nao foram salvos com sucesso.", Toast.LENGTH_SHORT).show();
+                                    preferences.edit().putInt(SP_USER_ID, user.getId()).apply();
+                                    Log.d("PREFERENCES_CHANGE", "USER_ID -> " + user.getId());
+                                    startActivity(intent);
+                                }
+                            });
+                        }
+                        else {
+                            for (String s : response.getErrors()) {
+                                Log.d("REST API", "Error in creation User: " + s);
+                            }
+                            throw new RuntimeException("An Error occurred during try of update resource");
+                        }
+
+                        return null;
                     }
-                }
-              break;
+                };
+
+                query.execute();
+
+                break;
         }
     }
 
@@ -147,17 +279,12 @@ public class ProfileActivity extends AppCompatActivity implements OnClickListene
         edDocument = (EditText) findViewById(R.id.profile_document);
 
         btnSave = (Button) findViewById(R.id.profile_btn_save);
-        btnUndone = (Button) findViewById(R.id.profile_btn_undone);
-
         rbCnpj = (RadioButton) findViewById(R.id.profile_rbCnpj);
         rbCpf = (RadioButton) findViewById(R.id.profile_rbCpf);
 
         rdGroup = (RadioGroup) findViewById(R.id.profile_rd_group);
 
         profilePictureView = (ProfilePictureView) findViewById(R.id.image);
-
-        btnUndone.setOnClickListener(this);
-        btnSave.setOnClickListener(this);
 
         fillFields();
     }

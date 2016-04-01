@@ -113,5 +113,5 @@ public class UserResource extends AbstractResource<User> {
         }
     }
 
-    private String[] columns = {"username", "typeDocument", "id"};
+    private String[] columns = {"username", "typeDocument", "id", "document"};
 }

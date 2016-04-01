@@ -142,8 +142,13 @@ public abstract class AbstractResource<T extends EntityModel> implements Resourc
             if (connection.getResponseCode() != HttpURLConnection.HTTP_CREATED &&
                     connection.getResponseCode() != HttpURLConnection.HTTP_OK) {
                 String errors = connection.getHeaderField("errors");
-                if (errors != null)
+                if (errors != null) {
                     responseServer.setErrors(Arrays.asList(errors.split("#")));
+                }
+                else if (connection.getResponseCode() == HttpURLConnection.HTTP_NOT_FOUND) {
+                    responseServer.setErrors(Arrays.asList("entity.not.found.error.message"));
+                }
+
                 connection.disconnect();
                 return responseServer;
             }

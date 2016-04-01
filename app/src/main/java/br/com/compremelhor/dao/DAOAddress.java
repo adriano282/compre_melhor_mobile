@@ -45,11 +45,11 @@ public class DAOAddress extends DAO {
         }
     }
 
-    public List<Address> getAddressesByUserId(Long userId) {
+    public List<Address> getAddressesByUserId(int userId) {
         try(Cursor cursor = getDB().query(DatabaseHelper.Address.TABLE,
                 DatabaseHelper.Address.COLUMNS,
                 DatabaseHelper.Address._USER_ID + " = ?",
-                new String[] {userId.toString()}, null, null, null)) {
+                new String[] {String.valueOf(userId)}, null, null, null)) {
 
             List<Address> addresses = new ArrayList<Address>();
             while (cursor.moveToNext()) {

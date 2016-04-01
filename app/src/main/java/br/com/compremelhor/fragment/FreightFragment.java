@@ -83,7 +83,7 @@ public class FreightFragment extends Fragment {
         RadioGroup rgAddresses = new RadioGroup(getActivity());
         rgAddresses.setOnCheckedChangeListener(new AddressOnCheckedChangeListener());
 
-        Long userId = preferences.getLong(SP_USER_ID, 0);
+        int userId = preferences.getInt(SP_USER_ID, 0);
         List<Address> addresses = DAOAddress.getInstance(getActivity()).getAddressesByUserId(userId);
 
         LinearLayout ll = (LinearLayout) view.findViewById(R.id.my_addresses);

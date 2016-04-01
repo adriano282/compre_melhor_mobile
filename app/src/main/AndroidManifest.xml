@@ -40,7 +40,10 @@
         <activity
             android:name=".activity.ProductActivity"
             android:label="@string/action_bar_cart_item_label" />
-        <activity android:name=".activity.RegisterActivity" />
+        <activity
+            android:name=".activity.RegisterActivity"
+            android:label="@string/register_label"
+            />
 
         <activity android:name=".activity.PaymentActivity"
             />

@@ -170,7 +170,7 @@ public class AddressListActivity extends AppCompatActivity {
     private List<Map<String, Object>> listAddress() {
         addresses = new ArrayList<>();
 
-        Long userId = preferences.getLong(SP_USER_ID, 0);
+        int userId = preferences.getInt(SP_USER_ID, 0);
         List<Address> listAddress = DAOAddress.getInstance(this).getAddressesByUserId(userId);
         Map<String, Object> item;
 
