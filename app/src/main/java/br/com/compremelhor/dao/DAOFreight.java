@@ -18,7 +18,8 @@ public class DAOFreight extends DAO {
         super(context);
     }
 
-    public long insertOrUpdate(EntityModel o) {
+    @Override
+    public ContentValues bindContentValues(EntityModel o) {
         Freight f = (Freight) o;
         ContentValues values = new ContentValues();
 
@@ -28,12 +29,7 @@ public class DAOFreight extends DAO {
         values.put(DatabaseHelper.Freight.DATE_CREATED, f.getDateCreated().getTimeInMillis());
         values.put(DatabaseHelper.Freight.LAST_UPDATED, f.getLastUpdated().getTimeInMillis());
 
-        if (f.getId() == 0)
-            return getDB().insert(DatabaseHelper.Freight.TABLE, null, values);
-
-        return getDB().update(DatabaseHelper.Freight.TABLE, values,
-                DatabaseHelper.Freight._ID + " = ?",
-                new String[] {String.valueOf(f.getId())});
+        return values;
     }
 
     public Freight getFreightById(Long id) {

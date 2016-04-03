@@ -16,7 +16,10 @@ import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.net.URLEncoder;
 import java.util.Arrays;
+import java.util.Map;
+import java.util.Set;
 
 import br.com.compremelhor.api.integration.ResponseServer;
 import br.com.compremelhor.model.EntityModel;
@@ -33,6 +36,7 @@ public abstract class AbstractResource<T extends EntityModel> implements Resourc
         this.context = context;
     }
 
+    public abstract boolean validAttributeName(String attributeName);
     public abstract T bindResourceFromJson(JsonObject jsonObject);
     public abstract String bindJsonFromEntity(T t);
 
@@ -44,6 +48,115 @@ public abstract class AbstractResource<T extends EntityModel> implements Resourc
         return pushOnServer(entity, HTTPMethods.POST);
     }
 
+    public ResponseServer<T> deleteResource(T entity) {
+
+        if (entity.getId() == 0) throw new NullPointerException("ID is null in a DELETE method on server");
+        try {
+            URL url = new URL(APPLICATION_ROOT
+                    .concat(RESOURCE_ROOT)
+                    .concat("/")
+                    .concat(String.valueOf(entity.getId())));
+
+            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+            connection.setInstanceFollowRedirects(false);
+            connection.setRequestMethod(HTTPMethods.DELETE.toString());
+            connection.setRequestProperty("Authorization", "token_app DG4OjT9ciuPtHk1p7Fi/kg==");
+            connection.setRequestProperty("Content-Type", "application/json");
+            OutputStream os = connection.getOutputStream();
+            os.flush();
+
+            ResponseServer<T> response = new ResponseServer<>();
+            response.setStatusCode(connection.getResponseCode());
+
+            if (response.getStatusCode() == HttpURLConnection.HTTP_NOT_FOUND) {
+                response.setErrors(Arrays.asList("user.id.not.found.error.message"));
+                log(connection, url);
+            }
+            else if (response.getStatusCode() == HttpURLConnection.HTTP_GONE) {
+                response.setStatusCode(200);
+                log(connection, url);
+                connection.disconnect();
+                return response;
+            }
+            else if (response.getStatusCode() == HttpURLConnection.HTTP_INTERNAL_ERROR) {
+                log(connection, url);
+            }
+
+            if (response.hasErrors()) {
+                connection.disconnect();
+                return response;
+            }
+
+            BufferedReader br =
+                    new BufferedReader(new InputStreamReader(connection.getInputStream()));
+
+            String line;
+            StringBuilder sb = new StringBuilder();
+
+            while ((line = br.readLine()) != null) {
+                sb.append(line);
+            }
+
+            JsonElement json =  new JsonParser().parse(sb.toString());
+            JsonObject jsonObject = json.getAsJsonObject();
+
+            T t = bindResourceFromJson(jsonObject);
+            response.setEntity(t);
+            return response;
+
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public T getResource(Map<String, String> params) {
+        StringBuilder sb = new StringBuilder();
+        Set<Map.Entry<String, String>> entries = params.entrySet();
+        for (Map.Entry<String, String> pair : entries) {
+
+            if (!validAttributeName(pair.getKey().trim()))
+                throw new IllegalArgumentException(
+                        "Unknown attribute name for User entity: " + pair.getKey().trim());
+
+            if (sb.length() == 0) sb.append("?");
+            else sb.append("&");
+
+            sb.append(pair.getKey().trim())
+                    .append("=").append(pair.getValue());
+        }
+
+        try {
+            URL url = new URL(APPLICATION_ROOT.concat(RESOURCE_ROOT)
+                    .concat(URLEncoder.encode(sb.toString(), "UTF-8")));
+
+            return doGET(url);
+        } catch (MalformedURLException e) {
+            throw new RuntimeException(e);
+        } catch (IOException e1) {
+            Log.d("REST_API", e1.getMessage());
+            return null;
+        }
+    }
+
+    public T getResource(String attributeName, String attributeValue) {
+        if (!validAttributeName(attributeName))
+            throw new IllegalArgumentException("Unknown attribute name for User entity: " + attributeName);
+
+        try {
+            URL url = new URL(APPLICATION_ROOT.concat(RESOURCE_ROOT)
+                    .concat("?")
+                    .concat(attributeName)
+                    .concat("=")
+                    .concat(attributeValue));
+
+            return doGET(url);
+        } catch (MalformedURLException e) {
+            throw new RuntimeException(e);
+        } catch (IOException e) {
+            Log.d("REST_API", e.getMessage());
+            return null;
+        }
+    }
     public T getResource(int id) {
         try {
             URL url = new URL(APPLICATION_ROOT
@@ -74,9 +187,7 @@ public abstract class AbstractResource<T extends EntityModel> implements Resourc
         connection.setRequestProperty("Content-Type", "application/json");
 
         if (connection.getResponseCode() != HttpURLConnection.HTTP_OK) {
-            Log.d("REST API", "GET " + RESOURCE_ROOT + "/" + url.getQuery());
-            Log.d("REST API", "Response Code: " + connection.getResponseCode());
-            Log.d("REST API", "Response Message: " + connection.getResponseMessage());
+            log(connection, url);
             return null;
         }
 
@@ -174,6 +285,12 @@ public abstract class AbstractResource<T extends EntityModel> implements Resourc
         } catch (Exception e) {
             return 0;
         }
+    }
+
+    private void log(HttpURLConnection connection, URL url) throws IOException {
+        Log.d("REST API", "GET " + RESOURCE_ROOT + "/" + url.getQuery());
+        Log.d("REST API", "Response Code: " + connection.getResponseCode());
+        Log.d("REST API", "Response Message: " + connection.getResponseMessage());
     }
 
     public enum HTTPMethods {

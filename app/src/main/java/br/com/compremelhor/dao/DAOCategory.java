@@ -18,6 +18,17 @@ public class DAOCategory extends DAO {
         super(context);
     }
 
+    @Override
+    public ContentValues bindContentValues(EntityModel o) {
+        Category c = (Category) o;
+        ContentValues values = new ContentValues();
+
+        values.put(DatabaseHelper.Category._ID, c.getId());
+        values.put(DatabaseHelper.Category.NAME, c.getName());
+
+        return values;
+    }
+
     public Category getCategoryByName(String name) {
         if (name == null)
             return null;
@@ -45,20 +56,5 @@ public class DAOCategory extends DAO {
             }
             return null;
         }
-    }
-
-    @Override
-    public long insertOrUpdate(EntityModel o) {
-        Category c = (Category) o;
-        ContentValues values = new ContentValues();
-
-        values.put(DatabaseHelper.Category._ID, c.getId());
-        values.put(DatabaseHelper.Category.NAME, c.getName());
-
-        if (c.getId() == 0)
-            return getDB().insert(DatabaseHelper.Category.TABLE, null, values);
-
-        return getDB().update(DatabaseHelper.Category.TABLE, values,
-                DatabaseHelper.Category._ID + " = ?", new String[]{String.valueOf(c.getId())});
     }
 }

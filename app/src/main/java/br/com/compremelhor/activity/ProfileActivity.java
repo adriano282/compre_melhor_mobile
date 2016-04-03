@@ -325,11 +325,6 @@ public class ProfileActivity extends AppCompatActivity implements OnClickListene
             rbCpf.setChecked(user.getTypeDocument().getType().equals(TypeDocument.CPF.toString().toLowerCase()));
         }
 
-        if (user.isLoggedByFacebook()) {
-            Toast.makeText(this,
-                    "Você está logado por meio do Facebook. Complete seu cadastro e cadastre uma " +
-                            "senha para que você consiga acessar sua conta mesmo OFFLINE", Toast.LENGTH_LONG).show();
-        }
     }
 
     private void showMessage(String message) {

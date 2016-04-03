@@ -1,11 +1,14 @@
 package br.com.compremelhor.activity;
 
+import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -24,6 +27,8 @@ import java.net.URL;
 import java.net.URLConnection;
 
 import br.com.compremelhor.R;
+import br.com.compremelhor.api.integration.ResponseServer;
+import br.com.compremelhor.api.integration.resource.AddressResource;
 import br.com.compremelhor.dao.DAOAddress;
 import br.com.compremelhor.model.Address;
 
@@ -33,6 +38,7 @@ import static br.com.compremelhor.useful.Constants.SP_USER_ID;
 
 public class AddressActivity extends AppCompatActivity {
 
+    private AddressResource resource;
     private SharedPreferences preferences;
 
     private EditText etZipcode;
@@ -53,8 +59,11 @@ public class AddressActivity extends AppCompatActivity {
     private String state;
 
     private ProgressDialog dialog;
+    private DAOAddress dao;
+    private Handler handler;
 
     private String result;
+    private boolean update = false;
 
     @Override
     public void onCreate(Bundle savedInstaceState) {
@@ -62,9 +71,27 @@ public class AddressActivity extends AppCompatActivity {
         setContentView(R.layout.activity_address);
 
         preferences = getSharedPreferences(PREFERENCES, MODE_PRIVATE);
+        int userId = preferences.getInt(SP_USER_ID, 0);
+        resource = new AddressResource(this, userId);
+
+        dao = DAOAddress.getInstance(AddressActivity.this);
+        handler = new Handler();
+
+        if (!resource.isConnectedOnInternet()) {
+            createDialogError();
+            finish();
+        }
+        
         setToolbar();
         setWidgets();
         registerWidgets();
+    }
+
+    private AlertDialog createDialogError() {
+        return new AlertDialog.Builder(this)
+                .setMessage("Por favor, se conecte a internet para realizar o cadastro.")
+                .setTitle(R.string.header_dialog_error_message_without_internet)
+                .create();
     }
 
     @Override
@@ -137,6 +164,8 @@ public class AddressActivity extends AppCompatActivity {
             etCity.setText(ad.getCity());
             etState.setText(ad.getState());
             etNameAddress.setText(ad.getAddressName());
+            btnSubmit.setText("Alterar");
+            update = true;
         }
     }
 
@@ -158,7 +187,7 @@ public class AddressActivity extends AppCompatActivity {
                 etNumber.getText().toString(),
                 etQuarter.getText().toString(),
                 etCity.getText().toString(),
-                null, etZipcode.getText().toString(),
+                etState.getText().toString(), etZipcode.getText().toString(),
                 etNameAddress.getText().toString(),
                 preferences.getInt(SP_USER_ID, 0)
         );
@@ -239,6 +268,13 @@ public class AddressActivity extends AppCompatActivity {
 
     }
 
+    private void showProgressDialog(String message) {
+        dialog = ProgressDialog
+                .show(AddressActivity.this,
+                        getString(R.string.wait_header_dialog),message, true, false);
+    }
+
+
     private class OnClickListener implements View.OnClickListener {
         @Override
         public void onClick(View view) {
@@ -248,13 +284,60 @@ public class AddressActivity extends AppCompatActivity {
                     break;
 
                 case R.id.btn_address_submit:
-                    DAOAddress dao = DAOAddress.getInstance(AddressActivity.this);
-                    if (dao.insertOrUpdate(getAddressView()) == -1) {
-                        showMessage(getString(R.string.err_ocurred_attempting_save_address));
-                    } else {
-                        showMessage(getString(R.string.address_saved_successfully));
+                    if (!resource.isConnectedOnInternet()) {
+                        createDialogError();
+                        return;
                     }
-                    finish();
+
+                    AsyncTask<Void, Void, Void> request = new AsyncTask<Void, Void, Void>() {
+                        @Override
+                        protected Void doInBackground(Void... params) {
+                            Address ad = getAddressView();
+                            ResponseServer<Address> response;
+
+                            if (update)
+                                response = resource.updateResource(ad);
+                            else
+                                response = resource.createResource(ad);
+
+                            if (!response.hasErrors()) {
+
+                                if (update) {
+                                    if (dao.insertOrUpdate(response.getEntity()) == -1) showMessage(getString(R.string.err_ocurred_attempting_save_address));
+                                } else {
+                                    if (dao.insert(response.getEntity()) == -1) showMessage(getString(R.string.err_ocurred_attempting_save_address));
+                                }
+
+                                dialog.dismiss();
+
+                                handler.post(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        Toast.makeText(AddressActivity.this, "Seus dados nao foram salvos com sucesso.", Toast.LENGTH_SHORT).show();
+                                        finish();
+                                    }
+                                });
+                            }
+                            else {
+                                for (String s : response.getErrors()) {
+                                    Log.d("REST API", "Error in creation Address: " + s);
+                                }
+                                throw new RuntimeException("An Error occurred during try of update resource");
+                            }
+                            return null;
+                        }
+
+                        @Override
+                        protected void onPreExecute() {
+                            showProgressDialog("Registrando no servidor...");
+                        }
+
+                        @Override
+                        protected void onPostExecute(Void aVoid) {
+                            dialog.dismiss();
+                        }
+                    };
+                    request.execute();
                     break;
             }
         }

@@ -19,22 +19,15 @@ public class DAOCode extends DAO {
     }
 
     @Override
-    public long insertOrUpdate(EntityModel o) {
+    public ContentValues bindContentValues(EntityModel o) {
         Code code = (Code) o;
         ContentValues values = new ContentValues();
 
         values.put(DatabaseHelper.Code._ID, code.getId());
         values.put(DatabaseHelper.Code.CODE, code.getCode());
         values.put(DatabaseHelper.Code.CODE_TYPE, code.getType().toString());
-
-        if (code.getId() == 0)
-            return getDB().insert(DatabaseHelper.Code.TABLE, null, values);
-
-        return getDB().update(DatabaseHelper.Code.TABLE, values,
-                DatabaseHelper.Code._ID + " = ?", new String[]{String.valueOf(code.getId())});
+        return values;
     }
-
-
     public Code getCodeById(int id) {
         try (Cursor cursor = getDB().query(DatabaseHelper.Code.TABLE,
                 DatabaseHelper.Code.COLUMNS,
@@ -46,7 +39,6 @@ public class DAOCode extends DAO {
             return null;
         }
     }
-
     public Code getCodeByCode(String code) {
         if (code == null || code.equals(""))
             return null;

@@ -1,6 +1,7 @@
 package br.com.compremelhor.dao;
 
 import android.annotation.TargetApi;
+import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.os.Build;
@@ -24,6 +25,11 @@ public class DAOProduct extends DAO {
 
     public DAOProduct(Context context) {
         super(context);
+    }
+
+    @Override
+    public ContentValues bindContentValues(EntityModel o) {
+        return null;
     }
 
     public Product getProductById(Long id) {

@@ -27,6 +27,11 @@ public class DAOCart extends DAO {
     private DAOCart(Context context) {super(context);}
 
     @Override
+    public ContentValues bindContentValues(EntityModel o) {
+        return null;
+    }
+
+    @Override
     public long insertOrUpdate(EntityModel o) {
         cart = (Cart) o;
         if (cart.getId() == 0)

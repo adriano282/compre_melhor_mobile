@@ -1,12 +1,16 @@
 package br.com.compremelhor.activity;
 
 import android.app.AlertDialog;
+import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -16,6 +20,7 @@ import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.SimpleAdapter;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -23,6 +28,8 @@ import java.util.List;
 import java.util.Map;
 
 import br.com.compremelhor.R;
+import br.com.compremelhor.api.integration.ResponseServer;
+import br.com.compremelhor.api.integration.resource.AddressResource;
 import br.com.compremelhor.dao.DAOAddress;
 import br.com.compremelhor.dao.DatabaseHelper;
 import br.com.compremelhor.model.Address;
@@ -38,12 +45,16 @@ public class AddressListActivity extends AppCompatActivity {
 
     private AlertDialog alertDialog;
     private AlertDialog alertDialogConfirmation;
+    private ProgressDialog progressDialog;
 
     private Button btnAddAddress;
 
     private ListAdapter adapter;
     private ListView listView;
 
+    private Handler handler;
+    private AddressResource resource;
+    private DAOAddress dao;
     private int addressSelect;
 
     @Override
@@ -52,6 +63,12 @@ public class AddressListActivity extends AppCompatActivity {
         setContentView(R.layout.activity_address_list);
 
         preferences = getSharedPreferences(PREFERENCES, MODE_PRIVATE);
+
+        int userId = preferences.getInt(SP_USER_ID, 0);
+        resource = new AddressResource(this, userId);
+
+        handler = new Handler();
+        dao = DAOAddress.getInstance(AddressListActivity.this);
 
         setViews();
         registerViews();
@@ -62,6 +79,12 @@ public class AddressListActivity extends AppCompatActivity {
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.action_bars_menu, menu);
         return true;
+    }
+
+    private void showProgressDialog(String message) {
+        progressDialog = ProgressDialog
+                .show(AddressListActivity.this,
+                        getString(R.string.wait_header_dialog), message, true, false);
     }
 
     @Override
@@ -193,12 +216,48 @@ public class AddressListActivity extends AppCompatActivity {
 
     private void deleteAddress() {
         Map<String, Object> attributes = addresses.get(addressSelect);
-        Long currentAddressId = (Long) attributes.get(DatabaseHelper.Address._ID);
+        final int currentAddressId = (int) attributes.get(DatabaseHelper.Address._ID);
 
-        DAOAddress.getInstance(AddressListActivity.this).delete(currentAddressId, DatabaseHelper.Address.TABLE);
+        AsyncTask<Void, Void, Void> request = new AsyncTask<Void, Void, Void>() {
+            @Override
+            protected Void doInBackground(Void... params) {
+                ResponseServer<Address> response = resource.deleteResource(dao.getAddressById(currentAddressId));
 
-        addresses.remove(addressSelect);
-        listView.invalidateViews();
+                if (!response.hasErrors()) {
+                    dao.delete(currentAddressId, DatabaseHelper.Address.TABLE);
+                    progressDialog.dismiss();
+                    addresses.remove(addressSelect);
+
+                    handler.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            listView.invalidateViews();
+                            Toast.makeText(AddressListActivity.this,
+                                    "Endereço excluído com sucesso", Toast.LENGTH_SHORT).show();
+
+                        }
+                    });
+
+                }
+                else {
+                    Log.w("REST_API", response.getErrors().toString());
+                    progressDialog.dismiss();
+                    handler.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            Toast.makeText(AddressListActivity.this, "Ocorreu um erro ao tentar excluir seu endereço.", Toast.LENGTH_SHORT).show();
+                        }
+                    });
+                }
+                return null;
+            }
+
+            @Override
+            protected void onPreExecute() {
+                showProgressDialog("Registrando no servidor...");
+            }
+        };
+        request.execute();
     }
 
     private class OnItemClickListener implements  AdapterView.OnItemClickListener {
@@ -224,9 +283,9 @@ public class AddressListActivity extends AppCompatActivity {
     // Listener for Dialog's actions
     private class DialogOnClickListener implements  DialogInterface.OnClickListener {
         @Override
-        public void onClick(DialogInterface dialog, int item) {
+        public void onClick(final DialogInterface dialog, int item) {
             Map<String, Object> attributes = addresses.get(addressSelect);
-            Long currentAddressId = (Long) attributes.get(DatabaseHelper.Address._ID);
+            int currentAddressId = (int) attributes.get(DatabaseHelper.Address._ID);
 
             switch (item) {
                 // Edit Action address:

@@ -19,19 +19,15 @@ public class DAOManufacturer extends DAO {
     }
 
     @Override
-    public long insertOrUpdate(EntityModel manufacturer) {
+    public ContentValues bindContentValues(EntityModel o) {
         ContentValues values = new ContentValues();
-        Manufacturer m = (Manufacturer) manufacturer;
+        Manufacturer m = (Manufacturer) o;
 
         values.put(DatabaseHelper.Manufacturer._ID, m.getId());
         values.put(DatabaseHelper.Manufacturer.COMPANY_NAME, m.getCompanyName());
         values.put(DatabaseHelper.Manufacturer.DATE_CREATED, "now");
 
-        if (m.getId() == 0)
-            return (int) getDB().insert(DatabaseHelper.Manufacturer.TABLE, null, values);
-
-        return getDB().update(DatabaseHelper.Manufacturer.TABLE, values,
-                DatabaseHelper.Manufacturer._ID + " = ?", new String[] {String.valueOf(m.getId())});
+        return values;
     }
 
     public Manufacturer getManufacturerByCompanyName(String name) {

@@ -14,21 +14,6 @@ import br.com.compremelhor.model.Establishment;
  */
 @TargetApi(Build.VERSION_CODES.KITKAT)
 public class DAOEstablishment extends DAO {
-    @Override
-    public long insertOrUpdate(EntityModel o) {
-        ContentValues values = new ContentValues();
-        Establishment est = (Establishment) o;
-
-        values.put(DatabaseHelper.Establishment._ID, est.getId());
-        values.put(DatabaseHelper.Establishment.NAME, est.getName());
-
-        if (est.getId() == 0)
-            return getDB().insert(DatabaseHelper.Establishment.TABLE, null, values);
-
-        return getDB().update(DatabaseHelper.Establishment.TABLE, values,
-                DatabaseHelper.Establishment._ID + " = ?", new String[] {String.valueOf(est.getId())});
-    }
-
 
     public Establishment getEstablishmentById(Long id) {
         if (id == null)
@@ -47,5 +32,15 @@ public class DAOEstablishment extends DAO {
 
     public DAOEstablishment(Context context) {
         super(context);
+    }
+
+    @Override
+    public ContentValues bindContentValues(EntityModel o) {
+        ContentValues values = new ContentValues();
+        Establishment est = (Establishment) o;
+
+        values.put(DatabaseHelper.Establishment._ID, est.getId());
+        values.put(DatabaseHelper.Establishment.NAME, est.getName());
+        return values;
     }
 }

@@ -229,7 +229,7 @@ public class LoginActivity extends Activity {
                     userFromServer.getId()) {
                 user.setId(userFromServer.getId());
 
-                int fbId = preferences.getInt(SP_FACEBOOK_USER_ID, 0);
+                String fbId = preferences.getString(SP_FACEBOOK_USER_ID, "");
                 user.setLoggedByFacebook(user.getPassword().equals(fbId));
                 dao.updateByEmail(user);
 

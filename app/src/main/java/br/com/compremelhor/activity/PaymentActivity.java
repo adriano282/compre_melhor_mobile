@@ -53,7 +53,6 @@ public static final String PUBLISHABLE_KEY = "pk_test_Jfkx2ypaif7fZpCZ3RLf45ZF";
 
                         @Override
                         public void onSuccess(Token token) {
-                            getTokenList().addToList(token);
                             finishProgress();
                         }
                     });
