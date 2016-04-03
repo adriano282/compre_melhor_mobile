@@ -27,6 +27,23 @@ public class DAOAddress extends DAO {
         return instance;
     }
 
+    @Override
+    public ContentValues bindContentValues(EntityModel o) {
+        ContentValues values = new ContentValues();
+        Address address = (Address) o;
+
+        if (address.getId() != 0) {values.put(DatabaseHelper.User._ID, address.getId());}
+        values.put(DatabaseHelper.Address.CITY, address.getCity());
+        values.put(DatabaseHelper.Address.NUMBER, address.getNumber());
+        values.put(DatabaseHelper.Address.QUARTER, address.getQuarter());
+        values.put(DatabaseHelper.Address.STATE, address.getState());
+        values.put(DatabaseHelper.Address.STREET, address.getStreet());
+        values.put(DatabaseHelper.Address.ZIPCODE, address.getZipcode());
+        values.put(DatabaseHelper.Address.ADDRESS_NAME, address.getAddressName());
+        values.put(DatabaseHelper.Address._USER_ID, address.getUserId());
+        return  values;
+    }
+
     private DAOAddress(Context context) {
         super(context);
     }
@@ -58,26 +75,5 @@ public class DAOAddress extends DAO {
             }
             return addresses;
         }
-    }
-
-    @Override
-    public long insertOrUpdate(EntityModel ad) {
-        ContentValues values = new ContentValues();
-        Address address = (Address) ad;
-
-        values.put(DatabaseHelper.Address.CITY, address.getCity());
-        values.put(DatabaseHelper.Address.NUMBER, address.getNumber());
-        values.put(DatabaseHelper.Address.QUARTER, address.getQuarter());
-        values.put(DatabaseHelper.Address.STATE, address.getState());
-        values.put(DatabaseHelper.Address.STREET, address.getStreet());
-        values.put(DatabaseHelper.Address.ZIPCODE, address.getZipcode());
-        values.put(DatabaseHelper.Address.ADDRESS_NAME, address.getAddressName());
-        values.put(DatabaseHelper.Address._USER_ID, address.getUserId());
-
-        if (address.getId() == 0 || address.getId() == 0)
-            return getDB().insert(DatabaseHelper.Address.TABLE, null, values);
-
-        return getDB().update(DatabaseHelper.Address.TABLE, values,
-                DatabaseHelper.Address._ID + " = ?", new String[] {String.valueOf(address.getId())});
     }
 }
