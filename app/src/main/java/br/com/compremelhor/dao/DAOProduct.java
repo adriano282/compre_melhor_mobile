@@ -18,11 +18,6 @@ import br.com.compremelhor.model.Product;
 @TargetApi(Build.VERSION_CODES.KITKAT)
 public class DAOProduct extends DAO {
 
-    @Override
-    public long insertOrUpdate(EntityModel o) {
-        return 0;
-    }
-
     public DAOProduct(Context context) {
         super(context);
     }

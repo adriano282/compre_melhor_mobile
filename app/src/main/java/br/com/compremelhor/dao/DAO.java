@@ -37,25 +37,25 @@ public abstract class DAO {
         return dataBind;
     }
 
-    public void delete(Long id, String table) {
-        String where [] = new String[] {id.toString()};
+    public void delete(int id, String table) {
+        String where [] = new String[] {String.valueOf(id)};
         getDB().delete(
                 table,
                 "_id = ?",
                 where);
     }
 
-    public long insert(EntityModel o) {
-        return getDB().insert(DatabaseHelper.User.TABLE, null, bindContentValues(o));
+    public long insert(EntityModel o, String table) {
+        return getDB().insert(table, null, bindContentValues(o));
     }
 
-    public long insertOrUpdate(EntityModel o) {
+    public long insertOrUpdate(EntityModel o, String table) {
         ContentValues values = bindContentValues(o);
         if ((o.getId() == 0 || o.getId() == 0))
-            return getDB().insert(DatabaseHelper.User.TABLE, null, values);
+            return getDB().insert(table, null, values);
 
-        return new Long(getDB().update(DatabaseHelper.User.TABLE, values,
-                DatabaseHelper.User._ID + " = ?", new String[] {String.valueOf(o.getId())}));
+        return getDB().update(table, values,
+                DatabaseHelper.User._ID + " = ?", new String[] {String.valueOf(o.getId())});
     }
 
 }

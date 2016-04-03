@@ -18,6 +18,7 @@ import br.com.compremelhor.api.integration.RequestAsync;
 import br.com.compremelhor.api.integration.ResponseServer;
 import br.com.compremelhor.api.integration.resource.UserResource;
 import br.com.compremelhor.dao.DAOUser;
+import br.com.compremelhor.dao.DatabaseHelper;
 import br.com.compremelhor.function.MyFunction;
 import br.com.compremelhor.model.User;
 import br.com.compremelhor.form.validator.ActionTextWatcher;
@@ -120,7 +121,7 @@ public class PasswordActivity extends AppCompatActivity implements OnClickListen
 
         user.setPassword(newPassword);
         user.setLoggedByFacebook(false);
-        boolean res = daoUser.insertOrUpdate(user) != -1;
+        boolean res = daoUser.insertOrUpdate(user, DatabaseHelper.User.TABLE) != -1;
 
         if (res) {
             final UserResource resource = new UserResource(this);

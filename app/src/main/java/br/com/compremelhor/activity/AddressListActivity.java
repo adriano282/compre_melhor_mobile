@@ -162,7 +162,7 @@ public class AddressListActivity extends AppCompatActivity {
 
     private AlertDialog deleteActionConfirmation() {
         return new AlertDialog.Builder(this)
-                .setMessage(R.string.confirm_delete)
+                .setMessage(R.string.delete_confirmation_address)
                 .setPositiveButton(getString(R.string.yes), new DialogOnClickListener())
                 .setNegativeButton(getString(R.string.no), new DialogOnClickListener())
                 .create();
@@ -233,7 +233,7 @@ public class AddressListActivity extends AppCompatActivity {
                         public void run() {
                             listView.invalidateViews();
                             Toast.makeText(AddressListActivity.this,
-                                    "Endereço excluído com sucesso", Toast.LENGTH_SHORT).show();
+                                    getString(R.string.address_removed_successuful_message), Toast.LENGTH_SHORT).show();
 
                         }
                     });
@@ -245,7 +245,7 @@ public class AddressListActivity extends AppCompatActivity {
                     handler.post(new Runnable() {
                         @Override
                         public void run() {
-                            Toast.makeText(AddressListActivity.this, "Ocorreu um erro ao tentar excluir seu endereço.", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(AddressListActivity.this, getString(R.string.address_remove_error_message), Toast.LENGTH_SHORT).show();
                         }
                     });
                 }
@@ -254,7 +254,7 @@ public class AddressListActivity extends AppCompatActivity {
 
             @Override
             protected void onPreExecute() {
-                showProgressDialog("Registrando no servidor...");
+                showProgressDialog("Excluindo endereço...");
             }
         };
         request.execute();

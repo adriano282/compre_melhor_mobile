@@ -34,7 +34,7 @@
     <string name="options">Opções</string>
     <string name="cancel">Cancelar</string>
     <string name="back">Voltar</string>
-    <string name="confirm_delete">Do you really want remove this item?</string>
+    <string name="delete_confirmation_address">Você realmente deseja remover este endereço?</string>
     <string name="yes">Sim</string>
     <string name="no">Não</string>
     <string name="list_is_empty">Você ainda não possui nenhum endereço cadastrado.</string>
@@ -142,4 +142,6 @@
     <string name="register_label">Cadastro</string>
     <string name="header_dialog_error_message_without_internet">Sem Conexão</string>
     <string name="doing_register">Realizando Cadastro...</string>
+    <string name="address_removed_successuful_message">Endereço excluído com sucesso!</string>
+    <string name="address_remove_error_message">Ocorreu um erro ao tentar excluir seu endereço</string>
 </resources>

@@ -41,6 +41,8 @@ public class DAOAddress extends DAO {
         values.put(DatabaseHelper.Address.ZIPCODE, address.getZipcode());
         values.put(DatabaseHelper.Address.ADDRESS_NAME, address.getAddressName());
         values.put(DatabaseHelper.Address._USER_ID, address.getUserId());
+
+        if (address.getUserId() == 0) { throw new RuntimeException("User ID is null on address entity, while trying create address"); }
         return  values;
     }
 

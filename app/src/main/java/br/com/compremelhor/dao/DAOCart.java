@@ -31,7 +31,6 @@ public class DAOCart extends DAO {
         return null;
     }
 
-    @Override
     public long insertOrUpdate(EntityModel o) {
         cart = (Cart) o;
         if (cart.getId() == 0)

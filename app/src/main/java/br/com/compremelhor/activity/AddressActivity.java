@@ -30,6 +30,7 @@ import br.com.compremelhor.R;
 import br.com.compremelhor.api.integration.ResponseServer;
 import br.com.compremelhor.api.integration.resource.AddressResource;
 import br.com.compremelhor.dao.DAOAddress;
+import br.com.compremelhor.dao.DatabaseHelper;
 import br.com.compremelhor.model.Address;
 
 import static br.com.compremelhor.useful.Constants.ADDRESS_ID_EXTRA;
@@ -303,9 +304,25 @@ public class AddressActivity extends AppCompatActivity {
                             if (!response.hasErrors()) {
 
                                 if (update) {
-                                    if (dao.insertOrUpdate(response.getEntity()) == -1) showMessage(getString(R.string.err_ocurred_attempting_save_address));
+                                    if (dao.insertOrUpdate(ad, DatabaseHelper.Address.TABLE) == -1) {
+                                        handler.post(new Runnable() {
+                                            @Override
+                                            public void run() {
+                                                showMessage(getString(R.string.err_ocurred_attempting_save_address));
+                                            }
+                                        });
+
+                                    }
                                 } else {
-                                    if (dao.insert(response.getEntity()) == -1) showMessage(getString(R.string.err_ocurred_attempting_save_address));
+                                    ad.setId(response.getEntity().getId());
+                                    if (dao.insert(ad, DatabaseHelper.Address.TABLE) == -1) {
+                                        handler.post(new Runnable() {
+                                            @Override
+                                            public void run() {
+                                                showMessage(getString(R.string.err_ocurred_attempting_save_address));
+                                            }
+                                        });
+                                    }
                                 }
 
                                 dialog.dismiss();
@@ -313,7 +330,7 @@ public class AddressActivity extends AppCompatActivity {
                                 handler.post(new Runnable() {
                                     @Override
                                     public void run() {
-                                        Toast.makeText(AddressActivity.this, "Seus dados nao foram salvos com sucesso.", Toast.LENGTH_SHORT).show();
+                                        Toast.makeText(AddressActivity.this, "Seus dados foram salvos com sucesso.", Toast.LENGTH_SHORT).show();
                                         finish();
                                     }
                                 });

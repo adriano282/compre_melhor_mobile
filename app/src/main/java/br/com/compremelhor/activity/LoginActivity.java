@@ -35,6 +35,7 @@ import br.com.compremelhor.R;
 import br.com.compremelhor.api.integration.ResponseServer;
 import br.com.compremelhor.api.integration.resource.UserResource;
 import br.com.compremelhor.dao.DAOUser;
+import br.com.compremelhor.dao.DatabaseHelper;
 import br.com.compremelhor.model.User;
 
 import static br.com.compremelhor.useful.Constants.KEEP_CONNECT_SP;
@@ -223,7 +224,7 @@ public class LoginActivity extends Activity {
             if (dao.getUserByEmail(user.getEmail()) == null) {
 
                 user.setId(userFromServer.getId());
-                dao.insert(user);
+                dao.insert(user, DatabaseHelper.User.TABLE);
 
             } else if ((user = dao.getUserByEmail(user.getEmail())).getId() !=
                     userFromServer.getId()) {

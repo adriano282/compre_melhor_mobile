@@ -168,7 +168,7 @@ public class CartFragment extends android.support.v4.app.Fragment {
 
     private AlertDialog createDialogConfirmation() {
         return new Builder(getActivity())
-                .setMessage(R.string.confirm_delete)
+                .setMessage(R.string.delete_confirmation_address)
                 .setPositiveButton(R.string.yes, optionsListener)
                 .setNegativeButton(R.string.no, optionsListener)
                 .create();

@@ -27,6 +27,7 @@ import br.com.compremelhor.R;
 import br.com.compremelhor.api.integration.ResponseServer;
 import br.com.compremelhor.api.integration.resource.UserResource;
 import br.com.compremelhor.dao.DAOUser;
+import br.com.compremelhor.dao.DatabaseHelper;
 import br.com.compremelhor.form.validator.ActionTextWatcher;
 import br.com.compremelhor.function.MyConsumer;
 import br.com.compremelhor.function.MyPredicate;
@@ -205,7 +206,7 @@ public class ProfileActivity extends AppCompatActivity implements OnClickListene
 
                         ResponseServer<User> response = resource.updateResource(user);
                         if (!response.hasErrors()) {
-                            if (dao.insertOrUpdate(user) == -1) throw new RuntimeException("Exception during saving user in Database");
+                            if (dao.insertOrUpdate(user, DatabaseHelper.User.TABLE) == -1) throw new RuntimeException("Exception during saving user in Database");
                             progressDialog.dismiss();
 
                             handler.post(new Runnable() {
