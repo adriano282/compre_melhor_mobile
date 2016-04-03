@@ -136,7 +136,7 @@ public class AddressListActivity extends AppCompatActivity {
         btnAddAddress = (Button) findViewById(R.id.btn_list_address_new);
 
         TextView tv = (TextView) findViewById(R.id.empty);
-        if (!addresses.isEmpty()) {
+        if (addresses.size() > 0) {
             tv.setVisibility(TextView.GONE);
         } else {
             tv.setVisibility(TextView.VISIBLE);
@@ -232,6 +232,7 @@ public class AddressListActivity extends AppCompatActivity {
                         @Override
                         public void run() {
                             listView.invalidateViews();
+                            setViews();
                             Toast.makeText(AddressListActivity.this,
                                     getString(R.string.address_removed_successuful_message), Toast.LENGTH_SHORT).show();
 
@@ -309,7 +310,6 @@ public class AddressListActivity extends AppCompatActivity {
                 // Confirmed delete action of selected address:
                 case DialogInterface.BUTTON_POSITIVE:
                     deleteAddress();
-                    setViews();
                     break;
 
                 // Cancelled delete action of selected address:

@@ -37,7 +37,7 @@
     <string name="delete_confirmation_address">Você realmente deseja remover este endereço?</string>
     <string name="yes">Sim</string>
     <string name="no">Não</string>
-    <string name="list_is_empty">Você ainda não possui nenhum endereço cadastrado.</string>
+    <string name="list_is_empty">Você não possui nenhum endereço cadastrado.</string>
 
 
     <!-- Dashboard page's resources -->
@@ -49,7 +49,7 @@
     <string name="title_my_addresses">Meus Endereços</string>
     <string name="change_password">Alterar minha senha</string>
     <string name="undone">Desfazer</string>
-    <string name="save">alterar</string>
+    <string name="save">Salvar</string>
     <string name="identification">N. Documento</string>
     <string name="my_data">Meu Cadastro</string>
     <string name="out">Sair</string>

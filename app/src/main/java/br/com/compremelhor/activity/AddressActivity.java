@@ -165,7 +165,6 @@ public class AddressActivity extends AppCompatActivity {
             etCity.setText(ad.getCity());
             etState.setText(ad.getState());
             etNameAddress.setText(ad.getAddressName());
-            btnSubmit.setText("Alterar");
             update = true;
         }
     }
