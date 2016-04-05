@@ -3,8 +3,8 @@ package br.com.compremelhor.form.validator;
 import android.text.Editable;
 import android.text.TextWatcher;
 
-import br.com.compremelhor.function.MyConsumer;
-import br.com.compremelhor.function.MyPredicate;
+import br.com.compremelhor.util.function.MyConsumer;
+import br.com.compremelhor.util.function.MyPredicate;
 
 public class ActionTextWatcher implements TextWatcher {
     private MyConsumer<MyPredicate> consumer;

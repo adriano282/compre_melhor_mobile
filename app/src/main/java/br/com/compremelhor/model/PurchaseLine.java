@@ -2,15 +2,23 @@ package br.com.compremelhor.model;
 
 import java.math.BigDecimal;
 
-/**
- * Created by adriano on 25/08/15.
- */
-public class PurchaseLine extends EntityModel {
+public class PurchaseLine extends EntityModel implements Comparable<String> {
+
     private BigDecimal quantity;
     private BigDecimal subTotal;
     private BigDecimal unitaryPrice;
     private Product product;
+    private Purchase purchase;
     private String productName;
+    private String category;
+
+    public Purchase getPurchase() {
+        return purchase;
+    }
+
+    public void setPurchase(Purchase purchase) {
+        this.purchase = purchase;
+    }
 
     public String getCategory() {
         return category;
@@ -19,8 +27,6 @@ public class PurchaseLine extends EntityModel {
     public void setCategory(String category) {
         this.category = category;
     }
-
-    private String category;
 
     public BigDecimal getUnitaryPrice() {
         return unitaryPrice;
@@ -62,5 +68,37 @@ public class PurchaseLine extends EntityModel {
 
     public void setProductName(String productName) {
         this.productName = productName;
+    }
+
+    @Override
+    public int hashCode() {
+        if (product != null && product.getId() != 0)
+            return product.getId();
+
+        return -1;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (o instanceof  PurchaseLine) {
+            PurchaseLine other = (PurchaseLine) o;
+            if (other.getPurchase() != null &&
+                    other.getPurchase().getId() != 0 &&
+                    other.getProduct() != null &&
+                    other.getProduct().getId() != 0 &&
+                    this.getPurchase() != null &&
+                    this.getPurchase().getId() != 0 &&
+                    this.getProduct() != null &&
+                    this.getProduct().getId() != 0 &&
+                    this.getProduct().getId() == other.getProduct().getId() &&
+                    this.getPurchase().getId() == other.getPurchase().getId())
+                return true;
+        }
+        return false;
+    }
+
+    @Override
+    public int compareTo(String another) {
+        return this.category.compareTo(another);
     }
 }

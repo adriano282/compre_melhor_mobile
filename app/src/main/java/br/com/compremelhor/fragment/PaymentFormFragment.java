@@ -10,7 +10,6 @@ import android.widget.EditText;
 import android.widget.Spinner;
 
 import br.com.compremelhor.R;
-import br.com.compremelhor.activity.PaymentActivity;
 import br.com.compremelhor.form.PaymentForm;
 
 public class PaymentFormFragment extends Fragment implements PaymentForm {
@@ -74,7 +73,7 @@ public class PaymentFormFragment extends Fragment implements PaymentForm {
     }
 
     public void saveForm(View button) {
-        ((PaymentActivity)getActivity()).saveCreditCard(this);
+        /*((PaymentActivity)getActivity()).saveCreditCard(this) */;
     }
 
     private Integer getInteger(Spinner spinner) {

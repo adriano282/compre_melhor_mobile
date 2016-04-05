@@ -1,21 +1,23 @@
 package br.com.compremelhor.dao;
 
-import android.annotation.TargetApi;
 import android.content.ContentValues;
 import android.content.Context;
-import android.database.Cursor;
-import android.os.Build;
 
 import br.com.compremelhor.model.EntityModel;
 import br.com.compremelhor.model.Manufacturer;
 
-/**
- * Created by adriano on 19/10/15.
- */
-@TargetApi(Build.VERSION_CODES.KITKAT)
-public class DAOManufacturer extends DAO {
-    public DAOManufacturer(Context context) {
-        super(context);
+public class DAOManufacturer extends AbstractDAO<Manufacturer> {
+    private static DAOManufacturer instance;
+
+    public static DAOManufacturer getInstance(Context context) {
+        if (instance == null)
+            instance = new DAOManufacturer(context);
+
+        return instance;
+    }
+
+    private DAOManufacturer(Context context) {
+        super(context, Manufacturer.class, DatabaseHelper.Manufacturer.TABLE, DatabaseHelper.Manufacturer.COLUMNS);
     }
 
     @Override
@@ -28,34 +30,5 @@ public class DAOManufacturer extends DAO {
         values.put(DatabaseHelper.Manufacturer.DATE_CREATED, "now");
 
         return values;
-    }
-
-    public Manufacturer getManufacturerByCompanyName(String name) {
-        if (name == null || name.equals(""))
-            return null;
-
-        try (Cursor cursor = getDB().query(DatabaseHelper.Manufacturer.TABLE,
-                DatabaseHelper.Manufacturer.COLUMNS,
-                DatabaseHelper.Manufacturer.COMPANY_NAME + " = ?",
-                new String[] {name}, null, null, null)) {
-
-            if (cursor.moveToNext()) {
-                return (Manufacturer) getBind().bind(new Manufacturer(), cursor);
-            }
-            return null;
-        }
-    }
-
-    public Manufacturer getManufacturerById(int id) {
-        try (Cursor cursor = getDB().query(DatabaseHelper.Manufacturer.TABLE,
-                DatabaseHelper.Manufacturer.COLUMNS,
-                DatabaseHelper.Manufacturer._ID + " = ?",
-                new String[] {String.valueOf(id)}, null, null, null)) {
-
-            if (cursor.moveToNext()) {
-                return (Manufacturer) getBind().bind(new Manufacturer(), cursor);
-            }
-            return null;
-        }
     }
 }

@@ -27,16 +27,15 @@ import br.com.compremelhor.R;
 import br.com.compremelhor.api.integration.ResponseServer;
 import br.com.compremelhor.api.integration.resource.UserResource;
 import br.com.compremelhor.dao.DAOUser;
-import br.com.compremelhor.dao.DatabaseHelper;
 import br.com.compremelhor.form.validator.ActionTextWatcher;
-import br.com.compremelhor.function.MyConsumer;
-import br.com.compremelhor.function.MyPredicate;
+import br.com.compremelhor.util.function.MyConsumer;
+import br.com.compremelhor.util.function.MyPredicate;
 import br.com.compremelhor.model.TypeDocument;
 import br.com.compremelhor.model.User;
 
-import static br.com.compremelhor.useful.Constants.PREFERENCES;
-import static br.com.compremelhor.useful.Constants.SP_FACEBOOK_USER_ID;
-import static br.com.compremelhor.useful.Constants.SP_USER_ID;
+import static br.com.compremelhor.util.Constants.PREFERENCES;
+import static br.com.compremelhor.util.Constants.SP_FACEBOOK_USER_ID;
+import static br.com.compremelhor.util.Constants.SP_USER_ID;
 
 public class ProfileActivity extends AppCompatActivity implements OnClickListener {
     private EditText edName;
@@ -66,7 +65,7 @@ public class ProfileActivity extends AppCompatActivity implements OnClickListene
         id = preferences.getInt(SP_USER_ID, 0);
         resource = new UserResource(this);
         handler = new Handler();
-        dao = new DAOUser(this);
+        dao = DAOUser.getInstance(this);
         setToolbar();
         setWidgets();
         registerViews();
@@ -206,7 +205,7 @@ public class ProfileActivity extends AppCompatActivity implements OnClickListene
 
                         ResponseServer<User> response = resource.updateResource(user);
                         if (!response.hasErrors()) {
-                            if (dao.insertOrUpdate(user, DatabaseHelper.User.TABLE) == -1) throw new RuntimeException("Exception during saving user in Database");
+                            if (dao.insertOrUpdate(user) == -1) throw new RuntimeException("Exception during saving user in Database");
                             progressDialog.dismiss();
 
                             handler.post(new Runnable() {
@@ -291,7 +290,7 @@ public class ProfileActivity extends AppCompatActivity implements OnClickListene
     }
 
     private User getUserView() {
-        User user = dao.getUserById(id);
+        User user = dao.find(id);
 
         if (user == null) throw new RuntimeException("User wouldn't be null here");
 
@@ -309,7 +308,7 @@ public class ProfileActivity extends AppCompatActivity implements OnClickListene
 
     private void fillFields() {
         id = preferences.getInt(SP_USER_ID, 0);
-        User user = new DAOUser(this).getUserById(id);
+        User user = DAOUser.getInstance(this).find(id);
 
         if (user == null) return;
 

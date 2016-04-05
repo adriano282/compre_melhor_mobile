@@ -32,13 +32,14 @@ import java.util.Map;
 import br.com.compremelhor.R;
 import br.com.compremelhor.activity.AddressListActivity;
 import br.com.compremelhor.dao.DAOAddress;
+import br.com.compremelhor.dao.DatabaseHelper;
 import br.com.compremelhor.model.Address;
 
-import static br.com.compremelhor.useful.Constants.MENU_OPTION_ID_MANAGE_ADDRESS;
-import static br.com.compremelhor.useful.Constants.PREFERENCES;
-import static br.com.compremelhor.useful.Constants.REQUEST_CODE_ADDRESS_EDITED_OR_ADDED;
-import static br.com.compremelhor.useful.Constants.SP_SELECTED_ADDRESS_ID;
-import static br.com.compremelhor.useful.Constants.SP_USER_ID;
+import static br.com.compremelhor.util.Constants.MENU_OPTION_ID_MANAGE_ADDRESS;
+import static br.com.compremelhor.util.Constants.PREFERENCES;
+import static br.com.compremelhor.util.Constants.REQUEST_CODE_ADDRESS_EDITED_OR_ADDED;
+import static br.com.compremelhor.util.Constants.SP_SELECTED_ADDRESS_ID;
+import static br.com.compremelhor.util.Constants.SP_USER_ID;
 
 
 public class FreightFragment extends Fragment {
@@ -84,7 +85,9 @@ public class FreightFragment extends Fragment {
         rgAddresses.setOnCheckedChangeListener(new AddressOnCheckedChangeListener());
 
         int userId = preferences.getInt(SP_USER_ID, 0);
-        List<Address> addresses = DAOAddress.getInstance(getActivity()).getAddressesByUserId(userId);
+        List<Address> addresses = DAOAddress
+                .getInstance(getActivity())
+                .findAllByForeignId(DatabaseHelper.Address._USER_ID, userId);
 
         LinearLayout ll = (LinearLayout) view.findViewById(R.id.my_addresses);
         ll.removeViews(1, ll.getChildCount() -1);

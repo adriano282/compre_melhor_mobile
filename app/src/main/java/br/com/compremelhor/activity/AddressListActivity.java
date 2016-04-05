@@ -34,9 +34,9 @@ import br.com.compremelhor.dao.DAOAddress;
 import br.com.compremelhor.dao.DatabaseHelper;
 import br.com.compremelhor.model.Address;
 
-import static br.com.compremelhor.useful.Constants.ADDRESS_ID_EXTRA;
-import static br.com.compremelhor.useful.Constants.PREFERENCES;
-import static br.com.compremelhor.useful.Constants.SP_USER_ID;
+import static br.com.compremelhor.util.Constants.ADDRESS_ID_EXTRA;
+import static br.com.compremelhor.util.Constants.PREFERENCES;
+import static br.com.compremelhor.util.Constants.SP_USER_ID;
 
 public class AddressListActivity extends AppCompatActivity {
     private SharedPreferences preferences;
@@ -194,7 +194,10 @@ public class AddressListActivity extends AppCompatActivity {
         addresses = new ArrayList<>();
 
         int userId = preferences.getInt(SP_USER_ID, 0);
-        List<Address> listAddress = DAOAddress.getInstance(this).getAddressesByUserId(userId);
+        List<Address> listAddress = DAOAddress
+                .getInstance(this)
+                .findAllByForeignId(DatabaseHelper.Address._USER_ID, userId);
+
         Map<String, Object> item;
 
         for (Address d: listAddress) {
@@ -221,10 +224,10 @@ public class AddressListActivity extends AppCompatActivity {
         AsyncTask<Void, Void, Void> request = new AsyncTask<Void, Void, Void>() {
             @Override
             protected Void doInBackground(Void... params) {
-                ResponseServer<Address> response = resource.deleteResource(dao.getAddressById(currentAddressId));
+                ResponseServer<Address> response = resource.deleteResource(dao.find(currentAddressId));
 
                 if (!response.hasErrors()) {
-                    dao.delete(currentAddressId, DatabaseHelper.Address.TABLE);
+                    dao.delete(currentAddressId);
                     progressDialog.dismiss();
                     addresses.remove(addressSelect);
 

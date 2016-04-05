@@ -30,13 +30,13 @@ import br.com.compremelhor.dao.DAOUser;
 import br.com.compremelhor.dao.DatabaseHelper;
 import br.com.compremelhor.form.validator.ActionTextWatcher;
 import br.com.compremelhor.form.validator.ValidatorTextWatcher;
-import br.com.compremelhor.function.MyConsumer;
-import br.com.compremelhor.function.MyPredicate;
+import br.com.compremelhor.util.function.MyConsumer;
+import br.com.compremelhor.util.function.MyPredicate;
 import br.com.compremelhor.model.TypeDocument;
 import br.com.compremelhor.model.User;
 
-import static br.com.compremelhor.useful.Constants.PREFERENCES;
-import static br.com.compremelhor.useful.Constants.SP_USER_ID;
+import static br.com.compremelhor.util.Constants.PREFERENCES;
+import static br.com.compremelhor.util.Constants.SP_USER_ID;
 
 public class RegisterActivity extends AppCompatActivity {
     private EditText etEmail;
@@ -66,7 +66,7 @@ public class RegisterActivity extends AppCompatActivity {
         }
 
         preferences = getSharedPreferences(PREFERENCES, MODE_PRIVATE);
-        dao = new DAOUser(this);
+        dao = DAOUser.getInstance(this);
 
         setToolbar();
         setWidgets();

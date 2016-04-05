@@ -33,9 +33,9 @@ import br.com.compremelhor.dao.DAOAddress;
 import br.com.compremelhor.dao.DatabaseHelper;
 import br.com.compremelhor.model.Address;
 
-import static br.com.compremelhor.useful.Constants.ADDRESS_ID_EXTRA;
-import static br.com.compremelhor.useful.Constants.PREFERENCES;
-import static br.com.compremelhor.useful.Constants.SP_USER_ID;
+import static br.com.compremelhor.util.Constants.ADDRESS_ID_EXTRA;
+import static br.com.compremelhor.util.Constants.PREFERENCES;
+import static br.com.compremelhor.util.Constants.SP_USER_ID;
 
 public class AddressActivity extends AppCompatActivity {
 
@@ -156,7 +156,7 @@ public class AddressActivity extends AppCompatActivity {
         if (getIntent().hasExtra(ADDRESS_ID_EXTRA)) {
 
             int id = getIntent().getIntExtra(ADDRESS_ID_EXTRA, 0);
-            Address ad = DAOAddress.getInstance(this).getAddressById(id);
+            Address ad = DAOAddress.getInstance(this).find(id);
 
             etZipcode.setText(ad.getZipcode());
             etStreet.setText(ad.getStreet());
@@ -303,7 +303,7 @@ public class AddressActivity extends AppCompatActivity {
                             if (!response.hasErrors()) {
 
                                 if (update) {
-                                    if (dao.insertOrUpdate(ad, DatabaseHelper.Address.TABLE) == -1) {
+                                    if (dao.insertOrUpdate(ad) == -1) {
                                         handler.post(new Runnable() {
                                             @Override
                                             public void run() {

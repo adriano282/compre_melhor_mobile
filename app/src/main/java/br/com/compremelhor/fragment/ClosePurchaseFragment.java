@@ -11,17 +11,11 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.TextView;
 
-import java.text.NumberFormat;
-
 import br.com.compremelhor.R;
 import br.com.compremelhor.activity.PaymentActivity;
-import br.com.compremelhor.dao.DAOCart;
-import br.com.compremelhor.model.Cart;
-import br.com.compremelhor.model.PurchaseLine;
 
-import static br.com.compremelhor.useful.Constants.PREFERENCES;
-import static br.com.compremelhor.useful.Constants.SP_FREIGHT_VALUE;
-import static br.com.compremelhor.useful.Constants.REQUEST_CODE_PAYMENT_PURCHASE_PAID;
+import static br.com.compremelhor.util.Constants.PREFERENCES;
+import static br.com.compremelhor.util.Constants.REQUEST_CODE_PAYMENT_PURCHASE_PAID;
 
 public class ClosePurchaseFragment extends Fragment {
     private TextView tvSubTotalPurchase;
@@ -42,8 +36,8 @@ public class ClosePurchaseFragment extends Fragment {
 
         btnClosePurchase = (Button) view.findViewById(R.id.btn_close_purchase);
 
-        Cart cart = DAOCart.getInstance(getActivity()).getCart();
-        Double dSubTotalPurchase = 0.0;
+
+        /*Double dSubTotalPurchase = 0.0;
 
         for (PurchaseLine pl : cart.getItems()) {
             dSubTotalPurchase += pl.getSubTotal().doubleValue();
@@ -57,7 +51,7 @@ public class ClosePurchaseFragment extends Fragment {
 
         Double dValueTotal = dSubTotalPurchase + fValueFreight;
         tvTotalPurchase.setText(nf.format(dValueTotal));
-
+        */
     }
 
     public void onClickButtonClosePurchase(View v) {

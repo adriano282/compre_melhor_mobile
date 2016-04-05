@@ -38,11 +38,11 @@ import br.com.compremelhor.dao.DAOUser;
 import br.com.compremelhor.dao.DatabaseHelper;
 import br.com.compremelhor.model.User;
 
-import static br.com.compremelhor.useful.Constants.KEEP_CONNECT_SP;
-import static br.com.compremelhor.useful.Constants.PREFERENCES;
-import static br.com.compremelhor.useful.Constants.SP_FACEBOOK_USER_ID;
-import static br.com.compremelhor.useful.Constants.SP_LOGGED_ON_FACEBOOK;
-import static br.com.compremelhor.useful.Constants.SP_USER_ID;
+import static br.com.compremelhor.util.Constants.KEEP_CONNECT_SP;
+import static br.com.compremelhor.util.Constants.PREFERENCES;
+import static br.com.compremelhor.util.Constants.SP_FACEBOOK_USER_ID;
+import static br.com.compremelhor.util.Constants.SP_LOGGED_ON_FACEBOOK;
+import static br.com.compremelhor.util.Constants.SP_USER_ID;
 
 public class LoginActivity extends Activity {
 
@@ -62,7 +62,7 @@ public class LoginActivity extends Activity {
         if (isAlreadyLogged())
             initDashboard();
 
-        dao = new DAOUser(LoginActivity.this);
+        dao = DAOUser.getInstance(this);
 
         setViews();
         setLoginOnFacebook();
@@ -134,7 +134,7 @@ public class LoginActivity extends Activity {
         if (username.isEmpty())
             return false;
 
-        User user = dao.getUserByEmail(username);
+        User user = dao.findByAttribute(DatabaseHelper.User.EMAIL, username);
         putUserId(user);
         return user != null && user.getPassword() != null && user.getPassword().equals(password);
     }
@@ -221,12 +221,12 @@ public class LoginActivity extends Activity {
                 userFromServer = response.getEntity();
             }
 
-            if (dao.getUserByEmail(user.getEmail()) == null) {
+            if (dao.findByAttribute(DatabaseHelper.User.EMAIL, user.getEmail()) == null) {
 
                 user.setId(userFromServer.getId());
                 dao.insert(user, DatabaseHelper.User.TABLE);
 
-            } else if ((user = dao.getUserByEmail(user.getEmail())).getId() !=
+            } else if ((user = dao.findByAttribute(DatabaseHelper.User.EMAIL, user.getEmail())).getId() !=
                     userFromServer.getId()) {
                 user.setId(userFromServer.getId());
 
@@ -234,8 +234,8 @@ public class LoginActivity extends Activity {
                 user.setLoggedByFacebook(user.getPassword().equals(fbId));
                 dao.updateByEmail(user);
 
-                Assert.assertNotNull(dao.getUserById(user.getId()));
-                Assert.assertEquals(dao.getUserById(user.getId()).getId(), user.getId());
+                Assert.assertNotNull(dao.find(user.getId()));
+                Assert.assertEquals(dao.find(user.getId()), user.getId());
             }
 
             putUserId(user);

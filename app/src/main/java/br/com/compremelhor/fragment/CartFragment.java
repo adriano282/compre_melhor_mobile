@@ -19,26 +19,24 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.TreeSet;
 
 import br.com.compremelhor.R;
 import br.com.compremelhor.activity.ProductActivity;
 import br.com.compremelhor.adapter.ExpandableListAdapter;
-import br.com.compremelhor.dao.DAOCart;
-import br.com.compremelhor.model.Cart;
 import br.com.compremelhor.model.PurchaseLine;
+import br.com.compremelhor.service.CartService;
 
-import static br.com.compremelhor.useful.Constants.CLIENT_SCANNER;
-import static br.com.compremelhor.useful.Constants.REQUEST_CODE_CART_ITEM_ADDED;
-import static br.com.compremelhor.useful.Constants.REQUEST_CODE_CART_ITEM_EDITED;
-import static br.com.compremelhor.useful.Constants.REQUEST_CODE_SCANNED_CODE;
-import static br.com.compremelhor.useful.Constants.PURCHASE_ID_EXTRA;
-import static br.com.compremelhor.useful.Constants.CURRENT_QUANTITY_OF_ITEM_EXTRA;
+import static br.com.compremelhor.util.Constants.CLIENT_SCANNER;
+import static br.com.compremelhor.util.Constants.CURRENT_QUANTITY_OF_ITEM_EXTRA;
+import static br.com.compremelhor.util.Constants.PURCHASE_ID_EXTRA;
+import static br.com.compremelhor.util.Constants.REQUEST_CODE_CART_ITEM_ADDED;
+import static br.com.compremelhor.util.Constants.REQUEST_CODE_CART_ITEM_EDITED;
+import static br.com.compremelhor.util.Constants.REQUEST_CODE_SCANNED_CODE;
 
 
 public class CartFragment extends android.support.v4.app.Fragment {
@@ -60,6 +58,8 @@ public class CartFragment extends android.support.v4.app.Fragment {
     private String itemIdSelected;
     private String currentQuantityOfItemSelected;
 
+    private CartService cartService;
+
     @Override
     public void onStart() {
         super.onStart();
@@ -67,9 +67,10 @@ public class CartFragment extends android.support.v4.app.Fragment {
         registerViews();
         Log.d("ASYNC TASK", "CartFragment.OnStart");
 
+        cartService = CartService.getInstance(getActivity());
+
         if (progressDialog == null || !progressDialog.isShowing())
             new LoadCurrentCart().execute();
-
     }
 
     @Override
@@ -222,8 +223,6 @@ public class CartFragment extends android.support.v4.app.Fragment {
     private boolean removeItemFromCart() {
         PurchaseLine line = new PurchaseLine();
         line.setId(Integer.valueOf(itemIdSelected));
-        if (DAOCart.getInstance(getActivity()).removeItem(line) == -1)
-            return false;
 
         new LoadCurrentCart().execute();
         return true;
@@ -273,17 +272,7 @@ public class CartFragment extends android.support.v4.app.Fragment {
         }
 
         private double refreshListOnCurrentCart() {
-            Cart c = DAOCart.getInstance(getActivity()).getCart();
-
-            List<PurchaseLine> items = c.getItems();
-            Collections.sort(items, new Comparator<PurchaseLine>() {
-                @Override
-                public int compare(PurchaseLine lhs, PurchaseLine rhs) {
-                    String category1 = lhs.getCategory();
-                    String category2 = rhs.getCategory();
-                    return category1.compareTo(category2);
-                }
-            });
+            TreeSet<PurchaseLine> items = cartService.getItems();
 
             listDataChild = new HashMap<>();
             listDataHeader = new ArrayList<>();
@@ -295,6 +284,7 @@ public class CartFragment extends android.support.v4.app.Fragment {
             }
 
             Map<String, Double> sumByCategoryMap = new HashMap<>();
+
             List<String> listChild = new ArrayList<>();
 
             for (PurchaseLine line : items) {
@@ -328,6 +318,7 @@ public class CartFragment extends android.support.v4.app.Fragment {
                 i++;
             }
             return valueTotal;
+
         }
     }
 }

@@ -9,14 +9,12 @@ import android.database.sqlite.SQLiteOpenHelper;
  */
 public class DatabaseHelper extends SQLiteOpenHelper {
     private static final String DATABASE = "CompreMelhor.db";
-    private static int DATABASE_VERSION = 23;
+    private static int DATABASE_VERSION = 24;
 
     private final String[] TABLES;
 
     {
         TABLES = new String[] {
-                CartPurchaseLine.TABLE,
-                Cart.TABLE,
                 Purchase.TABLE,
                 PurchaseLine.TABLE,
                 Establishment.TABLE,
@@ -132,20 +130,6 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         String[] COLUMNS = {_ID, QUANTITY, UNITARY_PRICE, SUB_TOTAL, CATEGORY, PRODUCT_NAME, _PRODUCT_ID, _PURCHASE_ID, DATE_CREATED, LAST_UPDATED};
     }
 
-    public interface Cart extends Domain {
-        String TABLE = "cart",
-                _ID = "_id";
-        String[] COLUMNS = {_ID, DATE_CREATED, LAST_UPDATED};
-
-    }
-
-    public interface CartPurchaseLine {
-        String  TABLE = "cart_purchase_line",
-                _ID_CART = "_id_cart",
-                _ID_PURCHASE_LINE = "_id_purchase_line";
-        String[] COLUMNS = {_ID_CART, _ID_PURCHASE_LINE};
-    }
-
     @Override
     public void onCreate(SQLiteDatabase db) {
         db.execSQL("CREATE TABLE " +  User.TABLE + " (" +
@@ -255,16 +239,6 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 " REFERENCES " + Product.TABLE + "(" + Product._ID + "), " +
                 " FOREIGN KEY( " + PurchaseLine._PURCHASE_ID + ") " +
                 " REFERENCES " + Purchase.TABLE + "(" + Purchase._ID + "));");
-
-        db.execSQL("CREATE TABLE " + Cart.TABLE + " (" +
-                Cart._ID + " INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, " +
-                Cart.DATE_CREATED + " TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL, " +
-                Cart.LAST_UPDATED + " TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL);");
-
-        db.execSQL("CREATE TABLE " + CartPurchaseLine.TABLE + " (" +
-                CartPurchaseLine._ID_CART + " INTEGER NOT NULL, " +
-                CartPurchaseLine._ID_PURCHASE_LINE + " INTEGER NOT NULL, " +
-                "PRIMARY KEY(" + CartPurchaseLine._ID_CART + ", " + CartPurchaseLine._ID_PURCHASE_LINE + "));");
     }
 
     @Override

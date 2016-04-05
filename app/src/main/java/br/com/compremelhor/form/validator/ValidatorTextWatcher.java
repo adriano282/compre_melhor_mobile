@@ -5,7 +5,7 @@ import android.text.Editable;
 import android.text.TextWatcher;
 import android.widget.EditText;
 
-import br.com.compremelhor.function.MyPredicate;
+import br.com.compremelhor.util.function.MyPredicate;
 
 public class ValidatorTextWatcher implements TextWatcher {
     private EditText editText;

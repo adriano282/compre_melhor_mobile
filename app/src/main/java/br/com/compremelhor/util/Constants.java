@@ -1,4 +1,4 @@
-package br.com.compremelhor.useful;
+package br.com.compremelhor.util;
 
 /**
  * Created by adriano on 22/08/15.

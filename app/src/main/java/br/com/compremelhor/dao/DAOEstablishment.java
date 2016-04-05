@@ -1,37 +1,22 @@
 package br.com.compremelhor.dao;
 
-import android.annotation.TargetApi;
 import android.content.ContentValues;
 import android.content.Context;
-import android.database.Cursor;
-import android.os.Build;
 
 import br.com.compremelhor.model.EntityModel;
 import br.com.compremelhor.model.Establishment;
 
-/**
- * Created by adriano on 19/10/15.
- */
-@TargetApi(Build.VERSION_CODES.KITKAT)
-public class DAOEstablishment extends DAO {
+public class DAOEstablishment extends AbstractDAO<Establishment> {
+    private static DAOEstablishment instance;
 
-    public Establishment getEstablishmentById(Long id) {
-        if (id == null)
-            return null;
+    public static DAOEstablishment getInstance(Context context) {
+        if (instance == null)
+            instance = new DAOEstablishment(context);
 
-        try (Cursor cursor = getDB().query(DatabaseHelper.Establishment.TABLE,
-                    DatabaseHelper.Establishment.COLUMNS,
-                    DatabaseHelper.Establishment._ID + " = ?",
-                    new String[] {id.toString()}, null, null, null)) {
-            if (cursor.moveToNext()) {
-                return (Establishment) getBind().bind(new Establishment(), cursor);
-            }
-            return null;
-        }
+        return instance;
     }
-
-    public DAOEstablishment(Context context) {
-        super(context);
+    private DAOEstablishment(Context context) {
+        super(context, Establishment.class, DatabaseHelper.Establishment.TABLE, DatabaseHelper.Establishment.COLUMNS);
     }
 
     @Override

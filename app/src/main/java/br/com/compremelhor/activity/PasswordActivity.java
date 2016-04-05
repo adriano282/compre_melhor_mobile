@@ -18,16 +18,15 @@ import br.com.compremelhor.api.integration.RequestAsync;
 import br.com.compremelhor.api.integration.ResponseServer;
 import br.com.compremelhor.api.integration.resource.UserResource;
 import br.com.compremelhor.dao.DAOUser;
-import br.com.compremelhor.dao.DatabaseHelper;
-import br.com.compremelhor.function.MyFunction;
-import br.com.compremelhor.model.User;
 import br.com.compremelhor.form.validator.ActionTextWatcher;
 import br.com.compremelhor.form.validator.ValidatorTextWatcher;
-import br.com.compremelhor.function.MyConsumer;
-import br.com.compremelhor.function.MyPredicate;
+import br.com.compremelhor.util.function.MyConsumer;
+import br.com.compremelhor.util.function.MyFunction;
+import br.com.compremelhor.util.function.MyPredicate;
+import br.com.compremelhor.model.User;
 
-import static br.com.compremelhor.useful.Constants.PREFERENCES;
-import static br.com.compremelhor.useful.Constants.SP_USER_ID;
+import static br.com.compremelhor.util.Constants.PREFERENCES;
+import static br.com.compremelhor.util.Constants.SP_USER_ID;
 
 public class PasswordActivity extends AppCompatActivity implements OnClickListener {
     private Button btnChangePassword;
@@ -54,7 +53,7 @@ public class PasswordActivity extends AppCompatActivity implements OnClickListen
         super.onCreate(savedInstanceState);
         setContentView(R.layout.change_password);
 
-        daoUser = new DAOUser(this);
+        daoUser = DAOUser.getInstance(this);
         preferences = getSharedPreferences(PREFERENCES, MODE_PRIVATE);
 
         userId = preferences.getInt(SP_USER_ID, 0);
@@ -107,7 +106,7 @@ public class PasswordActivity extends AppCompatActivity implements OnClickListen
 
 
     private boolean matcherPasswordOnDatabase() {
-        User user = daoUser.getUserById(userId);
+        User user = daoUser.find(userId);
         String password = etOldPassword.getText().toString();
         return user.isLoggedByFacebook() ||
                 user.getPassword() == null
@@ -115,13 +114,13 @@ public class PasswordActivity extends AppCompatActivity implements OnClickListen
     }
 
     private boolean updatePassword() {
-        User user = daoUser.getUserById(userId);
+        User user = daoUser.find(userId);
 
         String newPassword = etNewPassword.getText().toString();
 
         user.setPassword(newPassword);
         user.setLoggedByFacebook(false);
-        boolean res = daoUser.insertOrUpdate(user, DatabaseHelper.User.TABLE) != -1;
+        boolean res = daoUser.insertOrUpdate(user) != -1;
 
         if (res) {
             final UserResource resource = new UserResource(this);
@@ -152,7 +151,7 @@ public class PasswordActivity extends AppCompatActivity implements OnClickListen
         btnChangePassword = (Button) findViewById(R.id.btn_change_password);
         btnChangePassword.setEnabled(false);
 
-        if (daoUser.getUserById(userId).isLoggedByFacebook()) {
+        if (daoUser.find(userId).isLoggedByFacebook()) {
             tvOldPassword.setVisibility(View.GONE);
             etOldPassword.setVisibility(View.GONE);
             tvNewPassword.setText(getString(R.string.password));

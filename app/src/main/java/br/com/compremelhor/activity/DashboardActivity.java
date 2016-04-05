@@ -9,7 +9,7 @@ import android.view.View;
 
 import br.com.compremelhor.R;
 
-import static br.com.compremelhor.useful.Constants.PREFERENCES;
+import static br.com.compremelhor.util.Constants.PREFERENCES;
 /**
  * Created by adriano on 21/08/15.
  */

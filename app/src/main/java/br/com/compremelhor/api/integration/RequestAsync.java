@@ -2,7 +2,7 @@ package br.com.compremelhor.api.integration;
 
 import android.os.AsyncTask;
 
-import br.com.compremelhor.function.MyFunction;
+import br.com.compremelhor.util.function.MyFunction;
 
 /**
  * Created by adriano on 27/03/16.

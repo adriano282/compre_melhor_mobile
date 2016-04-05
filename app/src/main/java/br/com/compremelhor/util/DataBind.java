@@ -1,4 +1,4 @@
-package br.com.compremelhor.useful;
+package br.com.compremelhor.util;
 
 import android.content.Context;
 import android.database.Cursor;
@@ -13,7 +13,6 @@ import br.com.compremelhor.dao.DAOCode;
 import br.com.compremelhor.dao.DAOManufacturer;
 import br.com.compremelhor.dao.DatabaseHelper;
 import br.com.compremelhor.model.Address;
-import br.com.compremelhor.model.Cart;
 import br.com.compremelhor.model.Category;
 import br.com.compremelhor.model.Code;
 import br.com.compremelhor.model.Establishment;
@@ -29,12 +28,20 @@ import br.com.compremelhor.model.User;
 public class DataBind {
 
     private Context context;
-
     public DataBind(Context context) {
         this.context = context;
     }
 
+    public Object bind(Class clazz, Cursor cursor) {
+        try {
+            return bind(Class.forName(clazz.getName()).newInstance(), cursor);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
     public Object bind(Object objectModel, Cursor cursor) {
+
         if (objectModel instanceof Address) {
             Address ad = (Address) objectModel;
 
@@ -68,13 +75,15 @@ public class DataBind {
             p.setDescription(getString(cursor, DatabaseHelper.Product.DESCRIPTION));
             p.setName(getString(cursor, DatabaseHelper.Product.NAME));
 
-            Manufacturer manufacturer = new DAOManufacturer(context).getManufacturerById(getInt(cursor, DatabaseHelper.Product._MANUFACTURER_ID));
+            Manufacturer manufacturer = DAOManufacturer
+                    .getInstance(context)
+                    .find(getInt(cursor, DatabaseHelper.Product._MANUFACTURER_ID));
             p.setManufacturer(manufacturer);
 
-            Category category = new DAOCategory(context).getCategoryById(getInt(cursor, DatabaseHelper.Product._CATEGORY_ID));
+            Category category = DAOCategory.getInstance(context).find(getInt(cursor, DatabaseHelper.Product._CATEGORY_ID));
             p.setCategory(category);
 
-            Code code = new DAOCode(context).getCodeById(getInt(cursor, DatabaseHelper.Product._CODE_ID));
+            Code code = DAOCode.getInstance(context).find(getInt(cursor, DatabaseHelper.Product._CODE_ID));
             p.setCode(code);
 
             p.setUnit(Product.Unit.valueOf(getString(cursor, DatabaseHelper.Product.UNIT)));
@@ -108,7 +117,7 @@ public class DataBind {
 
             freight.setId(getInt(cursor, DatabaseHelper.Freight._ID));
 
-            Address address = DAOAddress.getInstance(context).getAddressById(getInt(cursor, DatabaseHelper.Freight._ADDRESS_ID));
+            Address address = DAOAddress.getInstance(context).find(getInt(cursor, DatabaseHelper.Freight._ADDRESS_ID));
             freight.setAddress(address);
 
             freight.setTotalValueDrive(getBigDecimal(cursor, DatabaseHelper.Freight.TOTAL_VALUE_DRIVE));
@@ -131,15 +140,6 @@ public class DataBind {
             pl.setProduct(p);
 
             return pl;
-        }
-        else if (objectModel instanceof Cart) {
-            Cart c = (Cart) objectModel;
-
-            c.setId(getInt(cursor, DatabaseHelper.Cart._ID));
-            c.setDateCreated(getCalendar(cursor, DatabaseHelper.Cart.DATE_CREATED));
-            c.setLastUpdated(getCalendar(cursor, DatabaseHelper.Cart.LAST_UPDATED));
-
-            return c;
         }
 
         return null;

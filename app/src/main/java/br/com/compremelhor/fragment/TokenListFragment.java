@@ -10,9 +10,8 @@ import java.util.List;
 import java.util.Map;
 
 import br.com.compremelhor.R;
-import br.com.compremelhor.TokenList;
 
-public class TokenListFragment extends ListFragment implements TokenList {
+public class TokenListFragment extends ListFragment {
     List<Map<String, String>> listItems = new ArrayList<>();
     SimpleAdapter adapter;
 

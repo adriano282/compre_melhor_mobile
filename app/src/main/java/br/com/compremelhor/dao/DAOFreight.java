@@ -1,21 +1,23 @@
 package br.com.compremelhor.dao;
 
-import android.annotation.TargetApi;
 import android.content.ContentValues;
 import android.content.Context;
-import android.database.Cursor;
-import android.os.Build;
 
 import br.com.compremelhor.model.EntityModel;
 import br.com.compremelhor.model.Freight;
 
-/**
- * Created by adriano on 19/10/15.
- */
-@TargetApi(Build.VERSION_CODES.KITKAT)
-public class DAOFreight extends DAO {
-    public DAOFreight(Context context) {
-        super(context);
+public class DAOFreight extends AbstractDAO<Freight> {
+    private static DAOFreight instance;
+
+    public static DAOFreight getInstance(Context context) {
+        if (instance == null)
+            instance = new DAOFreight(context);
+
+        return instance;
+    }
+
+    private DAOFreight(Context context) {
+        super(context, Freight.class, DatabaseHelper.Freight.TABLE, DatabaseHelper.Freight.COLUMNS);
     }
 
     @Override
@@ -30,18 +32,5 @@ public class DAOFreight extends DAO {
         values.put(DatabaseHelper.Freight.LAST_UPDATED, f.getLastUpdated().getTimeInMillis());
 
         return values;
-    }
-
-    public Freight getFreightById(Long id) {
-        if (id == null)
-            return null;
-        try(Cursor cursor = getDB().query(DatabaseHelper.Freight.TABLE, DatabaseHelper.Freight.COLUMNS,
-                DatabaseHelper.Freight._ID + " = ?", new String[] {id.toString()},
-                null, null, null)) {
-            if (cursor.moveToNext()) {
-                return (Freight) getBind().bind(new Freight(), cursor);
-            }
-            return null;
-        }
     }
 }

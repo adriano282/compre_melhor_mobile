@@ -18,16 +18,14 @@ import java.util.HashMap;
 import java.util.Map;
 
 import br.com.compremelhor.R;
-import br.com.compremelhor.dao.DAOCart;
-import br.com.compremelhor.model.Cart;
 import br.com.compremelhor.model.Category;
 import br.com.compremelhor.model.Code;
 import br.com.compremelhor.model.Manufacturer;
 import br.com.compremelhor.model.Product;
 import br.com.compremelhor.model.PurchaseLine;
 
-import static br.com.compremelhor.useful.Constants.CURRENT_QUANTITY_OF_ITEM_EXTRA;
-import static br.com.compremelhor.useful.Constants.PURCHASE_ID_EXTRA;
+import static br.com.compremelhor.util.Constants.CURRENT_QUANTITY_OF_ITEM_EXTRA;
+import static br.com.compremelhor.util.Constants.PURCHASE_ID_EXTRA;
 
 public class ProductActivity extends AppCompatActivity {
     private ImageView ivProduct;
@@ -119,7 +117,7 @@ public class ProductActivity extends AppCompatActivity {
         item.setId(Integer.valueOf(itemId));
         item.setProductName(item.getProduct().getName());
 
-        DAOCart dao = DAOCart.getInstance(this);
+/*        DAOCart dao = DAOCart.getInstance(this);
 
         Cart c = dao.getCart();
 
@@ -133,7 +131,7 @@ public class ProductActivity extends AppCompatActivity {
 
         dao.insertOrUpdate(c);
         dao.addItem(item);
-
+*/
         this.setResult(RESULT_OK);
         finish();
 

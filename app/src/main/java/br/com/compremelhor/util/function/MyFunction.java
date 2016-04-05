@@ -1,4 +1,4 @@
-package br.com.compremelhor.function;
+package br.com.compremelhor.util.function;
 
 /**
  * Created by adriano on 27/03/16.

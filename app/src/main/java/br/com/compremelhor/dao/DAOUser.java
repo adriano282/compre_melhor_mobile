@@ -1,19 +1,20 @@
 package br.com.compremelhor.dao;
 
-import android.annotation.TargetApi;
 import android.content.ContentValues;
 import android.content.Context;
-import android.database.Cursor;
-import android.os.Build;
 
 import br.com.compremelhor.model.EntityModel;
 import br.com.compremelhor.model.User;
 
-/**
- * Created by adriano on 29/09/15.
- */
-@TargetApi(Build.VERSION_CODES.KITKAT)
-public class DAOUser extends DAO {
+public class DAOUser extends AbstractDAO<User> {
+    private static DAOUser instance;
+
+    public static DAOUser getInstance(Context context) {
+        if (instance == null)
+            instance = new DAOUser(context);
+
+        return instance;
+    }
 
     @Override
     public ContentValues bindContentValues(EntityModel o) {
@@ -36,58 +37,13 @@ public class DAOUser extends DAO {
         return values;
     }
 
-    public DAOUser(Context context) {
-        super(context);
-    }
-
-    public User getUserById(int id) {
-        try(Cursor cursor = getDB().query(
-                DatabaseHelper.User.TABLE,
-                DatabaseHelper.User.COLUMNS,
-                DatabaseHelper.User._ID + " = ?" ,
-                new String[] {String.valueOf(id)}, null, null, null)) {
-
-            User user = null;
-            if (cursor.moveToFirst()) {
-                user =  (User) getBind().bind(new User(), cursor);
-            }
-            return user;
-        }
-    }
-
-    public User getUserByEmail(String email) {
-        try(Cursor cursor = getDB().query(
-            DatabaseHelper.User.TABLE,
-            DatabaseHelper.User.COLUMNS,
-            DatabaseHelper.User.EMAIL + " = ?" ,
-        new String[] {email}, null, null, null)){
-            User user = null;
-            if (cursor.moveToNext()) {
-                user =  (User) getBind().bind(new User(), cursor);
-            }
-            return user;
-        }
+    private DAOUser(Context context) {
+        super(context, User.class, DatabaseHelper.User.TABLE, DatabaseHelper.User.COLUMNS);
     }
 
     public long updateByEmail(EntityModel o) {
         User user = (User) o;
         return getDB().update(DatabaseHelper.User.TABLE, bindContentValues(o),
                 DatabaseHelper.User.EMAIL + " = ?", new String[] {user.getEmail()});
-    }
-
-    private boolean userAlreadyRegistered(User user) {
-        if (user == null || user.getEmail() == null || user.getEmail().equals(""))
-            return false;
-
-        User userStored =  getUserByEmail(user.getEmail());
-        if (userStored != null) {
-            user.setId(userStored.getId());
-            user.setDocument(userStored.getDocument());
-            user.setName(userStored.getName());
-            user.setPassword(userStored.getPassword());
-            user.setTypeDocument(userStored.getTypeDocument() == null? null:userStored.getTypeDocument().getType().toString());
-            return true;
-        }
-        return false;
     }
 }

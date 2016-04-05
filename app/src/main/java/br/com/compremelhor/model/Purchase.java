@@ -1,8 +1,7 @@
 package br.com.compremelhor.model;
 
 import java.math.BigDecimal;
-import java.util.Collection;
-import java.util.List;
+import java.util.TreeSet;
 
 /**
  * Created by adriano on 24/08/15.
@@ -10,7 +9,7 @@ import java.util.List;
 public class Purchase extends EntityModel {
     private BigDecimal totalValue;
     private Status status;
-    private Collection<PurchaseLine> items;
+    private TreeSet<PurchaseLine> items;
     private Freight freight;
     private Establishment establishment;
 
@@ -32,11 +31,11 @@ public class Purchase extends EntityModel {
         this.status = status;
     }
 
-    public Collection<PurchaseLine> getItems() {
+    public TreeSet<PurchaseLine> getItems() {
         return items;
     }
 
-    public void setItems(List<PurchaseLine> items) {
+    public void setItems(TreeSet<PurchaseLine> items) {
         this.items = items;
     }
 
@@ -56,8 +55,8 @@ public class Purchase extends EntityModel {
         this.establishment = establishment;
     }
 
-    enum Status {
-        FINISHED, PENDING
+    public enum Status {
+        OPENED, FINISHED, PENDING
     }
 
 }
