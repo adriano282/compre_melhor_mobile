@@ -1,9 +1,10 @@
-package br.com.compremelhor.api.integration.resource;
+package br.com.compremelhor.api.integration.resource.impl;
 
 import android.content.Context;
 
 import com.google.gson.JsonObject;
 
+import br.com.compremelhor.api.integration.resource.AbstractResource;
 import br.com.compremelhor.model.Establishment;
 
 /**

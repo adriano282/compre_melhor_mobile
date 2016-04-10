@@ -28,7 +28,7 @@ import java.net.URLConnection;
 
 import br.com.compremelhor.R;
 import br.com.compremelhor.api.integration.ResponseServer;
-import br.com.compremelhor.api.integration.resource.AddressResource;
+import br.com.compremelhor.api.integration.resource.impl.AddressResource;
 import br.com.compremelhor.dao.DAOAddress;
 import br.com.compremelhor.dao.DatabaseHelper;
 import br.com.compremelhor.model.Address;

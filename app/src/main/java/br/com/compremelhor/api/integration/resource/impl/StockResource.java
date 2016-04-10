@@ -1,4 +1,4 @@
-package br.com.compremelhor.api.integration.resource;
+package br.com.compremelhor.api.integration.resource.impl;
 
 import android.content.Context;
 
@@ -6,6 +6,7 @@ import com.google.gson.JsonObject;
 
 import java.math.BigDecimal;
 
+import br.com.compremelhor.api.integration.resource.AbstractResource;
 import br.com.compremelhor.model.Stock;
 
 /**

@@ -29,7 +29,7 @@ import java.util.TreeSet;
 import br.com.compremelhor.R;
 import br.com.compremelhor.activity.ProductActivity;
 import br.com.compremelhor.adapter.ExpandableListAdapter;
-import br.com.compremelhor.api.integration.resource.SKUResource;
+import br.com.compremelhor.api.integration.resource.impl.SKUResource;
 import br.com.compremelhor.model.Product;
 import br.com.compremelhor.model.PurchaseLine;
 import br.com.compremelhor.service.CartService;

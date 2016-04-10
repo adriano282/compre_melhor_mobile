@@ -25,7 +25,7 @@ import com.facebook.login.widget.ProfilePictureView;
 
 import br.com.compremelhor.R;
 import br.com.compremelhor.api.integration.ResponseServer;
-import br.com.compremelhor.api.integration.resource.UserResource;
+import br.com.compremelhor.api.integration.resource.impl.UserResource;
 import br.com.compremelhor.dao.DAOUser;
 import br.com.compremelhor.form.validator.ActionTextWatcher;
 import br.com.compremelhor.util.function.MyConsumer;
