@@ -13,6 +13,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
+import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -36,7 +37,7 @@ public abstract class AbstractResource<T extends EntityModel> implements Resourc
         this.context = context;
     }
 
-    public abstract boolean validAttributeName(String attributeName);
+    public abstract String[] getColumnNames();
     public abstract T bindResourceFromJson(JsonObject jsonObject);
     public abstract String bindJsonFromEntity(T t);
 
@@ -121,13 +122,18 @@ public abstract class AbstractResource<T extends EntityModel> implements Resourc
             if (sb.length() == 0) sb.append("?");
             else sb.append("&");
 
-            sb.append(pair.getKey().trim())
-                    .append("=").append(pair.getValue());
+            try {
+                sb.append(pair.getKey().trim())
+                        .append("=").append(URLEncoder.encode(pair.getValue(), "UTF-8"));
+
+            } catch (UnsupportedEncodingException e) {
+                e.printStackTrace();
+            }
         }
 
         try {
             URL url = new URL(APPLICATION_ROOT.concat(RESOURCE_ROOT)
-                    .concat(URLEncoder.encode(sb.toString(), "UTF-8")));
+                    .concat(sb.toString()));
 
             return doGET(url);
         } catch (MalformedURLException e) {
@@ -140,7 +146,7 @@ public abstract class AbstractResource<T extends EntityModel> implements Resourc
 
     public T getResource(String attributeName, String attributeValue) {
         if (!validAttributeName(attributeName))
-            throw new IllegalArgumentException("Unknown attribute name for User entity: " + attributeName);
+            throw new IllegalArgumentException("Unknown attribute name for entity: " + attributeName);
 
         try {
             URL url = new URL(APPLICATION_ROOT.concat(RESOURCE_ROOT)
@@ -286,6 +292,11 @@ public abstract class AbstractResource<T extends EntityModel> implements Resourc
             return 0;
         }
     }
+
+    private boolean validAttributeName(String attributeName) {
+        return Arrays.asList(getColumnNames()).contains(attributeName.trim());
+    }
+
 
     private void log(HttpURLConnection connection, URL url) throws IOException {
         Log.d("REST API", "GET " + RESOURCE_ROOT + "/" + url.getQuery());

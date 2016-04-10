@@ -40,7 +40,7 @@ public abstract class AbstractDAO<T> {
 
         try {
             cursor = getDB().query(TABLE, COLUMNS,
-                    DatabaseHelper.Domain._ID,
+                    DatabaseHelper.Domain._ID + " = ?",
                     new String[] {String.valueOf(id)},
                     null, null, null);
             if (cursor.moveToNext()) {

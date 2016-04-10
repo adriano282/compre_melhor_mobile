@@ -31,7 +31,7 @@ public class Code extends EntityModel {
     }
 
     public enum CodeType {
-        BAR_CODE,
+        BARCODE,
         QR_CODE
     }
 }

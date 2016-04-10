@@ -235,7 +235,7 @@ public class LoginActivity extends Activity {
                 dao.updateByEmail(user);
 
                 Assert.assertNotNull(dao.find(user.getId()));
-                Assert.assertEquals(dao.find(user.getId()), user.getId());
+                Assert.assertEquals(dao.find(user.getId()).getId(), user.getId());
             }
 
             putUserId(user);

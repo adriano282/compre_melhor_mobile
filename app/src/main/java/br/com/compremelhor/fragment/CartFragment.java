@@ -8,6 +8,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Handler;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -28,15 +29,21 @@ import java.util.TreeSet;
 import br.com.compremelhor.R;
 import br.com.compremelhor.activity.ProductActivity;
 import br.com.compremelhor.adapter.ExpandableListAdapter;
+import br.com.compremelhor.api.integration.resource.SKUResource;
+import br.com.compremelhor.model.Product;
 import br.com.compremelhor.model.PurchaseLine;
 import br.com.compremelhor.service.CartService;
 
 import static br.com.compremelhor.util.Constants.CLIENT_SCANNER;
 import static br.com.compremelhor.util.Constants.CURRENT_QUANTITY_OF_ITEM_EXTRA;
+import static br.com.compremelhor.util.Constants.OTHERS_CODES;
+import static br.com.compremelhor.util.Constants.PRODUCT_MODE;
 import static br.com.compremelhor.util.Constants.PURCHASE_ID_EXTRA;
+import static br.com.compremelhor.util.Constants.QR_CODE_MODE;
 import static br.com.compremelhor.util.Constants.REQUEST_CODE_CART_ITEM_ADDED;
 import static br.com.compremelhor.util.Constants.REQUEST_CODE_CART_ITEM_EDITED;
 import static br.com.compremelhor.util.Constants.REQUEST_CODE_SCANNED_CODE;
+import static br.com.compremelhor.util.Constants.SCAN_MODE;
 
 
 public class CartFragment extends android.support.v4.app.Fragment {
@@ -58,24 +65,23 @@ public class CartFragment extends android.support.v4.app.Fragment {
     private String itemIdSelected;
     private String currentQuantityOfItemSelected;
 
+
+    private SKUResource skuResource;
     private CartService cartService;
+    private Handler handler;
 
     @Override
     public void onStart() {
         super.onStart();
-        setWidgets();
-        registerViews();
-        Log.d("ASYNC TASK", "CartFragment.OnStart");
-
-        cartService = CartService.getInstance(getActivity());
-
         if (progressDialog == null || !progressDialog.isShowing())
             new LoadCurrentCart().execute();
+        Log.d("ASYNC TASK", "CartFragment.OnStart");
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
+
         Log.d("ASYNC TASK", "CartFragment.OnCreateView");
         if (getView() == null) {
             Log.d("ASYNC TASK", "NULL VIEW - CartFragment.OnCreateView ");
@@ -86,6 +92,11 @@ public class CartFragment extends android.support.v4.app.Fragment {
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState) {
         Log.d("ASYNC TASK", "CartFragment.OnViewCreated");
+        cartService = CartService.getInstance(getActivity());
+        skuResource = new SKUResource(getActivity());
+        handler = new Handler();
+        setWidgets();
+        registerViews();
         if (getView() == null) {
             Log.d("ASYNC TASK", "NULL VIEW - CartFragment.OnViewCreated ");
         }
@@ -94,14 +105,40 @@ public class CartFragment extends android.support.v4.app.Fragment {
 
 
     @Override
-    public void onActivityResult(int requestCode, int resultCode, Intent intent) {
+    public void onActivityResult(int requestCode, int resultCode, final Intent intent) {
         switch (requestCode) {
             case REQUEST_CODE_SCANNED_CODE:
                 if (resultCode == Activity.RESULT_OK) {
-                    String code = intent.getStringExtra("SCAN_RESULT");
-                    Intent intent1 = new Intent(getActivity(), ProductActivity.class);
-                    intent1.putExtra("codeResult", code);
-                    startActivityForResult(intent1, REQUEST_CODE_CART_ITEM_ADDED);
+                    final String code = intent.getStringExtra("SCAN_RESULT");
+
+                    showProgressDialog("Buscando produto...");
+
+                    AsyncTask<Void, Void, Void> request = new AsyncTask<Void, Void, Void>() {
+                        @Override
+                        protected Void doInBackground(Void... params) {
+                            Product p = skuResource.getResource("code.code", code);
+                            if (p == null) {
+                                handler.post(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        Toast.makeText(getActivity(),
+                                                "Produto de código " + code + " não encontrado.", Toast.LENGTH_SHORT).show();
+                                        progressDialog.dismiss();
+
+                                    }
+                                });
+                                return null;
+                            }
+                            progressDialog.dismiss();
+                            Intent intent1 = new Intent(getActivity(), ProductActivity.class);
+                            intent1.putExtra("product", p);
+                            startActivityForResult(intent1, REQUEST_CODE_CART_ITEM_ADDED);
+                            return null;
+                        }
+                    };
+                    request.execute();
+
+
                 }
                 else if (resultCode == Activity.RESULT_CANCELED) {
                     Log.v("SCRIP", "Press a button to start a scan.");
@@ -232,8 +269,8 @@ public class CartFragment extends android.support.v4.app.Fragment {
         @Override
         public void onClick(DialogInterface dialog, int item) {
             Intent intent = new Intent(CLIENT_SCANNER);
-            startActivityForResult(new Intent(getActivity(), ProductActivity.class), REQUEST_CODE_CART_ITEM_ADDED);
-            /*switch(item) {
+            //startActivityForResult(new Intent(getActivity(), ProductActivity.class), REQUEST_CODE_CART_ITEM_ADDED);
+            switch(item) {
                 case 0:
                     intent.putExtra(SCAN_MODE, QR_CODE_MODE);
                     break;
@@ -244,11 +281,15 @@ public class CartFragment extends android.support.v4.app.Fragment {
                     intent.putExtra(SCAN_MODE, OTHERS_CODES);
                     break;
             }
-            startActivityForResult(intent, REQUEST_CODE_SCANNED_CODE);*/
+            startActivityForResult(intent, REQUEST_CODE_SCANNED_CODE);
         }
     }
 
-
+    private void showProgressDialog(String message) {
+        progressDialog = ProgressDialog
+                .show(getActivity(),
+                        getString(R.string.wait_header_dialog), message, true, false);
+    }
 
     private class LoadCurrentCart extends AsyncTask<Void, Void, Double> {
         public void onPreExecute() {
@@ -261,7 +302,13 @@ public class CartFragment extends android.support.v4.app.Fragment {
         @Override
         protected Double doInBackground(Void... params) {
             Log.d("ASYNC TASK", "doInBackground(Void... params)");
-            return refreshListOnCurrentCart();
+            handler.post(new Runnable() {
+                @Override
+                public void run() {
+                    refreshListOnCurrentCart();
+                }
+            });
+            return 0.0;
         }
 
         public void onPostExecute(Double valueTotal) {
@@ -284,9 +331,6 @@ public class CartFragment extends android.support.v4.app.Fragment {
             }
 
             Map<String, Double> sumByCategoryMap = new HashMap<>();
-
-            List<String> listChild = new ArrayList<>();
-
             for (PurchaseLine line : items) {
                 String currentCategory = line.getCategory();
 

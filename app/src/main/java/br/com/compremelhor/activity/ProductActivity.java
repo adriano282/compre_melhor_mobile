@@ -14,15 +14,11 @@ import android.widget.TextView;
 
 import java.math.BigDecimal;
 import java.util.Calendar;
-import java.util.HashMap;
-import java.util.Map;
 
 import br.com.compremelhor.R;
-import br.com.compremelhor.model.Category;
-import br.com.compremelhor.model.Code;
-import br.com.compremelhor.model.Manufacturer;
 import br.com.compremelhor.model.Product;
 import br.com.compremelhor.model.PurchaseLine;
+import br.com.compremelhor.service.CartService;
 
 import static br.com.compremelhor.util.Constants.CURRENT_QUANTITY_OF_ITEM_EXTRA;
 import static br.com.compremelhor.util.Constants.PURCHASE_ID_EXTRA;
@@ -41,44 +37,15 @@ public class ProductActivity extends AppCompatActivity {
 
     private Button btnPutInCart;
     private PurchaseLine item;
-
+    private CartService cartService;
     private int itemId;
-
-    private static Map<String, Product> productsForTest;
-    private static void startMap() {
-        productsForTest = new HashMap<>();
-
-        Product p1 = new Product();
-        p1.setId(1);
-        p1.setName("Maionese");
-        p1.setDescription("Maionese");
-        p1.setPriceUnitary(new BigDecimal(4.50));
-
-        Manufacturer hellmans = new Manufacturer();
-        hellmans.setCompanyName("Hellmans");
-        p1.setManufacturer(hellmans);
-
-        Code code = new Code();
-        code.setCode("123444444444");
-        code.setType(Code.CodeType.BAR_CODE);
-
-        p1.setCode(code);
-
-        Category category1 = new Category();
-        category1.setName("Gelados");
-        p1.setCategory(category1);
-
-        p1.setUnit(Product.Unit.UNIT);
-
-        productsForTest.put(p1.getCode().getCode(), p1);
-    }
 
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_product);
 
-        startMap();
         item = new PurchaseLine();
+        cartService = CartService.getInstance(this);
         setToolbar();
         setViews();
         registerListeners();
@@ -117,32 +84,15 @@ public class ProductActivity extends AppCompatActivity {
         item.setId(Integer.valueOf(itemId));
         item.setProductName(item.getProduct().getName());
 
-/*        DAOCart dao = DAOCart.getInstance(this);
-
-        Cart c = dao.getCart();
-
-        if (c == null) {
-            c = new Cart();
-            c.setDateCreated(Calendar.getInstance());
-        }
-
-
-        c.setLastUpdated(Calendar.getInstance());
-
-        dao.insertOrUpdate(c);
-        dao.addItem(item);
-*/
+        cartService.addItem(item);
         this.setResult(RESULT_OK);
         finish();
-
     }
 
     private void fillViews() {
-        String code = getIntent().getStringExtra("codeResult");
-        // Here will request the product data from webservice
-        Product product = getProductOnWebServer("123444444444");
-        item.setProduct(product);
+        Product product = (Product) getIntent().getSerializableExtra("product");
 
+        item.setProduct(product);
         tvCategory.setText(product.getCategory().getName());
         tvManufacturer.setText(product.getManufacturer().getCompanyName());
         tvName.setText(product.getName());
@@ -150,10 +100,6 @@ public class ProductActivity extends AppCompatActivity {
         tvUnit.setText(product.getUnit().name());
         ivProduct.setImageBitmap(BitmapFactory.decodeResource(getResources(), R.drawable.ic_launcher));
 
-    }
-
-    private Product getProductOnWebServer(String code) {
-        return productsForTest.get(code);
     }
 
     private void setViews() {
@@ -169,7 +115,7 @@ public class ProductActivity extends AppCompatActivity {
 
         String stringId = getIntent().getStringExtra(PURCHASE_ID_EXTRA);
 
-        itemId = stringId == null || stringId.isEmpty() ? null : Integer.valueOf(stringId);
+        itemId = stringId == null || stringId.isEmpty() ? 0 : Integer.valueOf(stringId);
 
         if (itemId != 0)
             btnPutInCart.setText("ALTERAR QUANTIDADE");

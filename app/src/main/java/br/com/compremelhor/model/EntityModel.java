@@ -1,12 +1,13 @@
 package br.com.compremelhor.model;
 
+import java.io.Serializable;
 import java.util.Calendar;
 
 
 /**
  * Created by adriano on 25/08/15.
  */
-public class EntityModel {
+public class EntityModel implements Serializable {
     private int id;
     private Calendar dateCreated;
     private Calendar lastUpdated;

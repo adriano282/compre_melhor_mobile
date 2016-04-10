@@ -16,7 +16,7 @@ public class DAOPurchase extends AbstractDAO<Purchase> {
         return instance;
     }
 
-    private DAOPurchase(Context context) { super(context, Purchase.class, DatabaseHelper.Product.TABLE, DatabaseHelper.Product.COLUMNS); }
+    private DAOPurchase(Context context) { super(context, Purchase.class, DatabaseHelper.Purchase.TABLE, DatabaseHelper.Purchase.COLUMNS); }
 
     @Override
     public ContentValues bindContentValues(EntityModel o) {
@@ -26,8 +26,13 @@ public class DAOPurchase extends AbstractDAO<Purchase> {
         if (o.getId() != 0)
             values.put(DatabaseHelper.Purchase._ID, o.getId());
 
+
         values.put(DatabaseHelper.Purchase.STATUS, purchase.getStatus().toString());
-        values.put(DatabaseHelper.Purchase.TOTAL_VALUE, purchase.getTotalValue().toString());
+
+        if (purchase.getTotalValue() != null)
+            values.put(DatabaseHelper.Purchase.TOTAL_VALUE, purchase.getTotalValue().toString());
+        else
+            values.put(DatabaseHelper.Purchase.TOTAL_VALUE, "0.0");
 
         if (purchase.getFreight() != null)
             values.put(DatabaseHelper.Purchase._FREIGHT_ID, purchase.getFreight().getId());

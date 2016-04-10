@@ -4,8 +4,6 @@ import android.content.Context;
 
 import com.google.gson.JsonObject;
 
-import java.util.Arrays;
-
 import br.com.compremelhor.model.User;
 
 /**
@@ -18,8 +16,8 @@ public class UserResource extends AbstractResource<User> {
     }
 
     @Override
-    public boolean validAttributeName(String attributeName) {
-        return Arrays.asList(columns).contains(attributeName.trim());
+    public String[] getColumnNames() {
+        return columns;
     }
 
     @Override

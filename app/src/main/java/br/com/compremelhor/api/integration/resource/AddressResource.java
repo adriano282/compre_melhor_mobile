@@ -5,8 +5,6 @@ import android.content.Context;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 
-import java.util.Arrays;
-
 import br.com.compremelhor.model.Address;
 
 /**
@@ -18,6 +16,11 @@ public class AddressResource extends AbstractResource<Address> {
         super("users/"+userId+"/addresses", context);
     }
     private String[] columns = {"id", "street", "number", "zipcode", "quarter", "city", "state", "state"};
+
+    @Override
+    public String[] getColumnNames() {
+        return columns;
+    }
 
     @Override
     public Address bindResourceFromJson(JsonObject jsonObject) {
@@ -37,10 +40,5 @@ public class AddressResource extends AbstractResource<Address> {
     public String bindJsonFromEntity(Address address) {
         Gson gson = new Gson();
         return gson.toJson(address);
-    }
-
-   @Override
-    public boolean validAttributeName(String attributeName) {
-        return Arrays.asList(columns).contains(attributeName.trim());
     }
 }

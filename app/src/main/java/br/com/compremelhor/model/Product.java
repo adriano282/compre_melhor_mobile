@@ -1,13 +1,7 @@
 package br.com.compremelhor.model;
 
-import com.j256.ormlite.table.DatabaseTable;
-
 import java.math.BigDecimal;
 
-/**
- * Created by adriano on 25/08/15.
- */
-@DatabaseTable(tableName = "product")
 public class Product extends EntityModel {
     private String name;
     private String description;
@@ -76,16 +70,6 @@ public class Product extends EntityModel {
     }
 
     public enum Unit {
-        BOX("CX"),
-        UNIT("UN"),
-        METRO("MT"),
-        LITRO("LT"),
-        KILO("KG");
-
-        private String unit;
-
-        Unit(String unit) {
-            this.unit = unit;
-        }
+        CX, UN, M, L, SC, KG
     }
 }

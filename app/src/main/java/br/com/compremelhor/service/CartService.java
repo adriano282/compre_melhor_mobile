@@ -35,6 +35,8 @@ public class CartService {
     }
 
     public boolean addItem(PurchaseLine item) {
+        if (item.getPurchase() == null) { item.setPurchase(purchase);}
+
         if (daoItem.insertOrUpdate(item) == -1)
             throw new RuntimeException("An error occurred during the try of save on database");
 

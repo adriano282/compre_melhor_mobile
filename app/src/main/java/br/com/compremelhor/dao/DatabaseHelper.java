@@ -9,7 +9,7 @@ import android.database.sqlite.SQLiteOpenHelper;
  */
 public class DatabaseHelper extends SQLiteOpenHelper {
     private static final String DATABASE = "CompreMelhor.db";
-    private static int DATABASE_VERSION = 24;
+    private static int DATABASE_VERSION = 25;
 
     private final String[] TABLES;
 
@@ -216,7 +216,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 Purchase.STATUS + " VARCHAR(10) NOT NULL, " +
                 Purchase.TOTAL_VALUE + " DECIMAL(10,2) NOT NULL DEFAULT 0.00, " +
                 Purchase._ESTABLISHMENT_ID + " INTEGER NOT NULL, " +
-                Purchase._FREIGHT_ID + " INTEGER NOT NULL, " +
+                Purchase._FREIGHT_ID + " INTEGER, " +
                 Purchase.DATE_CREATED + " TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL, " +
                 Purchase.LAST_UPDATED + " TIMESTAMP  DEFAULT CURRENT_TIMESTAMP NOT NULL, " +
                 " FOREIGN KEY( " + Purchase._ESTABLISHMENT_ID + ") " +
