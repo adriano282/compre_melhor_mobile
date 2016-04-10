@@ -37,6 +37,9 @@ public class DAOPurchase extends AbstractDAO<Purchase> {
         if (purchase.getFreight() != null)
             values.put(DatabaseHelper.Purchase._FREIGHT_ID, purchase.getFreight().getId());
 
+        if (purchase.getUser() != null)
+            values.put(DatabaseHelper.Purchase._USER_ID, purchase.getUser().getId());
+
         if (purchase.getEstablishment() != null)
             values.put(DatabaseHelper.Purchase._ESTABLISHMENT_ID, purchase.getEstablishment().getId());
 

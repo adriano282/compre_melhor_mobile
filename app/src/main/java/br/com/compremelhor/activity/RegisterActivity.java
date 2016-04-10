@@ -27,13 +27,12 @@ import br.com.compremelhor.R;
 import br.com.compremelhor.api.integration.ResponseServer;
 import br.com.compremelhor.api.integration.resource.impl.UserResource;
 import br.com.compremelhor.dao.DAOUser;
-import br.com.compremelhor.dao.DatabaseHelper;
 import br.com.compremelhor.form.validator.ActionTextWatcher;
 import br.com.compremelhor.form.validator.ValidatorTextWatcher;
-import br.com.compremelhor.util.function.MyConsumer;
-import br.com.compremelhor.util.function.MyPredicate;
 import br.com.compremelhor.model.TypeDocument;
 import br.com.compremelhor.model.User;
+import br.com.compremelhor.util.function.MyConsumer;
+import br.com.compremelhor.util.function.MyPredicate;
 
 import static br.com.compremelhor.util.Constants.PREFERENCES;
 import static br.com.compremelhor.util.Constants.SP_USER_ID;
@@ -310,7 +309,7 @@ public class RegisterActivity extends AppCompatActivity {
                         Log.d("REST API", "User Created: " + response.getEntity().getEmail());
 
                         user.setId(response.getEntity().getId());
-                        if (dao.insert(user, DatabaseHelper.User.TABLE) == -1) throw new RuntimeException("Exception during saving user in Database");
+                        if (dao.insert(user) == -1) throw new RuntimeException("Exception during saving user in Database");
                         progressDialog.dismiss();
 
                         handler.post(new Runnable() {

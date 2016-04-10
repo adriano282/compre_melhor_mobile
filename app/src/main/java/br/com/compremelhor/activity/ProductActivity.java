@@ -1,5 +1,6 @@
 package br.com.compremelhor.activity;
 
+import android.content.SharedPreferences;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
@@ -21,9 +22,12 @@ import br.com.compremelhor.model.PurchaseLine;
 import br.com.compremelhor.service.CartService;
 
 import static br.com.compremelhor.util.Constants.CURRENT_QUANTITY_OF_ITEM_EXTRA;
+import static br.com.compremelhor.util.Constants.PREFERENCES;
 import static br.com.compremelhor.util.Constants.PURCHASE_ID_EXTRA;
+import static br.com.compremelhor.util.Constants.SP_USER_ID;
 
 public class ProductActivity extends AppCompatActivity {
+    private SharedPreferences preferences;
     private ImageView ivProduct;
 
     private TextView tvName;
@@ -45,7 +49,10 @@ public class ProductActivity extends AppCompatActivity {
         setContentView(R.layout.activity_product);
 
         item = new PurchaseLine();
-        cartService = CartService.getInstance(this);
+        preferences = getSharedPreferences(PREFERENCES, MODE_PRIVATE);
+        int userId = preferences.getInt(SP_USER_ID, 0);
+
+        cartService = CartService.getInstance(this, userId);
         setToolbar();
         setViews();
         registerListeners();
@@ -81,7 +88,7 @@ public class ProductActivity extends AppCompatActivity {
         item.setLastUpdated(Calendar.getInstance());
         item.setUnitaryPrice(item.getProduct().getPriceUnitary());
         item.setCategory(item.getProduct().getCategory().getName());
-        item.setId(Integer.valueOf(itemId));
+        item.setId(itemId);
         item.setProductName(item.getProduct().getName());
 
         cartService.addItem(item);

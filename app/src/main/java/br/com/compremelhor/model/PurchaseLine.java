@@ -11,6 +11,7 @@ public class PurchaseLine extends EntityModel implements Comparable<String> {
     private Purchase purchase;
     private String productName;
     private String category;
+    private Stock stock;
 
     public Purchase getPurchase() {
         return purchase;
@@ -100,5 +101,13 @@ public class PurchaseLine extends EntityModel implements Comparable<String> {
     @Override
     public int compareTo(String another) {
         return this.category.compareTo(another);
+    }
+
+    public Stock getStock() {
+        return stock;
+    }
+
+    public void setStock(Stock stock) {
+        this.stock = stock;
     }
 }

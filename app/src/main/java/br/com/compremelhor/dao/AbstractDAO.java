@@ -58,17 +58,21 @@ public abstract class AbstractDAO<T> {
         getDB().delete(TABLE, "_id = ?", where);
     }
 
-    public long insert(EntityModel o, String table) {
-        return getDB().insert(table, null, bindContentValues(o));
+    public long insert(EntityModel o) {
+        return getDB().insert(TABLE, null, bindContentValues(o));
     }
 
     public long insertOrUpdate(EntityModel o) {
         ContentValues values = bindContentValues(o);
-        if (o.getId() == 0)
-            return getDB().insert(TABLE, null, values);
-
-        return getDB().update(TABLE, values,
-                DatabaseHelper.User._ID + " = ?", new String[]{String.valueOf(o.getId())});
+        int id = 0;
+        if (o.getId() == 0) {
+            id = (int) getDB().insert(TABLE, null, values);
+        } else {
+            id = getDB().update(TABLE, values,
+                    DatabaseHelper.User._ID + " = ?", new String[]{String.valueOf(o.getId())});
+        }
+        o.setId(id);
+        return id;
     }
 
     public List<T> findAllByForeignId(String idName, int idValue) {

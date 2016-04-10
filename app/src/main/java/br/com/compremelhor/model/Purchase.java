@@ -12,6 +12,7 @@ public class Purchase extends EntityModel {
     private TreeSet<PurchaseLine> items;
     private Freight freight;
     private Establishment establishment;
+    private User user;
 
     public Purchase() {}
 
@@ -53,6 +54,14 @@ public class Purchase extends EntityModel {
 
     public void setEstablishment(Establishment establishment) {
         this.establishment = establishment;
+    }
+
+    public User getUser() {
+        return user;
+    }
+
+    public void setUser(User user) {
+        this.user = user;
     }
 
     public enum Status {

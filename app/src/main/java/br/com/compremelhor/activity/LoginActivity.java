@@ -224,7 +224,7 @@ public class LoginActivity extends Activity {
             if (dao.findByAttribute(DatabaseHelper.User.EMAIL, user.getEmail()) == null) {
 
                 user.setId(userFromServer.getId());
-                dao.insert(user, DatabaseHelper.User.TABLE);
+                dao.insert(user);
 
             } else if ((user = dao.findByAttribute(DatabaseHelper.User.EMAIL, user.getEmail())).getId() !=
                     userFromServer.getId()) {

@@ -6,6 +6,7 @@ import android.app.AlertDialog.Builder;
 import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
@@ -37,6 +38,7 @@ import br.com.compremelhor.service.CartService;
 import static br.com.compremelhor.util.Constants.CLIENT_SCANNER;
 import static br.com.compremelhor.util.Constants.CURRENT_QUANTITY_OF_ITEM_EXTRA;
 import static br.com.compremelhor.util.Constants.OTHERS_CODES;
+import static br.com.compremelhor.util.Constants.PREFERENCES;
 import static br.com.compremelhor.util.Constants.PRODUCT_MODE;
 import static br.com.compremelhor.util.Constants.PURCHASE_ID_EXTRA;
 import static br.com.compremelhor.util.Constants.QR_CODE_MODE;
@@ -44,6 +46,7 @@ import static br.com.compremelhor.util.Constants.REQUEST_CODE_CART_ITEM_ADDED;
 import static br.com.compremelhor.util.Constants.REQUEST_CODE_CART_ITEM_EDITED;
 import static br.com.compremelhor.util.Constants.REQUEST_CODE_SCANNED_CODE;
 import static br.com.compremelhor.util.Constants.SCAN_MODE;
+import static br.com.compremelhor.util.Constants.SP_USER_ID;
 
 
 public class CartFragment extends android.support.v4.app.Fragment {
@@ -65,6 +68,7 @@ public class CartFragment extends android.support.v4.app.Fragment {
     private String itemIdSelected;
     private String currentQuantityOfItemSelected;
 
+    private SharedPreferences preferences;
 
     private SKUResource skuResource;
     private CartService cartService;
@@ -92,7 +96,11 @@ public class CartFragment extends android.support.v4.app.Fragment {
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState) {
         Log.d("ASYNC TASK", "CartFragment.OnViewCreated");
-        cartService = CartService.getInstance(getActivity());
+
+        preferences = getActivity().getSharedPreferences(PREFERENCES, Activity.MODE_PRIVATE);
+        int userId = preferences.getInt(SP_USER_ID, 0);
+
+        cartService = CartService.getInstance(getActivity(), userId);
         skuResource = new SKUResource(getActivity());
         handler = new Handler();
         setWidgets();
@@ -124,7 +132,6 @@ public class CartFragment extends android.support.v4.app.Fragment {
                                         Toast.makeText(getActivity(),
                                                 "Produto de código " + code + " não encontrado.", Toast.LENGTH_SHORT).show();
                                         progressDialog.dismiss();
-
                                     }
                                 });
                                 return null;
@@ -149,7 +156,7 @@ public class CartFragment extends android.support.v4.app.Fragment {
             case REQUEST_CODE_CART_ITEM_ADDED:
                 if (resultCode == Activity.RESULT_OK) {
                     Log.d("ASYNC TASK", "CartFragment.OnActivityResult");
-                 //   new LoadCurrentCart().execute();
+                    new LoadCurrentCart().execute();
                 }
                 break;
         }

@@ -30,7 +30,6 @@ import br.com.compremelhor.R;
 import br.com.compremelhor.api.integration.ResponseServer;
 import br.com.compremelhor.api.integration.resource.impl.AddressResource;
 import br.com.compremelhor.dao.DAOAddress;
-import br.com.compremelhor.dao.DatabaseHelper;
 import br.com.compremelhor.model.Address;
 
 import static br.com.compremelhor.util.Constants.ADDRESS_ID_EXTRA;
@@ -314,7 +313,7 @@ public class AddressActivity extends AppCompatActivity {
                                     }
                                 } else {
                                     ad.setId(response.getEntity().getId());
-                                    if (dao.insert(ad, DatabaseHelper.Address.TABLE) == -1) {
+                                    if (dao.insert(ad) == -1) {
                                         handler.post(new Runnable() {
                                             @Override
                                             public void run() {
