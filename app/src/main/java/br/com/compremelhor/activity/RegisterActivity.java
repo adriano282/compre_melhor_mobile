@@ -251,7 +251,7 @@ public class RegisterActivity extends AppCompatActivity {
     private void showProgressDialog(String message) {
         progressDialog = ProgressDialog
                 .show(RegisterActivity.this,
-                        getString(R.string.wait_header_dialog),message, true, false);
+                        getString(R.string.dialog_header_wait),message, true, false);
     }
 
 

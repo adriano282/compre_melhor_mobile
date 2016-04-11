@@ -3,12 +3,11 @@ package br.com.compremelhor.api.integration.resource;
 import java.util.Map;
 
 import br.com.compremelhor.api.integration.ResponseServer;
-import br.com.compremelhor.model.EntityModel;
 
 /**
  * Created by adriano on 26/03/16.
  */
-public interface Resource<T extends EntityModel> {
+public interface Resource<T> {
     String PHISICAL_DEVICE = "192.168.0.101:8080";
     String EMULATOR_DEVICE = "10.0.2.2";
 
@@ -21,4 +20,6 @@ public interface Resource<T extends EntityModel> {
     T getResource(Map<String, String> params);
     T getResource(int id);
     T getResource(String location);
+    boolean isConnectedOnInternet();
+
 }

@@ -84,7 +84,7 @@ public class AddressListActivity extends AppCompatActivity {
     private void showProgressDialog(String message) {
         progressDialog = ProgressDialog
                 .show(AddressListActivity.this,
-                        getString(R.string.wait_header_dialog), message, true, false);
+                        getString(R.string.dialog_header_wait), message, true, false);
     }
 
     @Override
@@ -237,7 +237,7 @@ public class AddressListActivity extends AppCompatActivity {
                             listView.invalidateViews();
                             setViews();
                             Toast.makeText(AddressListActivity.this,
-                                    getString(R.string.address_removed_successuful_message), Toast.LENGTH_SHORT).show();
+                                    getString(R.string.address_removed_successful_message), Toast.LENGTH_SHORT).show();
 
                         }
                     });

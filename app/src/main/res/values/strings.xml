@@ -55,6 +55,11 @@
     <string name="dialog_content_text_putting_item_on_cart">Inserindo item no carrinho...</string>
     <string name="dialog_content_text_starting_item_on_cart">Iniciando carrinho atual...</string>
     <string name="dialog_content_text_loading_places">Carregando locais...</string>
+    <string name="dialog_content_text_running">Processando..</string>
+    <string name="dialog_content_text_registering_on_server">Registrando no servidor...</string>
+
+    <!-- ProgressDialog's headers texts -->
+    <string name="dialog_header_wait">Aguarde</string>
 
 
     <!-- Confirmation's actions -->
@@ -117,10 +122,13 @@
     <string name="err_ocurred_attempting_save_address">Ocorreu um erro ao tentar salvar o endereço</string>
     <string name="err_cep_not_found">CEP não encontrado</string>
     <string name="err_invalid_cep">Cep inválido.</string>
+    <string name="err_without_connection_register_message">Por favor, se conecte a internet para realizar o cadastro.</string>
 
 
     <!-- Successful messages -->
-    <string name="password_updated_successfully">Sua senha foi atualizada com sucesso.</string>
+    <string name="password_updated_successful_message">Sua senha foi atualizada com sucesso.</string>
+    <string name="address_removed_successful_message">Endereço excluído com sucesso!</string>
+    <string name="data_registered_successful_message">Seus dados foram salvos com sucesso.</string>
 
     <string name="purchase_label">Nova Compra</string>
     <string name="cart">Carrinho</string>
@@ -149,7 +157,7 @@
     <string name="action_bar_cart_item_label">Item Carrinho</string>
     <string name="btn_label_add_item_to_cart">Colocar no Carrinho</string>
 
-    <string name="wait_header_dialog">Aguarde</string>
+
     <string name="removed_item_success_msg">Item removido do carrinho</string>
     <string name="removed_item_error_msg">Ocorreu um erro ao tentar remover o item do carrinho.</string>
     <string name="cart_is_empty">Você não possui nenhum produto em seu carrinho.</string>
@@ -177,7 +185,7 @@
     <string name="register_label">Cadastro</string>
     <string name="header_dialog_error_message_without_internet">Sem Conexão</string>
     <string name="doing_register">Realizando Cadastro...</string>
-    <string name="address_removed_successuful_message">Endereço excluído com sucesso!</string>
+
     <string name="address_remove_error_message">Ocorreu um erro ao tentar excluir seu endereço</string>
     <string name="action_bar_partner_label">Selecionar Local</string>
 

@@ -2,12 +2,10 @@ package br.com.compremelhor.api.integration;
 
 import java.util.List;
 
-import br.com.compremelhor.model.EntityModel;
-
 /**
  * Created by adriano on 25/03/16.
  */
-public class ResponseServer<T extends EntityModel> {
+public class ResponseServer<T> {
     private String location;
     private T entity;
     private Integer statusCode;

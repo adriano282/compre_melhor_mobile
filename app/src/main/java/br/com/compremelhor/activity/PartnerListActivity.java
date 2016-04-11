@@ -142,7 +142,7 @@ public class PartnerListActivity extends AppCompatActivity {
     private void showProgressDialog(String message) {
         progressDialog = ProgressDialog
                 .show(PartnerListActivity.this,
-                        getString(R.string.wait_header_dialog), message, true, false);
+                        getString(R.string.dialog_header_wait), message, true, false);
     }
 
     private class OnItemClickListener implements AdapterView.OnItemClickListener {

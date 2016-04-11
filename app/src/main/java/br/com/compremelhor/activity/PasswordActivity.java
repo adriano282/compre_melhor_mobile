@@ -69,7 +69,7 @@ public class PasswordActivity extends AppCompatActivity implements OnClickListen
 
             case R.id.btn_change_password:
                 if (matcherPasswordOnDatabase() && updatePassword()) {
-                    Toast.makeText(this, R.string.password_updated_successfully, Toast.LENGTH_SHORT).show();
+                    Toast.makeText(this, R.string.password_updated_successful_message, Toast.LENGTH_SHORT).show();
                     finish();
                 }
                 else {

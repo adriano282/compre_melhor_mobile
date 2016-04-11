@@ -74,7 +74,7 @@ public class ProfileActivity extends AppCompatActivity implements OnClickListene
     private void showProgressDialog(String message) {
         progressDialog = ProgressDialog
                 .show(ProfileActivity.this,
-                        getString(R.string.wait_header_dialog), message, true, false);
+                        getString(R.string.dialog_header_wait), message, true, false);
     }
 
     private boolean validForm() {

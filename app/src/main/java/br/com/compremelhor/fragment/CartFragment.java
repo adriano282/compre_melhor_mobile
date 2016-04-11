@@ -294,13 +294,13 @@ public class CartFragment extends android.support.v4.app.Fragment {
     private void showProgressDialog(String message) {
         progressDialog = ProgressDialog
                 .show(getActivity(),
-                        getString(R.string.wait_header_dialog), message, true, false);
+                        getString(R.string.dialog_header_wait), message, true, false);
     }
 
     private class LoadCurrentCart extends AsyncTask<Void, Void, Double> {
         public void onPreExecute() {
             progressDialog = ProgressDialog
-                    .show(getActivity(), getString(R.string.wait_header_dialog), getString(R.string.loading_current_cart_dialog), true, false);
+                    .show(getActivity(), getString(R.string.dialog_header_wait), getString(R.string.loading_current_cart_dialog), true, false);
         }
 
         @Override

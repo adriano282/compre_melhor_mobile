@@ -15,7 +15,7 @@ import br.com.compremelhor.util.DataBind;
 /**
  * Created by adriano on 25/08/15.
  */
-public abstract class AbstractDAO<T> {
+public abstract class AbstractDAO<T> implements IDAO<T> {
     private DatabaseHelper helper;
     private SQLiteDatabase db;
     private DataBind dataBind;

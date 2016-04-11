@@ -1,23 +1,15 @@
 package br.com.compremelhor.activity;
 
-import android.app.AlertDialog;
-import android.app.ProgressDialog;
 import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
-import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.KeyEvent;
-import android.view.Menu;
-import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.Toast;
 
-import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.BufferedReader;
@@ -28,19 +20,17 @@ import java.net.URLConnection;
 
 import br.com.compremelhor.R;
 import br.com.compremelhor.api.integration.ResponseServer;
+import br.com.compremelhor.api.integration.resource.Resource;
 import br.com.compremelhor.api.integration.resource.impl.AddressResource;
 import br.com.compremelhor.dao.DAOAddress;
+import br.com.compremelhor.dao.IDAO;
 import br.com.compremelhor.model.Address;
 
 import static br.com.compremelhor.util.Constants.ADDRESS_ID_EXTRA;
 import static br.com.compremelhor.util.Constants.PREFERENCES;
 import static br.com.compremelhor.util.Constants.SP_USER_ID;
 
-public class AddressActivity extends AppCompatActivity {
-
-    private AddressResource resource;
-    private SharedPreferences preferences;
-
+public class AddressActivity extends ActivityTemplate<Address> {
     private EditText etZipcode;
     private EditText etStreet;
     private EditText etNumber;
@@ -58,10 +48,6 @@ public class AddressActivity extends AppCompatActivity {
     private String city;
     private String state;
 
-    private ProgressDialog dialog;
-    private DAOAddress dao;
-    private Handler handler;
-
     private String result;
     private boolean update = false;
 
@@ -69,69 +55,42 @@ public class AddressActivity extends AppCompatActivity {
     public void onCreate(Bundle savedInstaceState) {
         super.onCreate(savedInstaceState);
         setContentView(R.layout.activity_address);
-
-        preferences = getSharedPreferences(PREFERENCES, MODE_PRIVATE);
-        int userId = preferences.getInt(SP_USER_ID, 0);
-        resource = new AddressResource(this, userId);
-
-        dao = DAOAddress.getInstance(AddressActivity.this);
-        handler = new Handler();
+        setupOnCreateActivity(R.id.address_toolbar,
+                getSharedPreferences(PREFERENCES, MODE_PRIVATE), new Handler(),
+                DAOAddress.getInstance(AddressActivity.this),
+                new AddressResource(this, preferences.getInt(SP_USER_ID, 0)));
 
         if (!resource.isConnectedOnInternet()) {
-            createDialogError();
+            createDialogErrorWithoutNetwork(R.string.err_without_connection_register_message);
             finish();
         }
-        
+
         setToolbar();
         setWidgets();
         registerWidgets();
     }
 
-    private AlertDialog createDialogError() {
-        return new AlertDialog.Builder(this)
-                .setMessage("Por favor, se conecte a internet para realizar o cadastro.")
-                .setTitle(R.string.header_dialog_error_message_without_internet)
-                .create();
-    }
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.action_bars_menu, menu);
-        return true;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case R.id.menu_settings:
-                // Here we would open up our settings activity
-                return true;
-
-            case android.R.id.home:
-                finish();
-                return true;
-        }
-
-        return super.onOptionsItemSelected(item);
-    }
-
-    private void registerWidgets() {
+    protected void registerWidgets() {
         btnReset.setOnClickListener(new OnClickListener());
         btnSubmit.setOnClickListener(new OnClickListener());
         etZipcode.setOnKeyListener(new OnKeyListener());
     }
 
-    private void setToolbar() {
-        Toolbar myToolbar = (Toolbar) findViewById(R.id.address_toolbar);
-        myToolbar.setLogo(R.mipmap.icon);
-        setSupportActionBar(myToolbar);
-        if (getSupportActionBar() != null) {
-            getSupportActionBar().setDisplayShowHomeEnabled(true);
-            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        }
+    @Override
+    public void setupOnCreateActivity(int toolbarId,
+                                      SharedPreferences preferences,
+                                      Handler handler,
+                                      IDAO<Address> dao,
+                                      Resource<Address> resource) {
+        this.toolbarId = toolbarId;
+        this.preferences = preferences;
+        this.handler = handler;
+        this.dao = dao;
+        this.resource = resource;
     }
 
-    private void setWidgets() {
+    @Override
+    protected void setWidgets() {
         etZipcode = (EditText) findViewById(R.id.et_address_zipcode);
         etStreet = (EditText) findViewById(R.id.et_address_street);
         etNumber = (EditText) findViewById(R.id.et_address_number);
@@ -151,7 +110,8 @@ public class AddressActivity extends AppCompatActivity {
         fillFields();
     }
 
-    private void fillFields() {
+    @Override
+    protected void fillFields() {
         if (getIntent().hasExtra(ADDRESS_ID_EXTRA)) {
 
             int id = getIntent().getIntExtra(ADDRESS_ID_EXTRA, 0);
@@ -190,21 +150,13 @@ public class AddressActivity extends AppCompatActivity {
                 etNameAddress.getText().toString(),
                 preferences.getInt(SP_USER_ID, 0)
         );
-
-    }
-
-    private void showMessage(String message) {
-        Toast toast = Toast.makeText(this, message, Toast.LENGTH_SHORT);
-        toast.show();
     }
 
     private class HttpGetter extends AsyncTask<Void, Void, Void> {
         @Override
         protected void onPreExecute() {
-            if (AddressActivity.this.dialog != null) {
-                AddressActivity.this.dialog.dismiss();
-            }
-            AddressActivity.this.dialog = ProgressDialog.show(AddressActivity.this, "Aguarde", "Processando", true, false);
+            dismissProgressDialog();
+            showProgressDialog(R.string.dialog_header_wait, R.string.dialog_content_text_running);
         }
 
         private String converse(String host, int port, String path) throws IOException {
@@ -242,9 +194,7 @@ public class AddressActivity extends AppCompatActivity {
                     street = jsonObject.getString("logradouro");
                     state = jsonObject.getString("uf");
                 }
-            } catch (IOException e) {
-                e.printStackTrace();
-            } catch (JSONException e) {
+            } catch (Exception e) {
                 e.printStackTrace();
             }
             return null;
@@ -252,7 +202,7 @@ public class AddressActivity extends AppCompatActivity {
 
         @Override
         protected void onPostExecute(Void r) {
-            AddressActivity.this.dialog.dismiss();
+            dismissProgressDialog();
             if (result.equals("success")) {
                 etStreet.setText(street);
                 etCity.setText(city);
@@ -261,18 +211,11 @@ public class AddressActivity extends AppCompatActivity {
             } else {
                 resetFields(true);
                 etZipcode.setFocusable(true);
-                showMessage(getString(R.string.err_cep_not_found));
+                showMessage(R.string.err_cep_not_found);
             }
         }
 
     }
-
-    private void showProgressDialog(String message) {
-        dialog = ProgressDialog
-                .show(AddressActivity.this,
-                        getString(R.string.wait_header_dialog),message, true, false);
-    }
-
 
     private class OnClickListener implements View.OnClickListener {
         @Override
@@ -284,7 +227,7 @@ public class AddressActivity extends AppCompatActivity {
 
                 case R.id.btn_address_submit:
                     if (!resource.isConnectedOnInternet()) {
-                        createDialogError();
+                        createDialogErrorWithoutNetwork(R.string.err_without_connection_register_message);
                         return;
                     }
 
@@ -306,7 +249,7 @@ public class AddressActivity extends AppCompatActivity {
                                         handler.post(new Runnable() {
                                             @Override
                                             public void run() {
-                                                showMessage(getString(R.string.err_ocurred_attempting_save_address));
+                                                showMessage(R.string.err_ocurred_attempting_save_address);
                                             }
                                         });
 
@@ -317,18 +260,18 @@ public class AddressActivity extends AppCompatActivity {
                                         handler.post(new Runnable() {
                                             @Override
                                             public void run() {
-                                                showMessage(getString(R.string.err_ocurred_attempting_save_address));
+                                                showMessage(R.string.err_ocurred_attempting_save_address);
                                             }
                                         });
                                     }
                                 }
 
-                                dialog.dismiss();
+                                dismissProgressDialog();
 
                                 handler.post(new Runnable() {
                                     @Override
                                     public void run() {
-                                        Toast.makeText(AddressActivity.this, "Seus dados foram salvos com sucesso.", Toast.LENGTH_SHORT).show();
+                                        showMessage(R.string.data_registered_successful_message);
                                         finish();
                                     }
                                 });
@@ -344,12 +287,13 @@ public class AddressActivity extends AppCompatActivity {
 
                         @Override
                         protected void onPreExecute() {
-                            showProgressDialog("Registrando no servidor...");
+                            showProgressDialog(R.string.dialog_header_wait,
+                                    R.string.dialog_content_text_registering_on_server);
                         }
 
                         @Override
                         protected void onPostExecute(Void aVoid) {
-                            dialog.dismiss();
+                            dismissProgressDialog();
                         }
                     };
                     request.execute();

@@ -249,6 +249,6 @@ public class CartService {
     }
     private void showProgressDialog(String message) {
         progressDialog = ProgressDialog
-                .show(context, context.getString(R.string.wait_header_dialog), message, true, false);
+                .show(context, context.getString(R.string.dialog_header_wait), message, true, false);
     }
 }
