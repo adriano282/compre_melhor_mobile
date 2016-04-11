@@ -5,7 +5,6 @@ import android.content.Context;
 import android.os.AsyncTask;
 import android.os.Handler;
 import android.util.Log;
-import android.widget.Toast;
 
 import java.math.BigDecimal;
 import java.util.Calendar;
@@ -17,7 +16,6 @@ import br.com.compremelhor.R;
 import br.com.compremelhor.api.integration.ResponseServer;
 import br.com.compremelhor.api.integration.resource.impl.PurchaseLineResource;
 import br.com.compremelhor.api.integration.resource.impl.PurchaseResource;
-import br.com.compremelhor.dao.DAOEstablishment;
 import br.com.compremelhor.dao.DAOPurchase;
 import br.com.compremelhor.dao.DAOPurchaseLine;
 import br.com.compremelhor.model.Establishment;
@@ -25,44 +23,43 @@ import br.com.compremelhor.model.Purchase;
 import br.com.compremelhor.model.PurchaseLine;
 import br.com.compremelhor.model.User;
 
-/**
- * Created by adriano on 05/04/16.
- */
 public class CartService {
-
     private static CartService instance;
 
     private DAOPurchase daoPurchase;
     private DAOPurchaseLine daoItem;
-    private DAOEstablishment daoEstablishment;
 
     private PurchaseResource purchaseResource;
     private PurchaseLineResource itemResource;
 
+    private Purchase purchase;
+
     private Handler handler;
 
     private ProgressDialog progressDialog;
+
     private Context context;
+
     private int userId;
-    private Purchase purchase;
+    private int partnerId;
 
-    public static CartService getInstance(Context context, int userId) {
-        if (instance == null)
+    public static CartService getInstance(Context context, int userId, int partnerId) {
+        if (instance == null) {
             instance = new CartService();
+            instance.context = context;
+            instance.daoItem = DAOPurchaseLine.getInstance(context);
+            instance.daoPurchase = DAOPurchase.getInstance(context);
 
-        instance.context = context;
-        instance.daoItem = DAOPurchaseLine.getInstance(context);
-        instance.daoPurchase = DAOPurchase.getInstance(context);
-        instance.daoEstablishment = DAOEstablishment.getInstance(context);
+            instance.purchaseResource = new PurchaseResource("purchases", context);
+            instance.handler = new Handler();
+            instance.userId = userId;
+            instance.partnerId = partnerId;
+            instance.loadCurrentPurchase();
 
-        instance.purchaseResource = new PurchaseResource("purchases", context);
-        instance.handler = new Handler();
-        instance.userId = userId;
-        instance.loadCurrentPurchase();
-
-        if (instance.purchase != null) {
-            instance.itemResource = new PurchaseLineResource(
-                    "purchases/" + instance.purchase.getId() +"/lines", context);
+            if (instance.purchase != null) {
+                instance.itemResource = new PurchaseLineResource(
+                        "purchases/" + instance.purchase.getId() +"/lines", context);
+            }
         }
         return instance;
     }
@@ -70,75 +67,109 @@ public class CartService {
     public boolean addItem(final PurchaseLine item) {
         if (item.getPurchase() == null) { item.setPurchase(purchase);}
 
+        showProgressDialog(context.getString(R.string.dialog_content_text_putting_item_on_cart));
+
         AsyncTask<Void, Void, Boolean> request = new AsyncTask<Void, Void, Boolean>() {
             @Override
             protected Boolean doInBackground(Void... params) {
-                if (!getItems().add(item)) {
-                    progressDialog.dismiss();
-                    handler.post(new Runnable() {
-                        @Override
-                        public void run() {
-                            Toast.makeText(context,
-                                    "Seu item não foi inserido, pois o mesmo já está em seu carrinho.",
-                                    Toast.LENGTH_SHORT).show();
-                        }
-                    });
-                }
-                handler.post(new Runnable() {
-                    @Override
-                    public void run() {
-                        showProgressDialog("Inserindo item no carrinho...");
-                    }
-                });
+                if (!getItems().add(item)) return false;
 
                 ResponseServer<PurchaseLine> response = itemResource.createResource(item);
-
                 if (response.hasErrors()) {
-                    Log.d("REST API", "Response Status: " + response.getStatusCode());
-                    for (String error : response.getErrors()) {
-                        Log.d("REST API", "Error: " + error);
-                    }
-                    progressDialog.dismiss();
-                    handler.post(new Runnable() {
-                        @Override
-                        public void run() {
-                            Toast.makeText(context,
-                                    "Seu item não foi inserido, pois o mesmo já está em seu carrinho.",
-                                    Toast.LENGTH_SHORT).show();
-                        }
-                    });
+                    log(response);
                     return false;
                 }
-
-                if (daoItem.insertOrUpdate(item) == -1)
+                item.setId(response.getEntity().getId());
+                if (daoItem.insert(item) == -1)
                     throw new RuntimeException("An error occurred during the try of save on database");
 
-                refreshSubTotal();
-                handler.post(new Runnable() {
-                    @Override
-                    public void run() {
-                        Toast.makeText(context,
-                                "Item inserido com sucesso!",
-                                Toast.LENGTH_SHORT).show();
-                    }
-                });
                 return true;
             }
+
+            @Override
+            protected void onPostExecute(Boolean aBoolean) {
+                refreshSubTotal();
+                progressDialog.dismiss();
+            }
         };
+
         try {
             return request.execute().get();
         } catch (InterruptedException e) {
             return false;
         } catch (ExecutionException e) {
-            return false;
+            throw new RuntimeException("Error occurred during editing an item on cart: " + e);
         }
     }
 
-    public boolean removeItem(PurchaseLine item) {
-        daoItem.delete(item.getId());
-        boolean r = purchase.getItems().remove(item);
-        refreshSubTotal();
-        return r;
+    public boolean editItem(final PurchaseLine item) {
+        showProgressDialog(context.getString(R.string.dialog_content_text_changing_item_on_cart));
+
+        AsyncTask<Void, Void, Boolean> request = new AsyncTask<Void, Void, Boolean>() {
+            @Override
+            protected Boolean doInBackground(Void... params) {
+                ResponseServer<PurchaseLine> response = itemResource.updateResource(item);
+                if (response.hasErrors()) {
+                    log(response);
+                    return false;
+                }
+
+                if (daoItem.insertOrUpdate(item) == -1) {
+                    return false;
+                }
+
+                getItems().remove(item);
+                getItems().add(item);
+                return true;
+            }
+
+            @Override
+            protected void onPostExecute(Boolean aBoolean) {
+                refreshSubTotal();
+                progressDialog.dismiss();
+            }
+        };
+
+        try {
+            return request.execute().get();
+        } catch (InterruptedException e) {
+            return false;
+        } catch (ExecutionException e) {
+            throw new RuntimeException("Error occurred during editing an item on cart: " + e);
+        }
+    }
+
+    public boolean removeItem(final PurchaseLine item) {
+//        showProgressDialog(context.getString(R.string.dialog_content_text_removing_item_on_cart));
+
+        AsyncTask<Void, Void, Boolean> request = new AsyncTask<Void, Void, Boolean>() {
+            @Override
+            protected Boolean doInBackground(Void... params) {
+                if (!purchase.getItems().remove(item)) return false;
+
+                ResponseServer<PurchaseLine> responseServer = itemResource.deleteResource(item);
+                if (responseServer.hasErrors()) {
+                    log(responseServer);
+                    return false;
+                }
+                daoItem.delete(item.getId());
+                return true;
+            }
+
+            @Override
+            protected void onPostExecute(Boolean aBoolean) {
+                refreshSubTotal();
+  //              progressDialog.dismiss();
+            }
+        };
+
+        try {
+            return request.execute().get();
+        } catch (InterruptedException e) {
+            return false;
+        } catch (ExecutionException e) {
+            throw new RuntimeException("Error occurred during editing an item on cart: " + e);
+        }
     }
 
     public TreeSet<PurchaseLine> getItems() {
@@ -151,17 +182,12 @@ public class CartService {
     }
 
     private void loadCurrentPurchase() {
-        showProgressDialog("Iniciando carrinho atual...");
+        showProgressDialog(context.getString(R.string.dialog_content_text_starting_item_on_cart));
         purchase = daoPurchase.getOpenedPurchase();
+
         if (purchase == null) {
-
             final Establishment establishment = new Establishment();
-            establishment.setName("SuperMercado da Gente");
-
-
-            if (daoEstablishment.findByAttribute("name", establishment.getName()) == null) {
-                daoEstablishment.insertOrUpdate(establishment);
-            }
+            establishment.setId(partnerId);
 
             AsyncTask<Void, Void, Void> request = new AsyncTask<Void, Void, Void>() {
                 @Override
@@ -171,6 +197,8 @@ public class CartService {
                     param.put("status", Purchase.Status.OPENED.toString());
 
                     purchase = purchaseResource.getResource(param);
+                    purchase.setEstablishment(establishment);
+
                     if (purchase == null) {
                         purchase = new Purchase();
                         User user = new User();
@@ -181,32 +209,44 @@ public class CartService {
                         purchase.setLastUpdated(Calendar.getInstance());
 
                         ResponseServer<Purchase> responseServer = purchaseResource.createResource(purchase);
-
                         if (responseServer.hasErrors()) {
                             Log.d("REST API", "Response STATUS CODE: " + responseServer.getStatusCode());
                             for (String error : responseServer.getErrors()) {
                                 Log.d("REST API", "Error: " + error);
                             }
+                            throw new RuntimeException("Error on Server");
                         }
+                        daoPurchase.insertOrUpdate(purchase);
+                        progressDialog.dismiss();
+                        return null;
                     }
-                    purchase.setEstablishment(establishment);
+
                     daoPurchase.insert(purchase);
                     progressDialog.dismiss();
                     return null;
                 }
             };
             request.execute();
+        } else {
+            progressDialog.dismiss();
         }
     }
 
     private void refreshSubTotal() {
         BigDecimal total = BigDecimal.valueOf(0.0);
-        for (PurchaseLine line : purchase.getItems()) {
-                total.add(line.getSubTotal());
+        for (PurchaseLine line : getItems()) {
+            total.add(line.getSubTotal());
         }
         instance.purchase.setTotalValue(total);
     }
 
+    private void log(ResponseServer<PurchaseLine> response) {
+        Log.d("REST API", "Response Status: " + response.getStatusCode());
+        for (String error : response.getErrors()) {
+            Log.d("REST API", "Error: " + error);
+        }
+
+    }
     private void showProgressDialog(String message) {
         progressDialog = ProgressDialog
                 .show(context, context.getString(R.string.wait_header_dialog), message, true, false);

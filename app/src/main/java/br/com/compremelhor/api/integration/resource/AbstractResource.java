@@ -5,6 +5,7 @@ import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.util.Log;
 
+import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
@@ -16,9 +17,12 @@ import java.io.OutputStream;
 import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
+import java.net.ProtocolException;
 import java.net.URL;
 import java.net.URLEncoder;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -132,7 +136,7 @@ public abstract class AbstractResource<T extends EntityModel> implements Resourc
         }
 
         try {
-            URL url = new URL(APPLICATION_ROOT.concat(RESOURCE_ROOT)
+            URL url = new URL(APPLICATION_ROOT.concat(RESOURCE_ROOT).concat("/find")
                     .concat(sb.toString()));
 
             return doGET(url);
@@ -144,12 +148,59 @@ public abstract class AbstractResource<T extends EntityModel> implements Resourc
         }
     }
 
+    public List<T> getAllResources(int start, int size) {
+        URL url = null;
+        try {
+            url = new URL(APPLICATION_ROOT.concat(RESOURCE_ROOT)
+                    .concat("?start=" + start + "0&size=" + size));
+            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+            connection.setInstanceFollowRedirects(false);
+            connection.setRequestMethod(HTTPMethods.GET.toString());
+            connection.setRequestProperty("Authorization", "token_app DG4OjT9ciuPtHk1p7Fi/kg==");
+            connection.setRequestProperty("Content-Type", "application/json");
+
+            if (connection.getResponseCode() != HttpURLConnection.HTTP_OK) {
+                log(connection, url);
+                return null;
+            }
+
+            BufferedReader br =
+                    new BufferedReader(new InputStreamReader(connection.getInputStream()));
+
+            String line;
+            StringBuilder sb = new StringBuilder();
+
+            while ((line = br.readLine()) != null) {
+                sb.append(line);
+            }
+
+            JsonElement json =  new JsonParser().parse(sb.toString());
+            JsonArray jsonArray = json.getAsJsonArray();
+
+            List<T> entities = new ArrayList<>();
+
+            for (int i = 0; i < jsonArray.size(); i++) {
+                entities.add(bindResourceFromJson(jsonArray.get(i).getAsJsonObject()));
+            }
+
+            connection.disconnect();
+            return entities;
+        } catch (MalformedURLException e) {
+            throw new RuntimeException(e);
+        } catch (ProtocolException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
     public T getResource(String attributeName, String attributeValue) {
         if (!validAttributeName(attributeName))
             throw new IllegalArgumentException("Unknown attribute name for entity: " + attributeName);
 
         try {
-            URL url = new URL(APPLICATION_ROOT.concat(RESOURCE_ROOT)
+            URL url = new URL(APPLICATION_ROOT.concat(RESOURCE_ROOT).concat("/find")
                     .concat("?")
                     .concat(attributeName)
                     .concat("=")

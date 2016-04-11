@@ -2,7 +2,9 @@ package br.com.compremelhor.activity;
 
 import android.content.SharedPreferences;
 import android.graphics.BitmapFactory;
+import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
@@ -15,15 +17,19 @@ import android.widget.TextView;
 
 import java.math.BigDecimal;
 import java.util.Calendar;
+import java.util.HashMap;
 
 import br.com.compremelhor.R;
+import br.com.compremelhor.api.integration.resource.impl.StockResource;
 import br.com.compremelhor.model.Product;
 import br.com.compremelhor.model.PurchaseLine;
+import br.com.compremelhor.model.Stock;
 import br.com.compremelhor.service.CartService;
 
 import static br.com.compremelhor.util.Constants.CURRENT_QUANTITY_OF_ITEM_EXTRA;
 import static br.com.compremelhor.util.Constants.PREFERENCES;
 import static br.com.compremelhor.util.Constants.PURCHASE_ID_EXTRA;
+import static br.com.compremelhor.util.Constants.SP_PARTNER_ID;
 import static br.com.compremelhor.util.Constants.SP_USER_ID;
 
 public class ProductActivity extends AppCompatActivity {
@@ -39,9 +45,12 @@ public class ProductActivity extends AppCompatActivity {
 
     private NumberPicker npQuantity;
 
-    private Button btnPutInCart;
+    private Button btnChangeOnCart;
     private PurchaseLine item;
     private CartService cartService;
+
+    private Handler handler;
+    private StockResource stockResource;
     private int itemId;
 
     public void onCreate(Bundle savedInstanceState) {
@@ -49,10 +58,13 @@ public class ProductActivity extends AppCompatActivity {
         setContentView(R.layout.activity_product);
 
         item = new PurchaseLine();
+        handler = new Handler();
         preferences = getSharedPreferences(PREFERENCES, MODE_PRIVATE);
         int userId = preferences.getInt(SP_USER_ID, 0);
+        int partnerId = preferences.getInt(SP_PARTNER_ID, 0);
 
-        cartService = CartService.getInstance(this, userId);
+        stockResource = new StockResource("stock", this);
+        cartService = CartService.getInstance(this, userId, partnerId);
         setToolbar();
         setViews();
         registerListeners();
@@ -79,7 +91,7 @@ public class ProductActivity extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
-    public void onClickPutOnCart(View view) {
+    public void onClickChangeOnCart(View view) {
         item.setQuantity(new BigDecimal(npQuantity.getValue()));
         item.setSubTotal(item.getQuantity().multiply(item.getProduct().getPriceUnitary()));
 
@@ -91,9 +103,30 @@ public class ProductActivity extends AppCompatActivity {
         item.setId(itemId);
         item.setProductName(item.getProduct().getName());
 
-        cartService.addItem(item);
-        this.setResult(RESULT_OK);
-        finish();
+        AsyncTask<Void, Void, Void> request = new AsyncTask<Void, Void, Void>() {
+            @Override
+            protected Void doInBackground(Void... params) {
+                HashMap<String, String> paramsStock = new HashMap<>();
+                paramsStock.put("skuPartner.sku.id", String.valueOf(item.getProduct().getId()));
+                paramsStock.put("skuPartner.partner.id", String.valueOf(preferences.getInt(SP_PARTNER_ID, 0)));
+                Stock stock = stockResource.getResource(paramsStock);
+                item.setStock(stock);
+                handler.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        if (btnChangeOnCart.getText().toString().equals(getString(R.string.btn_change_on_cart_text)))
+                            cartService.editItem(item);
+                        else
+                            cartService.addItem(item);
+                    }
+                });
+
+                ProductActivity.this.setResult(RESULT_OK);
+                finish();
+                return null;
+            }
+        };
+        request.execute();
     }
 
     private void fillViews() {
@@ -118,22 +151,20 @@ public class ProductActivity extends AppCompatActivity {
         tvSubtotal = (TextView) findViewById(R.id.tv_sub_total_product);
         tvUnit = (TextView) findViewById(R.id.tv_product_unit);
 
-        btnPutInCart = (Button) findViewById(R.id.btn_put_on_cart);
+        btnChangeOnCart = (Button) findViewById(R.id.btn_put_on_cart);
 
         String stringId = getIntent().getStringExtra(PURCHASE_ID_EXTRA);
 
         itemId = stringId == null || stringId.isEmpty() ? 0 : Integer.valueOf(stringId);
 
         if (itemId != 0)
-            btnPutInCart.setText("ALTERAR QUANTIDADE");
+            btnChangeOnCart.setText(getString(R.string.btn_change_on_cart_text));
 
         String quantity = getIntent().getStringExtra(CURRENT_QUANTITY_OF_ITEM_EXTRA);
         npQuantity = (NumberPicker) findViewById(R.id.np_quantity);
         npQuantity.setMinValue(0);
         npQuantity.setMaxValue(20);
         npQuantity.setValue(quantity == null || quantity.isEmpty() ? 0 : Integer.valueOf(quantity));
-
-
     }
 
     private void registerListeners() {

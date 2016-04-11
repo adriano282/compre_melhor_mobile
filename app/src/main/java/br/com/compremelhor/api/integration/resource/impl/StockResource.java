@@ -31,6 +31,7 @@ public class StockResource extends AbstractResource<Stock> {
 
         stock.setUnitPrice(BigDecimal.valueOf(jsonObject.get("unitPrice").getAsDouble()));
         stock.setQuantity(BigDecimal.valueOf(jsonObject.get("quantity").getAsDouble()));
+        stock.setId(jsonObject.get("id").getAsInt());
         return stock;
     }
 

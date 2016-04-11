@@ -9,7 +9,7 @@ import android.database.sqlite.SQLiteOpenHelper;
  */
 public class DatabaseHelper extends SQLiteOpenHelper {
     private static final String DATABASE = "CompreMelhor.db";
-    private static int DATABASE_VERSION = 28;
+    private static int DATABASE_VERSION = 30;
 
     private final String[] TABLES;
 

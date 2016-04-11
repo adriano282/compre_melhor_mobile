@@ -9,7 +9,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import br.com.compremelhor.model.Address;
 import br.com.compremelhor.model.EntityModel;
 import br.com.compremelhor.util.DataBind;
 
@@ -91,7 +90,7 @@ public abstract class AbstractDAO<T> {
 
             List<T> entities = new ArrayList<>();
             while (cursor.moveToNext()) {
-                T entity = (T) dataBind.bind(new Address(), cursor);
+                T entity = (T) dataBind.bind(clazz, cursor);
                 entities.add(entity);
             }
             return entities;

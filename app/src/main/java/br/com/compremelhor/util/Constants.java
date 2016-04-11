@@ -23,10 +23,12 @@ public interface Constants {
     String CURRENT_QUANTITY_OF_ITEM_EXTRA = "current_quantity_of_item_selected";
 
     String SP_SELECTED_ADDRESS_ID = "selected_address_id_sp";
+    String SP_PARTNER_ID = "sp_partner_id";
     String SP_USER_ID = "user_id";
     String SP_FACEBOOK_USER_ID = "facebook_user_id";
     String SP_LOGGED_ON_FACEBOOK = "is_logged_on_facebook";
     String SP_FREIGHT_VALUE = "sp_freight_value";
+
 
     String CLIENT_SCANNER = "com.google.zxing.client.android.SCAN";
     String SCAN_MODE = "SCAN_MODE";

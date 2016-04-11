@@ -3,42 +3,66 @@
     <string name="app_name">CompreMelhor</string>
     <string name="app_id">1621410234792107</string>
 
-
-    <!-- Page Login's resources -->
-    <string name="user">Email</string>
-    <string name="password">Senha</string>
-    <string name="login">Log in</string>
-    <string name="register">Cadastrar se</string>
-    <string name="keep_connected">Manter-se conectado</string>
-
-
-    <!-- Register page's resources -->
-    <string name="name">Nome</string>
-    <string name="email">E-mail</string>
-    <string name="document">Numero Documento</string>
-    <string name="addAddress">Adicionar Endereço</string>
-    <string name="password2">Repita a senha</string>
-
-
-    <!-- Register Address page's resources -->
-    <string name="street">Rua</string>
-    <string name="number">Numero</string>
-    <string name="quarter">Bairro</string>
-    <string name="city">Cidade</string>
-    <string name="state">Estado</string>
-    <string name="zipcode">CEP</string>
-
-    <string name="edit">Editar</string>
-    <string name="new_address">Novo Endereço</string>
-    <string name="remove">Remover Endereço</string>
-    <string name="options">Opções</string>
-    <string name="cancel">Cancelar</string>
-    <string name="back">Voltar</string>
-    <string name="delete_confirmation_address">Você realmente deseja remover este endereço?</string>
+    <!-- User's responses -->
     <string name="yes">Sim</string>
     <string name="no">Não</string>
-    <string name="list_is_empty">Você não possui nenhum endereço cadastrado.</string>
 
+    <!-- User's actions -->
+    <string name="edit">Editar</string>
+    <string name="cancel">Cancelar</string>
+    <string name="back">Voltar</string>
+    <string name="options">Opções</string>
+    <string name="out">Sair</string>
+    <string name="undone">Desfazer</string>
+    <string name="save">Salvar</string>
+    <string name="finish">Finalizar</string>
+
+    <!-- User's fields Labels -->
+    <string name="edit_text_label_email">Email</string>
+    <string name="edit_text_label_password">Senha</string>
+    <string name="edit_text_label_name">Nome</string>
+    <string name="edit_text_label_document">Numero Documento</string>
+    <string name="edit_text_label_password_confirmation">Repita a senha</string>
+
+
+    <!-- Button's labels -->
+    <string name="button_text_login">Log in</string>
+    <string name="button_text_register">Cadastrar se</string>
+    <string name="button_text_add_address">Adicionar Endereço</string>
+
+
+    <!-- CheckBox's labels -->
+    <string name="check_box_label_keep_connected">Manter-se conectado</string>
+
+
+    <!-- Address's fields labels -->
+    <string name="edit_text_label_street">Rua</string>
+    <string name="edit_text_label_number">Numero</string>
+    <string name="edit_text_label_quarter">Bairro</string>
+    <string name="edit_text_label_city">Cidade</string>
+    <string name="edit_text_label_state">Estado</string>
+    <string name="edit_text_label_zipcode">CEP</string>
+
+
+    <!-- Dialog's options text -->
+    <string name="dialog_option_text_new_address">Novo Endereço</string>
+    <string name="dialog_option_text_address">Remover Endereço</string>
+
+
+    <!-- ProgressDialog's content texts -->
+    <string name="dialog_content_text_changing_item_on_cart">Alterando item no carrinho...</string>
+    <string name="dialog_content_text_removing_item_on_cart">Removendo item do carrinho...</string>
+    <string name="dialog_content_text_putting_item_on_cart">Inserindo item no carrinho...</string>
+    <string name="dialog_content_text_starting_item_on_cart">Iniciando carrinho atual...</string>
+    <string name="dialog_content_text_loading_places">Carregando locais...</string>
+
+
+    <!-- Confirmation's actions -->
+    <string name="delete_confirmation_address">Você realmente deseja remover este endereço?</string>
+
+
+    <!-- TextView's messages texts -->
+    <string name="address_list_is_empty">Você não possui nenhum endereço cadastrado.</string>
 
     <!-- Dashboard page's resources -->
     <string name="start_purchase">Iniciar Compra</string>
@@ -48,23 +72,27 @@
     <string name="add_address">Adicionar Novo Endereço</string>
     <string name="title_my_addresses">Meus Endereços</string>
     <string name="change_password">Alterar minha senha</string>
-    <string name="undone">Desfazer</string>
-    <string name="save">Salvar</string>
     <string name="identification">N. Documento</string>
     <string name="my_data">Meu Cadastro</string>
-    <string name="out">Sair</string>
     <string name="type_document">Tipo de Documento:</string>
 
+
+    <!-- Cart page's resources -->
     <string name="total">Total R$ </string>
     <string name="add_product">Adicionar Produto</string>
     <string name="finish_purchase">Finalizar Esta Compra</string>
     <string name="remove_product">Remover Produto</string>
     <string name="alter_quantity">Alterar Quantidade</string>
     <string name="establishment">Local:</string>
+    <string name="loading_current_cart_dialog">Carregando atual carrinho</string>
 
+
+    <!-- Read Codes Options -->
     <string name="QR_CODE">Leitura de QR Code</string>
     <string name="BARCODE">Código de Barras</string>
     <string name="OTHER">Outro tipo de Código de Barras</string>
+
+
     <string name="manual">Inserir Código</string>
     <string name="read_type">Adionar Produto Por:</string>
     <string name="menu_settings">Configurações</string>
@@ -74,18 +102,30 @@
     <string name="action_bar_change_password_label">Senha Login</string>
     <string name="btn_change_password_cancel_operation">Cancelar Operação</string>
     <string name="btn_change_password_commit_changes">Alterar senha</string>
+
+
+    <!-- Error messages -->
     <string name="err_field_not_filled">Campo necessário não preenchido</string>
     <string name="err_differents_password">Senhas divergentes</string>
     <string name="err_invalid_password_cannot_contain_space">Senha inválida. Não pode possuir espaços</string>
     <string name="err_wrong_password">Senha informada incorreta</string>
     <string name="err_expired_session">Sessão expirada. Por favor realize login novamente.</string>
-    <string name="password_updated_successfully">Sua senha foi atualizada com sucesso.</string>
     <string name="err_wrong_credentials">Usuário ou senha incorretos</string>
-    <string name="err_login_facebook">Occurred a error while we were attempting to login on facebook.</string>
+    <string name="err_login_facebook">Desculpe, ocorreu um erro inesperado ao tentar-se conectar pelo facebook.</string>
+    <string name="err_cpf_document_invalid">Documento CPF inválido</string>
+    <string name="err_cnpj_document_invalid">Documento CNPJ inválido</string>
+    <string name="err_ocurred_attempting_save_address">Ocorreu um erro ao tentar salvar o endereço</string>
+    <string name="err_cep_not_found">CEP não encontrado</string>
+    <string name="err_invalid_cep">Cep inválido.</string>
+
+
+    <!-- Successful messages -->
+    <string name="password_updated_successfully">Sua senha foi atualizada com sucesso.</string>
+
     <string name="purchase_label">Nova Compra</string>
     <string name="cart">Carrinho</string>
     <string name="freight">Frete</string>
-    <string name="finish">Finalizar</string>
+
     <string name="category">Categoria</string>
     <string name="delete_all_in_category">Tirar todos produtos desta categoria</string>
     <string name="freight_type">Tipo de Frete</string>
@@ -95,9 +135,6 @@
     <string name="address_name">Título do Endereço</string>
     <string name="clear">Limpar</string>
     <string name="address_saved_successfully">Endereço salvo com sucesso</string>
-    <string name="err_ocurred_attempting_save_address">Ocorreu um erro ao tentar salvar o endereço</string>
-    <string name="err_cep_not_found">CEP não encontrado</string>
-    <string name="err_invalid_cep">Cep inválido.</string>
     <string name="without_freight">Sem Frete.</string>
     <string name="day_of_ship">Dia da Entrega</string>
     <string name="start_hour_range">A partir do horário:</string>
@@ -111,7 +148,7 @@
     <string name="select_quantity">Selecione Quantidade</string>
     <string name="action_bar_cart_item_label">Item Carrinho</string>
     <string name="btn_label_add_item_to_cart">Colocar no Carrinho</string>
-    <string name="loading_current_cart_dialog">Carregando atual carrinho</string>
+
     <string name="wait_header_dialog">Aguarde</string>
     <string name="removed_item_success_msg">Item removido do carrinho</string>
     <string name="removed_item_error_msg">Ocorreu um erro ao tentar remover o item do carrinho.</string>
@@ -137,11 +174,14 @@
     </string-array>
 
     <string name="token_api">token_app DG4OjT9ciuPtHk1p7Fi/kg==</string>
-    <string name="err_cpf_document_invalid">Documento CPF inválido</string>
-    <string name="err_cnpj_document_invalid">Documento CNPJ inválido</string>
     <string name="register_label">Cadastro</string>
     <string name="header_dialog_error_message_without_internet">Sem Conexão</string>
     <string name="doing_register">Realizando Cadastro...</string>
     <string name="address_removed_successuful_message">Endereço excluído com sucesso!</string>
     <string name="address_remove_error_message">Ocorreu um erro ao tentar excluir seu endereço</string>
+    <string name="action_bar_partner_label">Selecionar Local</string>
+
+    <!-- Product's page's resources -->
+    <string name="btn_change_on_cart_text">ALTERAR QUANTIDADE</string>
+    <string name="btn_put_on_cart_text">ALTERAR QUANTIDADE</string>
 </resources>

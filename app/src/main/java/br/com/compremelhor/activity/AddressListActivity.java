@@ -174,13 +174,13 @@ public class AddressListActivity extends AppCompatActivity {
         if (addresses.size() >= 3) {
             items = new CharSequence[]{
                     getString(R.string.edit),
-                    getString(R.string.remove)
+                    getString(R.string.dialog_option_text_address)
             };
         } else {
             items = new CharSequence[]{
                     getString(R.string.edit),
-                    getString(R.string.remove),
-                    getString(R.string.new_address)
+                    getString(R.string.dialog_option_text_address),
+                    getString(R.string.dialog_option_text_new_address)
             };
         }
 

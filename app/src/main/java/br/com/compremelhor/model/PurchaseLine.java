@@ -2,7 +2,7 @@ package br.com.compremelhor.model;
 
 import java.math.BigDecimal;
 
-public class PurchaseLine extends EntityModel implements Comparable<String> {
+public class PurchaseLine extends EntityModel implements Comparable<PurchaseLine> {
 
     private BigDecimal quantity;
     private BigDecimal subTotal;
@@ -99,8 +99,8 @@ public class PurchaseLine extends EntityModel implements Comparable<String> {
     }
 
     @Override
-    public int compareTo(String another) {
-        return this.category.compareTo(another);
+    public int compareTo(PurchaseLine another) {
+        return this.category.compareTo(another.getCategory());
     }
 
     public Stock getStock() {

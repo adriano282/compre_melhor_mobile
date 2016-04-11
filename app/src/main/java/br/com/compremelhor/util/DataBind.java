@@ -6,19 +6,27 @@ import android.database.Cursor;
 import java.math.BigDecimal;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.List;
+import java.util.TreeSet;
 
 import br.com.compremelhor.dao.DAOAddress;
 import br.com.compremelhor.dao.DAOCategory;
 import br.com.compremelhor.dao.DAOCode;
+import br.com.compremelhor.dao.DAOEstablishment;
+import br.com.compremelhor.dao.DAOFreight;
 import br.com.compremelhor.dao.DAOManufacturer;
+import br.com.compremelhor.dao.DAOPurchaseLine;
+import br.com.compremelhor.dao.DAOUser;
 import br.com.compremelhor.dao.DatabaseHelper;
 import br.com.compremelhor.model.Address;
 import br.com.compremelhor.model.Category;
 import br.com.compremelhor.model.Code;
+import br.com.compremelhor.model.EntityModel;
 import br.com.compremelhor.model.Establishment;
 import br.com.compremelhor.model.Freight;
 import br.com.compremelhor.model.Manufacturer;
 import br.com.compremelhor.model.Product;
+import br.com.compremelhor.model.Purchase;
 import br.com.compremelhor.model.PurchaseLine;
 import br.com.compremelhor.model.User;
 
@@ -34,13 +42,18 @@ public class DataBind {
 
     public Object bind(Class clazz, Cursor cursor) {
         try {
-            return bind(Class.forName(clazz.getName()).newInstance(), cursor);
+            return bind((EntityModel)Class.forName(clazz.getName()).newInstance(), cursor);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
     }
 
-    public Object bind(Object objectModel, Cursor cursor) {
+    public Object bind(EntityModel objectModel, Cursor cursor) {
+        if (objectModel != null) {
+            objectModel.setId(getInt(cursor, DatabaseHelper.Domain._ID));
+            objectModel.setDateCreated(getCalendar(cursor, DatabaseHelper.Domain.DATE_CREATED));
+            objectModel.setDateCreated(getCalendar(cursor, DatabaseHelper.Domain.LAST_UPDATED));
+        }
 
         if (objectModel instanceof Address) {
             Address ad = (Address) objectModel;
@@ -140,6 +153,32 @@ public class DataBind {
             pl.setProduct(p);
 
             return pl;
+        } else if (objectModel instanceof Purchase) {
+            Purchase purchase = (Purchase) objectModel;
+
+            purchase.setId(getInt(cursor, DatabaseHelper.Purchase._ID));
+            purchase.setStatus(Purchase.Status.valueOf(getString(cursor, DatabaseHelper.Purchase.STATUS)));
+
+            Establishment establishment = DAOEstablishment
+                    .getInstance(context)
+                    .find(getInt(cursor, DatabaseHelper.Purchase._ESTABLISHMENT_ID));
+
+            purchase.setEstablishment(establishment);
+
+            purchase.setTotalValue(getBigDecimal(cursor, DatabaseHelper.Purchase.TOTAL_VALUE));
+
+            User user = DAOUser.getInstance(context).find(getInt(cursor, DatabaseHelper.Purchase._USER_ID));
+            purchase.setUser(user);
+
+            Freight freight = DAOFreight.getInstance(context).find(getInt(cursor, DatabaseHelper.Purchase._FREIGHT_ID));
+            purchase.setFreight(freight);
+
+            List<PurchaseLine> list = DAOPurchaseLine
+                    .getInstance(context)
+                    .findAllByForeignId(DatabaseHelper.PurchaseLine._PURCHASE_ID, purchase.getId());
+
+            purchase.setItems(new TreeSet<>(list));
+            return purchase;
         }
 
         return null;

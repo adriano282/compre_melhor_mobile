@@ -43,7 +43,7 @@ public class DashboardActivity extends Activity implements View.OnClickListener 
                 break;
 
             case R.id.start_purchase:
-                intent = new Intent(this, ShoppingActivity.class);
+                intent = new Intent(this, PartnerListActivity.class);
                 startActivity(intent);
                 break;
 

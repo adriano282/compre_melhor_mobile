@@ -154,7 +154,7 @@ public class PasswordActivity extends AppCompatActivity implements OnClickListen
         if (daoUser.find(userId).isLoggedByFacebook()) {
             tvOldPassword.setVisibility(View.GONE);
             etOldPassword.setVisibility(View.GONE);
-            tvNewPassword.setText(getString(R.string.password));
+            tvNewPassword.setText(getString(R.string.edit_text_label_password));
             tvRepeatPassword.setText("Repita a senha");
             btnChangePassword.setText("Salvar Senha");
 

@@ -39,7 +39,7 @@
             android:label="@string/action_bar_change_password_label" />
 
         <activity
-            android:name=".activity.PartnerActivity"
+            android:name=".activity.PartnerListActivity"
             android:label="@string/action_bar_partner_label" />
 
         <activity

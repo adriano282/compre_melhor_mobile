@@ -34,7 +34,7 @@
             android:layout_marginTop="10sp"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/name" />
+            android:text="@string/edit_text_label_name" />
 
         <EditText
             android:id="@+id/profile_name"
@@ -45,7 +45,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="10sp"
-            android:text="@string/email" />
+            android:text="@string/edit_text_label_email" />
 
         <EditText
             android:id="@+id/profile_email"

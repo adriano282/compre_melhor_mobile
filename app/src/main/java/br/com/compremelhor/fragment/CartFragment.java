@@ -31,6 +31,8 @@ import br.com.compremelhor.R;
 import br.com.compremelhor.activity.ProductActivity;
 import br.com.compremelhor.adapter.ExpandableListAdapter;
 import br.com.compremelhor.api.integration.resource.impl.SKUResource;
+import br.com.compremelhor.dao.DAOEstablishment;
+import br.com.compremelhor.dao.DAOPurchaseLine;
 import br.com.compremelhor.model.Product;
 import br.com.compremelhor.model.PurchaseLine;
 import br.com.compremelhor.service.CartService;
@@ -46,6 +48,7 @@ import static br.com.compremelhor.util.Constants.REQUEST_CODE_CART_ITEM_ADDED;
 import static br.com.compremelhor.util.Constants.REQUEST_CODE_CART_ITEM_EDITED;
 import static br.com.compremelhor.util.Constants.REQUEST_CODE_SCANNED_CODE;
 import static br.com.compremelhor.util.Constants.SCAN_MODE;
+import static br.com.compremelhor.util.Constants.SP_PARTNER_ID;
 import static br.com.compremelhor.util.Constants.SP_USER_ID;
 
 
@@ -59,6 +62,7 @@ public class CartFragment extends android.support.v4.app.Fragment {
     private AlertDialog actionsProduct;
     private AlertDialog alertDialogConfirmation;
 
+    private TextView tvPartnerName;
     private TextView tvValueTotal;
     private Button btnAddProduct;
 
@@ -70,44 +74,39 @@ public class CartFragment extends android.support.v4.app.Fragment {
 
     private SharedPreferences preferences;
 
+    private DAOPurchaseLine daoPurchaseLine;
+    private DAOEstablishment daoEstablishment;
     private SKUResource skuResource;
     private CartService cartService;
     private Handler handler;
+
 
     @Override
     public void onStart() {
         super.onStart();
         if (progressDialog == null || !progressDialog.isShowing())
             new LoadCurrentCart().execute();
-        Log.d("ASYNC TASK", "CartFragment.OnStart");
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
-
-        Log.d("ASYNC TASK", "CartFragment.OnCreateView");
-        if (getView() == null) {
-            Log.d("ASYNC TASK", "NULL VIEW - CartFragment.OnCreateView ");
-        }
         return inflater.inflate(R.layout.fragment_cart, container, false);
     }
 
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState) {
-        Log.d("ASYNC TASK", "CartFragment.OnViewCreated");
-
         preferences = getActivity().getSharedPreferences(PREFERENCES, Activity.MODE_PRIVATE);
         int userId = preferences.getInt(SP_USER_ID, 0);
+        int partnerId = preferences.getInt(SP_PARTNER_ID, 0);
 
-        cartService = CartService.getInstance(getActivity(), userId);
+        daoEstablishment = DAOEstablishment.getInstance(getActivity());
+        daoPurchaseLine = DAOPurchaseLine.getInstance(getActivity());
+        cartService = CartService.getInstance(getActivity(), userId, partnerId);
         skuResource = new SKUResource(getActivity());
         handler = new Handler();
         setWidgets();
         registerViews();
-        if (getView() == null) {
-            Log.d("ASYNC TASK", "NULL VIEW - CartFragment.OnViewCreated ");
-        }
         super.onViewCreated(view, savedInstanceState);
     }
 
@@ -188,7 +187,8 @@ public class CartFragment extends android.support.v4.app.Fragment {
         explicitView = (ExpandableListView) getView().findViewById(R.id.lv_shopping_list);
         listAdapter = new ExpandableListAdapter(getActivity(), listDataHeader, listDataChild);
         explicitView.setAdapter(listAdapter);
-
+        tvPartnerName = (TextView) getView().findViewById(R.id.fragment_tv_partner_name);
+        tvPartnerName.setText(daoEstablishment.find(preferences.getInt(SP_PARTNER_ID, 0)).getName());
         tvValueTotal = (TextView) getView().findViewById(R.id.tv_value_total_purchase);
         btnAddProduct = (Button) getView().findViewById(R.id.btn_shopping_list_add);
 
@@ -238,6 +238,7 @@ public class CartFragment extends android.support.v4.app.Fragment {
             Intent intent;
 
             switch (item) {
+                // For to do changes on item
                 case 0:
                     intent = new Intent(getActivity(), ProductActivity.class);
                     intent.putExtra(PURCHASE_ID_EXTRA, itemIdSelected);
@@ -249,12 +250,12 @@ public class CartFragment extends android.support.v4.app.Fragment {
                     alertDialogConfirmation.show();
                     break;
 
+                // For exclusion of item from cart
                 case DialogInterface.BUTTON_POSITIVE:
                     if (removeItemFromCart())
                         Toast.makeText(getActivity(), getString(R.string.removed_item_success_msg), Toast.LENGTH_SHORT).show();
                     else
                         Toast.makeText(getActivity(), getString(R.string.removed_item_error_msg), Toast.LENGTH_SHORT).show();
-
                     break;
 
                 case DialogInterface.BUTTON_NEGATIVE:
@@ -265,11 +266,9 @@ public class CartFragment extends android.support.v4.app.Fragment {
     }
 
     private boolean removeItemFromCart() {
-        PurchaseLine line = new PurchaseLine();
-        line.setId(Integer.valueOf(itemIdSelected));
-
+        boolean result = cartService.removeItem(daoPurchaseLine.find(Integer.valueOf(itemIdSelected)));
         new LoadCurrentCart().execute();
-        return true;
+        return result;
     }
 
     private class ScannerOnClickListener implements DialogInterface.OnClickListener {
@@ -300,42 +299,37 @@ public class CartFragment extends android.support.v4.app.Fragment {
 
     private class LoadCurrentCart extends AsyncTask<Void, Void, Double> {
         public void onPreExecute() {
-            Log.d("ASYNC TASK", "onPreExecute");
             progressDialog = ProgressDialog
                     .show(getActivity(), getString(R.string.wait_header_dialog), getString(R.string.loading_current_cart_dialog), true, false);
-
         }
 
         @Override
         protected Double doInBackground(Void... params) {
-            Log.d("ASYNC TASK", "doInBackground(Void... params)");
-            handler.post(new Runnable() {
-                @Override
-                public void run() {
-                    refreshListOnCurrentCart();
-                }
-            });
-            return 0.0;
+            return refreshListOnCurrentCart();
         }
 
         public void onPostExecute(Double valueTotal) {
-            Log.d("ASYNC TASK", "onPostExecute(Double valueTotal)");
             setWidgets();
             tvValueTotal.setText("R$ " + valueTotal);
             progressDialog.dismiss();
         }
 
         private double refreshListOnCurrentCart() {
-            TreeSet<PurchaseLine> items = cartService.getItems();
+            final TreeSet<PurchaseLine> items = cartService.getItems();
 
             listDataChild = new HashMap<>();
             listDataHeader = new ArrayList<>();
 
-            if (items.size() == 0) {
-                getView().findViewById(R.id.tv_empty_cart_message).setVisibility(View.VISIBLE);
-            } else {
-                getView().findViewById(R.id.tv_empty_cart_message).setVisibility(View.GONE);
-            }
+            handler.post(new Runnable() {
+                @Override
+                public void run() {
+                    if (items.size() == 0) {
+                        getView().findViewById(R.id.tv_empty_cart_message).setVisibility(View.VISIBLE);
+                    } else {
+                        getView().findViewById(R.id.tv_empty_cart_message).setVisibility(View.GONE);
+                    }
+                }
+            });
 
             Map<String, Double> sumByCategoryMap = new HashMap<>();
             for (PurchaseLine line : items) {
@@ -369,7 +363,6 @@ public class CartFragment extends android.support.v4.app.Fragment {
                 i++;
             }
             return valueTotal;
-
         }
     }
 }
