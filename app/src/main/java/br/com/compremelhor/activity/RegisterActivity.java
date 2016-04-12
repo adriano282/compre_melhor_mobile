@@ -26,7 +26,7 @@ import java.util.Calendar;
 import br.com.compremelhor.R;
 import br.com.compremelhor.api.integration.ResponseServer;
 import br.com.compremelhor.api.integration.resource.impl.UserResource;
-import br.com.compremelhor.dao.DAOUser;
+import br.com.compremelhor.dao.impl.DAOUser;
 import br.com.compremelhor.form.validator.ActionTextWatcher;
 import br.com.compremelhor.form.validator.ValidatorTextWatcher;
 import br.com.compremelhor.model.TypeDocument;

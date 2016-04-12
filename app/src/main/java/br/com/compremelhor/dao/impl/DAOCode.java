@@ -1,10 +1,12 @@
-package br.com.compremelhor.dao;
+package br.com.compremelhor.dao.impl;
 
 import android.annotation.TargetApi;
 import android.content.ContentValues;
 import android.content.Context;
 import android.os.Build;
 
+import br.com.compremelhor.dao.AbstractDAO;
+import br.com.compremelhor.util.DatabaseHelper;
 import br.com.compremelhor.model.Code;
 import br.com.compremelhor.model.EntityModel;
 

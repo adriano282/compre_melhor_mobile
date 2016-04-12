@@ -24,8 +24,8 @@ import java.util.concurrent.ExecutionException;
 
 import br.com.compremelhor.R;
 import br.com.compremelhor.api.integration.resource.impl.PartnerResource;
-import br.com.compremelhor.dao.DAOEstablishment;
-import br.com.compremelhor.dao.DatabaseHelper;
+import br.com.compremelhor.dao.impl.DAOEstablishment;
+import br.com.compremelhor.util.DatabaseHelper;
 import br.com.compremelhor.model.Establishment;
 
 import static br.com.compremelhor.util.Constants.PREFERENCES;

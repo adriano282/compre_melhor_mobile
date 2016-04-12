@@ -20,7 +20,7 @@ import java.net.URLConnection;
 import br.com.compremelhor.R;
 import br.com.compremelhor.api.integration.ResponseServer;
 import br.com.compremelhor.api.integration.resource.impl.AddressResource;
-import br.com.compremelhor.dao.DAOAddress;
+import br.com.compremelhor.dao.impl.DAOAddress;
 import br.com.compremelhor.model.Address;
 
 import static br.com.compremelhor.util.Constants.ADDRESS_ID_EXTRA;

@@ -31,8 +31,8 @@ import java.util.Map;
 
 import br.com.compremelhor.R;
 import br.com.compremelhor.activity.AddressListActivity;
-import br.com.compremelhor.dao.DAOAddress;
-import br.com.compremelhor.dao.DatabaseHelper;
+import br.com.compremelhor.dao.impl.DAOAddress;
+import br.com.compremelhor.util.DatabaseHelper;
 import br.com.compremelhor.model.Address;
 
 import static br.com.compremelhor.util.Constants.MENU_OPTION_ID_MANAGE_ADDRESS;

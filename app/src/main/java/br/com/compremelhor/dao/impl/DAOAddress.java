@@ -1,8 +1,10 @@
-package br.com.compremelhor.dao;
+package br.com.compremelhor.dao.impl;
 
 import android.content.ContentValues;
 import android.content.Context;
 
+import br.com.compremelhor.dao.AbstractDAO;
+import br.com.compremelhor.util.DatabaseHelper;
 import br.com.compremelhor.model.Address;
 import br.com.compremelhor.model.EntityModel;
 

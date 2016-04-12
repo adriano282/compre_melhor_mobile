@@ -1,4 +1,4 @@
-package br.com.compremelhor.dao;
+package br.com.compremelhor.util;
 
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;

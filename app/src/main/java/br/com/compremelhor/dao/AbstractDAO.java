@@ -11,6 +11,7 @@ import java.util.List;
 
 import br.com.compremelhor.model.EntityModel;
 import br.com.compremelhor.util.DataBind;
+import br.com.compremelhor.util.DatabaseHelper;
 
 /**
  * Created by adriano on 25/08/15.
