@@ -2,20 +2,14 @@ package br.com.compremelhor.activity;
 
 import android.app.Activity;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 
 import br.com.compremelhor.R;
 
-import static br.com.compremelhor.util.Constants.PREFERENCES;
-/**
- * Created by adriano on 21/08/15.
- */
 public class DashboardActivity extends Activity implements View.OnClickListener {
     private static final String TAG = "Dashboard";
-    private SharedPreferences preferences;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -27,7 +21,6 @@ public class DashboardActivity extends Activity implements View.OnClickListener 
         findViewById(R.id.list_purchases).setOnClickListener(this);
         findViewById(R.id.manager_addresses).setOnClickListener(this);
 
-        preferences = getSharedPreferences(PREFERENCES, MODE_PRIVATE);
     }
 
     @Override

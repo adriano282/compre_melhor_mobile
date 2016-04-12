@@ -1,18 +1,12 @@
 package br.com.compremelhor.activity;
 
 import android.app.AlertDialog;
-import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
-import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
 import android.util.Log;
-import android.view.Menu;
-import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.Button;
@@ -20,7 +14,6 @@ import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.SimpleAdapter;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -38,85 +31,41 @@ import static br.com.compremelhor.util.Constants.ADDRESS_ID_EXTRA;
 import static br.com.compremelhor.util.Constants.PREFERENCES;
 import static br.com.compremelhor.util.Constants.SP_USER_ID;
 
-public class AddressListActivity extends AppCompatActivity {
-    private SharedPreferences preferences;
-
+public class AddressListActivity extends ActivityTemplate<Address> {
     private List<Map<String, Object>> addresses;
 
     private AlertDialog alertDialog;
     private AlertDialog alertDialogConfirmation;
-    private ProgressDialog progressDialog;
 
     private Button btnAddAddress;
 
     private ListAdapter adapter;
     private ListView listView;
 
-    private Handler handler;
-    private AddressResource resource;
-    private DAOAddress dao;
     private int addressSelect;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
+        setupOnCreateActivity(R.id.address_toolbar,
+                getSharedPreferences(PREFERENCES, MODE_PRIVATE),
+                new Handler(),
+                DAOAddress.getInstance(AddressListActivity.this),
+                new AddressResource(this, preferences.getInt(SP_USER_ID, 0)));
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_address_list);
 
-        preferences = getSharedPreferences(PREFERENCES, MODE_PRIVATE);
-
-        int userId = preferences.getInt(SP_USER_ID, 0);
-        resource = new AddressResource(this, userId);
-
-        handler = new Handler();
-        dao = DAOAddress.getInstance(AddressListActivity.this);
-
-        setViews();
-        registerViews();
+        setWidgets();
+        registerWidgets();
         setToolbar();
     }
 
     @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.action_bars_menu, menu);
-        return true;
-    }
-
-    private void showProgressDialog(String message) {
-        progressDialog = ProgressDialog
-                .show(AddressListActivity.this,
-                        getString(R.string.dialog_header_wait), message, true, false);
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case R.id.menu_settings:
-                // Here we would open up our settings activity
-                return true;
-
-            case android.R.id.home:
-                finish();
-                return true;
-        }
-        return super.onOptionsItemSelected(item);
-    }
-
-    @Override
     public void onActivityResult(int requestCode, int requestResult, Intent data) {
-        setViews();
+        setWidgets();
     }
 
-    private void setToolbar() {
-        Toolbar myToolbar = (Toolbar) findViewById(R.id.address_toolbar);
-        myToolbar.setLogo(R.mipmap.icon);
-        setSupportActionBar(myToolbar);
-        if (getSupportActionBar() != null) {
-            getSupportActionBar().setDisplayShowHomeEnabled(true);
-            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        }
-    }
-
-    private void setViews() {
+    @Override
+    protected void setWidgets() {
         addresses = listAddress();
 
         String[] from = {
@@ -150,10 +99,14 @@ public class AddressListActivity extends AppCompatActivity {
         setDialogs();
     }
 
-    private void registerViews() {
+    @Override
+    protected void registerWidgets() {
         listView.setOnItemClickListener(new OnItemClickListener());
         btnAddAddress.setOnClickListener(new ViewOnClickListener());
     }
+
+    @Override
+    protected void fillFields() {}
 
     private void setDialogs() {
         alertDialog = dialogOptions();
@@ -235,21 +188,19 @@ public class AddressListActivity extends AppCompatActivity {
                         @Override
                         public void run() {
                             listView.invalidateViews();
-                            setViews();
-                            Toast.makeText(AddressListActivity.this,
-                                    getString(R.string.address_removed_successful_message), Toast.LENGTH_SHORT).show();
-
+                            setWidgets();
+                            showMessage(R.string.address_removed_successful_message);
                         }
                     });
 
                 }
                 else {
                     Log.w("REST_API", response.getErrors().toString());
-                    progressDialog.dismiss();
+                    dismissProgressDialog();
                     handler.post(new Runnable() {
                         @Override
                         public void run() {
-                            Toast.makeText(AddressListActivity.this, getString(R.string.address_remove_error_message), Toast.LENGTH_SHORT).show();
+                            showMessage(R.string.address_remove_error_message);
                         }
                     });
                 }
@@ -258,7 +209,7 @@ public class AddressListActivity extends AppCompatActivity {
 
             @Override
             protected void onPreExecute() {
-                showProgressDialog("Excluindo endereço...");
+                showProgressDialog(R.string.dialog_header_wait, R.string.dialog_content_text_removing_address);
             }
         };
         request.execute();

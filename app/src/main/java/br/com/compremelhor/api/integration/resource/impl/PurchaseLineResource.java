@@ -25,6 +25,7 @@ public class PurchaseLineResource extends AbstractResource<PurchaseLine> {
     public PurchaseLine bindResourceFromJson(JsonObject jsonObject) {
         PurchaseLine item = new PurchaseLine();
 
+        item.setId(jsonObject.get("id").getAsInt());
         item.setQuantity(jsonObject.get("quantity").getAsBigDecimal());
         item.setUnitaryPrice(jsonObject.get("unitPrice").getAsBigDecimal());
         item.setSubTotal(jsonObject.get("subTotal").getAsBigDecimal());

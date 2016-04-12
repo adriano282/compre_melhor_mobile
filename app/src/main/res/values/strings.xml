@@ -55,8 +55,10 @@
     <string name="dialog_content_text_putting_item_on_cart">Inserindo item no carrinho...</string>
     <string name="dialog_content_text_starting_item_on_cart">Iniciando carrinho atual...</string>
     <string name="dialog_content_text_loading_places">Carregando locais...</string>
+    <string name="dialog_content_text_removing_address">Excluindo endereço...</string>
     <string name="dialog_content_text_running">Processando..</string>
     <string name="dialog_content_text_registering_on_server">Registrando no servidor...</string>
+
 
     <!-- ProgressDialog's headers texts -->
     <string name="dialog_header_wait">Aguarde</string>

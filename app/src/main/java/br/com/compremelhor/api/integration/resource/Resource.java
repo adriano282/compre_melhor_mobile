@@ -16,6 +16,7 @@ public interface Resource<T> {
 
     ResponseServer<T> updateResource(T entity);
     ResponseServer<T> createResource(T entity);
+    ResponseServer<T> deleteResource(T entity);
     T getResource(String attributeName, String attributeValue);
     T getResource(Map<String, String> params);
     T getResource(int id);

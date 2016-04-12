@@ -1,6 +1,5 @@
 package br.com.compremelhor.activity;
 
-import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
@@ -20,10 +19,8 @@ import java.net.URLConnection;
 
 import br.com.compremelhor.R;
 import br.com.compremelhor.api.integration.ResponseServer;
-import br.com.compremelhor.api.integration.resource.Resource;
 import br.com.compremelhor.api.integration.resource.impl.AddressResource;
 import br.com.compremelhor.dao.DAOAddress;
-import br.com.compremelhor.dao.IDAO;
 import br.com.compremelhor.model.Address;
 
 import static br.com.compremelhor.util.Constants.ADDRESS_ID_EXTRA;
@@ -52,13 +49,14 @@ public class AddressActivity extends ActivityTemplate<Address> {
     private boolean update = false;
 
     @Override
-    public void onCreate(Bundle savedInstaceState) {
-        super.onCreate(savedInstaceState);
-        setContentView(R.layout.activity_address);
+    public void onCreate(Bundle savedInstanceState) {
         setupOnCreateActivity(R.id.address_toolbar,
                 getSharedPreferences(PREFERENCES, MODE_PRIVATE), new Handler(),
                 DAOAddress.getInstance(AddressActivity.this),
                 new AddressResource(this, preferences.getInt(SP_USER_ID, 0)));
+        super.onCreate(savedInstanceState);
+
+        setContentView(R.layout.activity_address);
 
         if (!resource.isConnectedOnInternet()) {
             createDialogErrorWithoutNetwork(R.string.err_without_connection_register_message);
@@ -74,19 +72,6 @@ public class AddressActivity extends ActivityTemplate<Address> {
         btnReset.setOnClickListener(new OnClickListener());
         btnSubmit.setOnClickListener(new OnClickListener());
         etZipcode.setOnKeyListener(new OnKeyListener());
-    }
-
-    @Override
-    public void setupOnCreateActivity(int toolbarId,
-                                      SharedPreferences preferences,
-                                      Handler handler,
-                                      IDAO<Address> dao,
-                                      Resource<Address> resource) {
-        this.toolbarId = toolbarId;
-        this.preferences = preferences;
-        this.handler = handler;
-        this.dao = dao;
-        this.resource = resource;
     }
 
     @Override

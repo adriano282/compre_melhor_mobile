@@ -3,6 +3,7 @@ package br.com.compremelhor.activity;
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.SharedPreferences;
+import android.os.Bundle;
 import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
@@ -16,6 +17,8 @@ import br.com.compremelhor.dao.IDAO;
 
 
 public abstract class ActivityTemplate<T> extends AppCompatActivity {
+    private boolean configured = false;
+
     protected int toolbarId;
     protected SharedPreferences preferences;
     protected Handler handler;
@@ -27,11 +30,25 @@ public abstract class ActivityTemplate<T> extends AppCompatActivity {
     protected abstract void setWidgets();
     protected abstract void registerWidgets();
     protected abstract void fillFields();
-    protected abstract void setupOnCreateActivity(int toolbarId,
-                                                  SharedPreferences preferences,
-                                                  Handler handler,
-                                                  IDAO<T> dao,
-                                                  Resource<T> resource);
+
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        if (!configured) throw new RuntimeException("Activity resources weren't configured!");
+        super.onCreate(savedInstanceState);
+    }
+
+    protected void setupOnCreateActivity(int toolbarId,
+                                      SharedPreferences preferences,
+                                      Handler handler,
+                                      IDAO<T> dao,
+                                      Resource<T> resource) {
+        this.toolbarId = toolbarId;
+        this.preferences = preferences;
+        this.handler = handler;
+        this.dao = dao;
+        this.resource = resource;
+        configured = true;
+    }
 
     protected void setToolbar() {
         Toolbar myToolbar = (Toolbar) findViewById(toolbarId);
@@ -86,6 +103,4 @@ public abstract class ActivityTemplate<T> extends AppCompatActivity {
 
         return super.onOptionsItemSelected(item);
     }
-
-
 }
