@@ -1,14 +1,9 @@
 package br.com.compremelhor.activity;
 
-import android.content.SharedPreferences;
 import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
-import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
-import android.view.Menu;
-import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
@@ -26,14 +21,15 @@ import br.com.compremelhor.model.PurchaseLine;
 import br.com.compremelhor.model.Stock;
 import br.com.compremelhor.service.CartService;
 
-import static br.com.compremelhor.util.Constants.CURRENT_QUANTITY_OF_ITEM_EXTRA;
+import static br.com.compremelhor.util.Constants.EXTRA_CURRENT_QUANTITY_OF_ITEM;
+import static br.com.compremelhor.util.Constants.EXTRA_SER_PRODUCT;
+import static br.com.compremelhor.util.Constants.EXTRA_PURCHASE_ID;
 import static br.com.compremelhor.util.Constants.PREFERENCES;
-import static br.com.compremelhor.util.Constants.PURCHASE_ID_EXTRA;
 import static br.com.compremelhor.util.Constants.SP_PARTNER_ID;
 import static br.com.compremelhor.util.Constants.SP_USER_ID;
+import static br.com.compremelhor.util.Constants.ROOT_RESOURCE_STOCK;
 
-public class ProductActivity extends AppCompatActivity {
-    private SharedPreferences preferences;
+public class ProductActivity extends ActivityTemplate<Stock> {
     private ImageView ivProduct;
 
     private TextView tvName;
@@ -49,46 +45,26 @@ public class ProductActivity extends AppCompatActivity {
     private PurchaseLine item;
     private CartService cartService;
 
-    private Handler handler;
-    private StockResource stockResource;
     private int itemId;
 
     public void onCreate(Bundle savedInstanceState) {
+        setupOnCreateActivity(R.id.my_toolbar,
+                getSharedPreferences(PREFERENCES, MODE_PRIVATE),
+                new Handler(),
+                null, new StockResource(ROOT_RESOURCE_STOCK, this));
+
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_product);
 
         item = new PurchaseLine();
-        handler = new Handler();
-        preferences = getSharedPreferences(PREFERENCES, MODE_PRIVATE);
         int userId = preferences.getInt(SP_USER_ID, 0);
         int partnerId = preferences.getInt(SP_PARTNER_ID, 0);
 
-        stockResource = new StockResource("stock", this);
         cartService = CartService.getInstance(this, userId, partnerId);
         setToolbar();
-        setViews();
-        registerListeners();
-        fillViews();
-    }
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.action_bars_menu, menu);
-        return true;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case R.id.menu_settings:
-                // Here we would open up our settings activity
-                return true;
-
-            case android.R.id.home:
-                finish();
-                return true;
-        }
-        return super.onOptionsItemSelected(item);
+        setWidgets();
+        registerWidgets();
+        fillFields();
     }
 
     public void onClickChangeOnCart(View view) {
@@ -109,12 +85,12 @@ public class ProductActivity extends AppCompatActivity {
                 HashMap<String, String> paramsStock = new HashMap<>();
                 paramsStock.put("skuPartner.sku.id", String.valueOf(item.getProduct().getId()));
                 paramsStock.put("skuPartner.partner.id", String.valueOf(preferences.getInt(SP_PARTNER_ID, 0)));
-                Stock stock = stockResource.getResource(paramsStock);
+                Stock stock = resource.getResource(paramsStock);
                 item.setStock(stock);
                 handler.post(new Runnable() {
                     @Override
                     public void run() {
-                        if (btnChangeOnCart.getText().toString().equals(getString(R.string.btn_change_on_cart_text)))
+                        if (btnChangeOnCart.getText().toString().equals(getString(R.string.button_text_change_on_cart)))
                             cartService.editItem(item);
                         else
                             cartService.addItem(item);
@@ -129,8 +105,8 @@ public class ProductActivity extends AppCompatActivity {
         request.execute();
     }
 
-    private void fillViews() {
-        Product product = (Product) getIntent().getSerializableExtra("product");
+    protected void fillFields() {
+        Product product = (Product) getIntent().getSerializableExtra(EXTRA_SER_PRODUCT);
 
         item.setProduct(product);
         tvCategory.setText(product.getCategory().getName());
@@ -142,7 +118,7 @@ public class ProductActivity extends AppCompatActivity {
 
     }
 
-    private void setViews() {
+    protected void setWidgets() {
         ivProduct = (ImageView) findViewById(R.id.iv_product);
         tvCategory = (TextView) findViewById(R.id.tv_product_category);
         tvManufacturer = (TextView) findViewById(R.id.tv_product_manufacturer);
@@ -153,32 +129,22 @@ public class ProductActivity extends AppCompatActivity {
 
         btnChangeOnCart = (Button) findViewById(R.id.btn_put_on_cart);
 
-        String stringId = getIntent().getStringExtra(PURCHASE_ID_EXTRA);
+        String stringId = getIntent().getStringExtra(EXTRA_PURCHASE_ID);
 
         itemId = stringId == null || stringId.isEmpty() ? 0 : Integer.valueOf(stringId);
 
         if (itemId != 0)
-            btnChangeOnCart.setText(getString(R.string.btn_change_on_cart_text));
+            btnChangeOnCart.setText(getString(R.string.button_text_change_on_cart));
 
-        String quantity = getIntent().getStringExtra(CURRENT_QUANTITY_OF_ITEM_EXTRA);
+        String quantity = getIntent().getStringExtra(EXTRA_CURRENT_QUANTITY_OF_ITEM);
         npQuantity = (NumberPicker) findViewById(R.id.np_quantity);
         npQuantity.setMinValue(0);
         npQuantity.setMaxValue(20);
         npQuantity.setValue(quantity == null || quantity.isEmpty() ? 0 : Integer.valueOf(quantity));
     }
 
-    private void registerListeners() {
+    protected void registerWidgets() {
         npQuantity.setOnValueChangedListener(new OnValueChangeListener());
-    }
-
-    private void setToolbar() {
-        Toolbar myToolbar = (Toolbar) findViewById(R.id.my_toolbar);
-        myToolbar.setLogo(R.mipmap.icon);
-        setSupportActionBar(myToolbar);
-        if (getSupportActionBar() != null) {
-            getSupportActionBar().setDisplayShowHomeEnabled(true);
-            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        }
     }
 
     private class OnValueChangeListener implements NumberPicker.OnValueChangeListener {

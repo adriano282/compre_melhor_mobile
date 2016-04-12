@@ -27,7 +27,7 @@ import br.com.compremelhor.dao.impl.DAOAddress;
 import br.com.compremelhor.util.DatabaseHelper;
 import br.com.compremelhor.model.Address;
 
-import static br.com.compremelhor.util.Constants.ADDRESS_ID_EXTRA;
+import static br.com.compremelhor.util.Constants.EXTRA_ADDRESS_ID;
 import static br.com.compremelhor.util.Constants.PREFERENCES;
 import static br.com.compremelhor.util.Constants.SP_USER_ID;
 
@@ -246,7 +246,7 @@ public class AddressListActivity extends ActivityTemplate<Address> {
                 // Edit Action address:
                 case 0:
                     Intent intent = new Intent(AddressListActivity.this, AddressActivity.class);
-                    intent.putExtra(ADDRESS_ID_EXTRA, currentAddressId);
+                    intent.putExtra(EXTRA_ADDRESS_ID, currentAddressId);
 
                     startActivityForResult(intent, 0);
                     break;

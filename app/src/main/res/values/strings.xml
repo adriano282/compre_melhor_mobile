@@ -3,9 +3,11 @@
     <string name="app_name">CompreMelhor</string>
     <string name="app_id">1621410234792107</string>
 
+
     <!-- User's responses -->
     <string name="yes">Sim</string>
     <string name="no">Não</string>
+
 
     <!-- User's actions -->
     <string name="edit">Editar</string>
@@ -35,6 +37,8 @@
     <string name="button_text_add_address">Adicionar Endereço</string>
     <string name="button_text_save_password">Salvar Senha</string>
     <string name="button_text_change_password">Alterar Senha</string>
+    <string name="button_text_change_on_cart">ALTERAR QUANTIDADE</string>
+    <string name="button_text_put_on_cart">COLOCAR NO CARRINHO</string>
 
 
     <!-- CheckBox's labels -->
@@ -64,6 +68,7 @@
     <string name="dialog_content_text_removing_address">Excluindo endereço...</string>
     <string name="dialog_content_text_running">Processando..</string>
     <string name="dialog_content_text_registering_on_server">Registrando no servidor...</string>
+    <string name="dialog_content_text_validating_data_on_server">Validando Dados no Servidor...</string>
 
 
     <!-- ProgressDialog's headers texts -->
@@ -76,6 +81,36 @@
 
     <!-- TextView's messages texts -->
     <string name="address_list_is_empty">Você não possui nenhum endereço cadastrado.</string>
+
+
+    <!-- Regex Patterns -->
+    <string name="regex_pattern_cpf_document">([0-9]{3}[\.]?[0-9]{3}[\.]?[0-9]{3}[-]?[0-9]{2})</string>
+    <string name="regex_pattern_cnpj_document">([0-9]{2}[\.]?[0-9]{3}[\.]?[0-9]{3}[\/]?[0-9]{4}[-]?[0-9]{2})</string>
+
+
+    <!-- Error messages -->
+    <string name="err_document_already_registered">Este documento já está cadastrado</string>
+    <string name="err_email_already_used">Este e-mail já está cadastrado</string>
+    <string name="err_field_not_filled">Campo necessário não preenchido</string>
+    <string name="err_differents_password">Senhas divergentes</string>
+    <string name="err_invalid_password_cannot_contain_space">Senha inválida. Não pode possuir espaços</string>
+    <string name="err_wrong_password">Senha informada incorreta</string>
+    <string name="err_expired_session">Sessão expirada. Por favor realize login novamente.</string>
+    <string name="err_wrong_credentials">Usuário ou senha incorretos</string>
+    <string name="err_login_facebook">Desculpe, ocorreu um erro inesperado ao tentar-se conectar pelo facebook.</string>
+    <string name="err_cpf_document_invalid">Documento CPF inválido</string>
+    <string name="err_cnpj_document_invalid">Documento CNPJ inválido</string>
+    <string name="err_ocurred_attempting_save_address">Ocorreu um erro ao tentar salvar o endereço</string>
+    <string name="err_cep_not_found">CEP não encontrado</string>
+    <string name="err_invalid_cep">Cep inválido.</string>
+    <string name="err_without_connection_register_message">Por favor, se conecte a internet para realizar o cadastro.</string>
+
+
+    <!-- Successful messages -->
+    <string name="password_updated_successful_message">Sua senha foi atualizada com sucesso.</string>
+    <string name="address_removed_successful_message">Endereço excluído com sucesso!</string>
+    <string name="data_registered_successful_message">Seus dados foram salvos com sucesso.</string>
+
 
     <!-- Dashboard page's resources -->
     <string name="start_purchase">Iniciar Compra</string>
@@ -117,26 +152,6 @@
     <string name="btn_change_password_commit_changes">Alterar senha</string>
 
 
-    <!-- Error messages -->
-    <string name="err_field_not_filled">Campo necessário não preenchido</string>
-    <string name="err_differents_password">Senhas divergentes</string>
-    <string name="err_invalid_password_cannot_contain_space">Senha inválida. Não pode possuir espaços</string>
-    <string name="err_wrong_password">Senha informada incorreta</string>
-    <string name="err_expired_session">Sessão expirada. Por favor realize login novamente.</string>
-    <string name="err_wrong_credentials">Usuário ou senha incorretos</string>
-    <string name="err_login_facebook">Desculpe, ocorreu um erro inesperado ao tentar-se conectar pelo facebook.</string>
-    <string name="err_cpf_document_invalid">Documento CPF inválido</string>
-    <string name="err_cnpj_document_invalid">Documento CNPJ inválido</string>
-    <string name="err_ocurred_attempting_save_address">Ocorreu um erro ao tentar salvar o endereço</string>
-    <string name="err_cep_not_found">CEP não encontrado</string>
-    <string name="err_invalid_cep">Cep inválido.</string>
-    <string name="err_without_connection_register_message">Por favor, se conecte a internet para realizar o cadastro.</string>
-
-
-    <!-- Successful messages -->
-    <string name="password_updated_successful_message">Sua senha foi atualizada com sucesso.</string>
-    <string name="address_removed_successful_message">Endereço excluído com sucesso!</string>
-    <string name="data_registered_successful_message">Seus dados foram salvos com sucesso.</string>
 
     <string name="purchase_label">Nova Compra</string>
     <string name="cart">Carrinho</string>
@@ -197,7 +212,9 @@
     <string name="address_remove_error_message">Ocorreu um erro ao tentar excluir seu endereço</string>
     <string name="action_bar_partner_label">Selecionar Local</string>
 
-    <!-- Product's page's resources -->
-    <string name="btn_change_on_cart_text">ALTERAR QUANTIDADE</string>
-    <string name="btn_put_on_cart_text">ALTERAR QUANTIDADE</string>
+    <!-- Exception's messages -->
+    <string name="exception_message_user_cannot_be_null">User wouldn't be null here</string>
+    <string name="exception_message_error_during_updating_resource">An Error occurred during try of update resource</string>
+    <string name="exception_message_error_during_saving_entity_on_database">Exception during saving user in Database</string>
+
 </resources>

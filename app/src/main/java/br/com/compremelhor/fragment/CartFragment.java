@@ -38,11 +38,11 @@ import br.com.compremelhor.model.PurchaseLine;
 import br.com.compremelhor.service.CartService;
 
 import static br.com.compremelhor.util.Constants.CLIENT_SCANNER;
-import static br.com.compremelhor.util.Constants.CURRENT_QUANTITY_OF_ITEM_EXTRA;
+import static br.com.compremelhor.util.Constants.EXTRA_CURRENT_QUANTITY_OF_ITEM;
 import static br.com.compremelhor.util.Constants.OTHERS_CODES;
 import static br.com.compremelhor.util.Constants.PREFERENCES;
 import static br.com.compremelhor.util.Constants.PRODUCT_MODE;
-import static br.com.compremelhor.util.Constants.PURCHASE_ID_EXTRA;
+import static br.com.compremelhor.util.Constants.EXTRA_PURCHASE_ID;
 import static br.com.compremelhor.util.Constants.QR_CODE_MODE;
 import static br.com.compremelhor.util.Constants.REQUEST_CODE_CART_ITEM_ADDED;
 import static br.com.compremelhor.util.Constants.REQUEST_CODE_CART_ITEM_EDITED;
@@ -241,8 +241,8 @@ public class CartFragment extends android.support.v4.app.Fragment {
                 // For to do changes on item
                 case 0:
                     intent = new Intent(getActivity(), ProductActivity.class);
-                    intent.putExtra(PURCHASE_ID_EXTRA, itemIdSelected);
-                    intent.putExtra(CURRENT_QUANTITY_OF_ITEM_EXTRA, currentQuantityOfItemSelected);
+                    intent.putExtra(EXTRA_PURCHASE_ID, itemIdSelected);
+                    intent.putExtra(EXTRA_CURRENT_QUANTITY_OF_ITEM, currentQuantityOfItemSelected);
                     startActivityForResult(intent, REQUEST_CODE_CART_ITEM_EDITED);
                     break;
 

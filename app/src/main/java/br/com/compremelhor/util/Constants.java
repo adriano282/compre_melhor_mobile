@@ -18,9 +18,13 @@ public interface Constants {
     String QUARTER = "quarter";
     String CITY = "city";
     String STATE = "state";
-    String ADDRESS_ID_EXTRA = "address_id";
-    String PURCHASE_ID_EXTRA = "purchase_id";
-    String CURRENT_QUANTITY_OF_ITEM_EXTRA = "current_quantity_of_item_selected";
+
+    String ROOT_RESOURCE_STOCK = "stock";
+
+    String EXTRA_CURRENT_QUANTITY_OF_ITEM = "current_quantity_of_item_selected";
+    String EXTRA_PURCHASE_ID = "purchase_id";
+    String EXTRA_ADDRESS_ID = "address_id";
+    String EXTRA_SER_PRODUCT = "product";
 
     String SP_SELECTED_ADDRESS_ID = "selected_address_id_sp";
     String SP_PARTNER_ID = "sp_partner_id";

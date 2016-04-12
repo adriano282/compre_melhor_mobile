@@ -1,13 +1,9 @@
 package br.com.compremelhor.activity;
 
-import android.app.ProgressDialog;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
-import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
 import android.text.TextWatcher;
 import android.util.Log;
 import android.view.Menu;
@@ -19,7 +15,6 @@ import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
-import android.widget.Toast;
 
 import com.facebook.login.widget.ProfilePictureView;
 
@@ -28,53 +23,44 @@ import br.com.compremelhor.api.integration.ResponseServer;
 import br.com.compremelhor.api.integration.resource.impl.UserResource;
 import br.com.compremelhor.dao.impl.DAOUser;
 import br.com.compremelhor.form.validator.ActionTextWatcher;
-import br.com.compremelhor.util.function.MyConsumer;
-import br.com.compremelhor.util.function.MyPredicate;
 import br.com.compremelhor.model.TypeDocument;
 import br.com.compremelhor.model.User;
+import br.com.compremelhor.util.function.MyConsumer;
+import br.com.compremelhor.util.function.MyPredicate;
 
 import static br.com.compremelhor.util.Constants.PREFERENCES;
 import static br.com.compremelhor.util.Constants.SP_FACEBOOK_USER_ID;
 import static br.com.compremelhor.util.Constants.SP_USER_ID;
 
-public class ProfileActivity extends AppCompatActivity implements OnClickListener {
+public class ProfileActivity extends ActivityTemplate<User> implements OnClickListener {
     private EditText edName;
     private EditText edEmail;
     private EditText edDocument;
 
-    private SharedPreferences preferences;
     private int id;
     private final int change_password_id = 0;
 
     private Button btnSave;
     private RadioButton rbCpf, rbCnpj;
     private RadioGroup rdGroup;
-    private DAOUser dao;
-    private UserResource resource;
-    private Handler handler;
-    private ProgressDialog progressDialog;
 
     ProfilePictureView profilePictureView;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
+        setupOnCreateActivity(R.id.my_toolbar,
+                getSharedPreferences(PREFERENCES, MODE_PRIVATE),
+                new Handler(),
+                DAOUser.getInstance(this),
+                new UserResource(this));
         super.onCreate(savedInstanceState);
         setContentView(R.layout.view_profile);
 
-        preferences = getSharedPreferences(PREFERENCES, MODE_PRIVATE);
+
         id = preferences.getInt(SP_USER_ID, 0);
-        resource = new UserResource(this);
-        handler = new Handler();
-        dao = DAOUser.getInstance(this);
         setToolbar();
         setWidgets();
-        registerViews();
-    }
-
-    private void showProgressDialog(String message) {
-        progressDialog = ProgressDialog
-                .show(ProfileActivity.this,
-                        getString(R.string.dialog_header_wait), message, true, false);
+        registerWidgets();
     }
 
     private boolean validForm() {
@@ -92,14 +78,14 @@ public class ProfileActivity extends AppCompatActivity implements OnClickListene
         }
 
         if (rbCpf.isChecked()) {
-            String regex = "([0-9]{3}[\\.]?[0-9]{3}[\\.]?[0-9]{3}[-]?[0-9]{2})";
+            String regex = getString(R.string.regex_pattern_cpf_document);
 
             if (!document.isEmpty() && !document.matches(regex)) {
                 edDocument.setError(getString(R.string.err_cpf_document_invalid));
                 valid = false;
             }
         } else if (rbCnpj.isChecked()) {
-            String regex = "([0-9]{2}[\\.]?[0-9]{3}[\\.]?[0-9]{3}[\\/]?[0-9]{4}[-]?[0-9]{2})";
+            String regex = getString(R.string.regex_pattern_cnpj_document);
 
             if (!document.isEmpty() && !document.matches(regex)) {
                 edDocument.setError(getString(R.string.err_cnpj_document_invalid));
@@ -115,11 +101,11 @@ public class ProfileActivity extends AppCompatActivity implements OnClickListene
             edEmail.setError(getString(R.string.err_field_not_filled));
             valid = false;
         }
-
         return valid;
     }
 
-    private void registerViews() {
+    @Override
+    protected void registerWidgets() {
         final MyPredicate predicate = new MyPredicate() {
             public boolean test() {
                 return !edEmail.getText().toString().isEmpty() &&
@@ -167,7 +153,8 @@ public class ProfileActivity extends AppCompatActivity implements OnClickListene
                 if (!validForm()) return;
                 final User user = getUserView();
 
-                showProgressDialog("Validando Dados no Servidor...");
+                showProgressDialog(R.string.dialog_header_wait,
+                        R.string.dialog_content_text_validating_data_on_server);
 
                 AsyncTask<Void, Void, Void> query = new AsyncTask<Void, Void, Void>() {
                     @Override
@@ -177,20 +164,20 @@ public class ProfileActivity extends AppCompatActivity implements OnClickListene
                             handler.post(new Runnable() {
                                 @Override
                                 public void run() {
-                                    edEmail.setError("Este e-mail já está cadastrado");
-                                    progressDialog.dismiss();
+                                    edEmail.setError(getString(R.string.err_email_already_used));
+                                    dismissProgressDialog();
                                 }
                             });
                             return null;
                         }
 
                         User userByDocument = resource.getResource("document", user.getDocument());
-                        if ( userByDocument != null && user.getId() != userByDocument.getId()) {
+                        if (userByDocument != null && user.getId() != userByDocument.getId()) {
                             handler.post(new Runnable() {
                                 @Override
                                 public void run() {
-                                    edDocument.setError("Este documento já está cadastrado");
-                                    progressDialog.dismiss();
+                                    edDocument.setError(getString(R.string.err_document_already_registered));
+                                    dismissProgressDialog();
                                 }
                             });
                             return null;
@@ -199,19 +186,22 @@ public class ProfileActivity extends AppCompatActivity implements OnClickListene
                         handler.post(new Runnable() {
                             @Override
                             public void run() {
-                                showProgressDialog("Registrando alterações...");
+                                showProgressDialog(R.string.dialog_header_wait,
+                                        R.string.dialog_content_text_registering_on_server);
                             }
                         });
 
                         ResponseServer<User> response = resource.updateResource(user);
                         if (!response.hasErrors()) {
-                            if (dao.insertOrUpdate(user) == -1) throw new RuntimeException("Exception during saving user in Database");
-                            progressDialog.dismiss();
+                            if (dao.insertOrUpdate(user) == -1)
+                                throw new RuntimeException(getString(R.string.exception_message_error_during_saving_entity_on_database));
+
+                            dismissProgressDialog();
 
                             handler.post(new Runnable() {
                                 @Override
                                 public void run() {
-                                    Toast.makeText(ProfileActivity.this, "Seus dados nao foram salvos com sucesso.", Toast.LENGTH_SHORT).show();
+                                    showMessage(R.string.data_registered_successful_message);
                                     preferences.edit().putInt(SP_USER_ID, user.getId()).apply();
                                     Log.d("PREFERENCES_CHANGE", "USER_ID -> " + user.getId());
                                     startActivity(intent);
@@ -222,15 +212,13 @@ public class ProfileActivity extends AppCompatActivity implements OnClickListene
                             for (String s : response.getErrors()) {
                                 Log.d("REST API", "Error in creation User: " + s);
                             }
-                            throw new RuntimeException("An Error occurred during try of update resource");
+                            throw new RuntimeException(getString(R.string.exception_message_error_during_updating_resource));
                         }
 
                         return null;
                     }
                 };
-
                 query.execute();
-
                 break;
         }
     }
@@ -240,40 +228,20 @@ public class ProfileActivity extends AppCompatActivity implements OnClickListene
         menu.add(0, change_password_id, 0, R.string.change_password)
                 .setIcon(R.drawable.lock)
                 .setShowAsAction(MenuItem.SHOW_AS_ACTION_IF_ROOM);
-        getMenuInflater().inflate(R.menu.action_bars_menu, menu);
-        return true;
+        return super.onCreateOptionsMenu(menu);
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
-            case R.id.menu_settings:
-                // Here we would open up our settings activity
-                return true;
-
             case change_password_id:
                 startActivity(new Intent(this, PasswordActivity.class));
-                break;
-
-            case android.R.id.home:
-                finish();
                 return true;
         }
-
         return super.onOptionsItemSelected(item);
     }
 
-    private void setToolbar() {
-        Toolbar myToolbar = (Toolbar) findViewById(R.id.my_toolbar);
-        myToolbar.setLogo(R.mipmap.icon);
-        setSupportActionBar(myToolbar);
-        if (getSupportActionBar() != null) {
-            getSupportActionBar().setDisplayShowHomeEnabled(true);
-            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        }
-    }
-
-    private void setWidgets() {
+    protected void setWidgets() {
         edName = (EditText) findViewById(R.id.profile_name);
         edEmail = (EditText) findViewById(R.id.profile_email);
         edDocument = (EditText) findViewById(R.id.profile_document);
@@ -292,7 +260,7 @@ public class ProfileActivity extends AppCompatActivity implements OnClickListene
     private User getUserView() {
         User user = dao.find(id);
 
-        if (user == null) throw new RuntimeException("User wouldn't be null here");
+        if (user == null) throw new RuntimeException(getString(R.string.exception_message_user_cannot_be_null));
 
         user.setName(edName.getText().toString());
         user.setDocument(edDocument.getText().toString());
@@ -306,9 +274,9 @@ public class ProfileActivity extends AppCompatActivity implements OnClickListene
         return user;
     }
 
-    private void fillFields() {
+    protected void fillFields() {
         id = preferences.getInt(SP_USER_ID, 0);
-        User user = DAOUser.getInstance(this).find(id);
+        User user = dao.find(id);
 
         if (user == null) return;
 
@@ -324,10 +292,5 @@ public class ProfileActivity extends AppCompatActivity implements OnClickListene
             rbCnpj.setChecked(user.getTypeDocument().getType().equals(TypeDocument.CNPJ.toString().toLowerCase()));
             rbCpf.setChecked(user.getTypeDocument().getType().equals(TypeDocument.CPF.toString().toLowerCase()));
         }
-
-    }
-
-    private void showMessage(String message) {
-        Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
     }
 }

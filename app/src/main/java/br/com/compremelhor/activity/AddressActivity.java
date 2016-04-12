@@ -23,7 +23,7 @@ import br.com.compremelhor.api.integration.resource.impl.AddressResource;
 import br.com.compremelhor.dao.impl.DAOAddress;
 import br.com.compremelhor.model.Address;
 
-import static br.com.compremelhor.util.Constants.ADDRESS_ID_EXTRA;
+import static br.com.compremelhor.util.Constants.EXTRA_ADDRESS_ID;
 import static br.com.compremelhor.util.Constants.PREFERENCES;
 import static br.com.compremelhor.util.Constants.SP_USER_ID;
 
@@ -97,9 +97,9 @@ public class AddressActivity extends ActivityTemplate<Address> {
 
     @Override
     protected void fillFields() {
-        if (getIntent().hasExtra(ADDRESS_ID_EXTRA)) {
+        if (getIntent().hasExtra(EXTRA_ADDRESS_ID)) {
 
-            int id = getIntent().getIntExtra(ADDRESS_ID_EXTRA, 0);
+            int id = getIntent().getIntExtra(EXTRA_ADDRESS_ID, 0);
             Address ad = DAOAddress.getInstance(this).find(id);
 
             etZipcode.setText(ad.getZipcode());
@@ -127,7 +127,7 @@ public class AddressActivity extends ActivityTemplate<Address> {
     private Address getAddressView() {
 
         return new Address(
-                getIntent().getIntExtra(ADDRESS_ID_EXTRA, 0), etStreet.getText().toString(),
+                getIntent().getIntExtra(EXTRA_ADDRESS_ID, 0), etStreet.getText().toString(),
                 etNumber.getText().toString(),
                 etQuarter.getText().toString(),
                 etCity.getText().toString(),
