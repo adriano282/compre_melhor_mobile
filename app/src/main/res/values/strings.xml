@@ -17,18 +17,24 @@
     <string name="save">Salvar</string>
     <string name="finish">Finalizar</string>
 
+
     <!-- User's fields Labels -->
     <string name="edit_text_label_email">Email</string>
     <string name="edit_text_label_password">Senha</string>
     <string name="edit_text_label_name">Nome</string>
     <string name="edit_text_label_document">Numero Documento</string>
     <string name="edit_text_label_password_confirmation">Repita a senha</string>
+    <string name="edit_text_label_repeat_password">Repita a senha</string>
+    <string name="edit_text_label_repeat_new_password">Repita a nova Senha</string>
+    <string name="edit_text_label_new_password">Nova Senha</string>
 
 
     <!-- Button's labels -->
     <string name="button_text_login">Log in</string>
     <string name="button_text_register">Cadastrar se</string>
     <string name="button_text_add_address">Adicionar Endereço</string>
+    <string name="button_text_save_password">Salvar Senha</string>
+    <string name="button_text_change_password">Alterar Senha</string>
 
 
     <!-- CheckBox's labels -->

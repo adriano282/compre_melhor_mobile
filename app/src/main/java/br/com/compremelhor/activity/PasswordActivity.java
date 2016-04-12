@@ -1,17 +1,12 @@
 package br.com.compremelhor.activity;
 
-import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
-import android.view.Menu;
-import android.view.MenuItem;
+import android.os.Handler;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import br.com.compremelhor.R;
 import br.com.compremelhor.api.integration.RequestAsync;
@@ -20,15 +15,15 @@ import br.com.compremelhor.api.integration.resource.impl.UserResource;
 import br.com.compremelhor.dao.impl.DAOUser;
 import br.com.compremelhor.form.validator.ActionTextWatcher;
 import br.com.compremelhor.form.validator.ValidatorTextWatcher;
+import br.com.compremelhor.model.User;
 import br.com.compremelhor.util.function.MyConsumer;
 import br.com.compremelhor.util.function.MyFunction;
 import br.com.compremelhor.util.function.MyPredicate;
-import br.com.compremelhor.model.User;
 
 import static br.com.compremelhor.util.Constants.PREFERENCES;
 import static br.com.compremelhor.util.Constants.SP_USER_ID;
 
-public class PasswordActivity extends AppCompatActivity implements OnClickListener {
+public class PasswordActivity extends ActivityTemplate<User> implements OnClickListener {
     private Button btnChangePassword;
     private Button btnCancelOperation;
 
@@ -42,25 +37,21 @@ public class PasswordActivity extends AppCompatActivity implements OnClickListen
 
     private int userId;
 
-    private DAOUser daoUser;
-
-    private SharedPreferences preferences;
-
-    private Toolbar myToolbar;
-
     @Override
     public void onCreate(Bundle savedInstanceState) {
+        setupOnCreateActivity(R.id.my_toolbar,
+                getSharedPreferences(PREFERENCES, MODE_PRIVATE),
+                new Handler(),
+                DAOUser.getInstance(this),
+                new UserResource(this));
         super.onCreate(savedInstanceState);
         setContentView(R.layout.change_password);
-
-        daoUser = DAOUser.getInstance(this);
-        preferences = getSharedPreferences(PREFERENCES, MODE_PRIVATE);
 
         userId = preferences.getInt(SP_USER_ID, 0);
 
         setToolbar();
         setWidgets();
-        registerViews();
+        registerWidgets();
     }
 
     @Override
@@ -69,7 +60,7 @@ public class PasswordActivity extends AppCompatActivity implements OnClickListen
 
             case R.id.btn_change_password:
                 if (matcherPasswordOnDatabase() && updatePassword()) {
-                    Toast.makeText(this, R.string.password_updated_successful_message, Toast.LENGTH_SHORT).show();
+                    showMessage(R.string.password_updated_successful_message);
                     finish();
                 }
                 else {
@@ -79,34 +70,13 @@ public class PasswordActivity extends AppCompatActivity implements OnClickListen
                 break;
 
             case R.id.btn_cancel:
-                Toast.makeText(this, R.string.btn_change_password_cancel_operation, Toast.LENGTH_SHORT).show();
+                showMessage(R.string.btn_change_password_cancel_operation);
                 finish();
         }
     }
-
-    public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.action_bars_menu, menu);
-        return true;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case R.id.menu_settings:
-                // Here we would open up our settings activity
-                return true;
-
-            case android.R.id.home:
-                finish();
-                return true;
-        }
-
-        return super.onOptionsItemSelected(item);
-    }
-
 
     private boolean matcherPasswordOnDatabase() {
-        User user = daoUser.find(userId);
+        User user = dao.find(userId);
         String password = etOldPassword.getText().toString();
         return user.isLoggedByFacebook() ||
                 user.getPassword() == null
@@ -114,16 +84,15 @@ public class PasswordActivity extends AppCompatActivity implements OnClickListen
     }
 
     private boolean updatePassword() {
-        User user = daoUser.find(userId);
+        User user = dao.find(userId);
 
         String newPassword = etNewPassword.getText().toString();
 
         user.setPassword(newPassword);
         user.setLoggedByFacebook(false);
-        boolean res = daoUser.insertOrUpdate(user) != -1;
+        boolean res = dao.insertOrUpdate(user) != -1;
 
         if (res) {
-            final UserResource resource = new UserResource(this);
             if (resource.isConnectedOnInternet()) {
                 MyFunction<User, ResponseServer<User>> function = new MyFunction<User, ResponseServer<User>>() {
                     @Override
@@ -138,7 +107,7 @@ public class PasswordActivity extends AppCompatActivity implements OnClickListen
         return res;
     }
 
-    private void setWidgets() {
+    protected void setWidgets() {
         tvRepeatPassword = (TextView) findViewById(R.id.tv_new_password_confirmation);
         tvNewPassword = (TextView) findViewById(R.id.tv_new_password);
         tvOldPassword = (TextView) findViewById(R.id.tv_old_password);
@@ -151,23 +120,26 @@ public class PasswordActivity extends AppCompatActivity implements OnClickListen
         btnChangePassword = (Button) findViewById(R.id.btn_change_password);
         btnChangePassword.setEnabled(false);
 
-        if (daoUser.find(userId).isLoggedByFacebook()) {
+        if (dao.find(userId).isLoggedByFacebook()) {
             tvOldPassword.setVisibility(View.GONE);
             etOldPassword.setVisibility(View.GONE);
             tvNewPassword.setText(getString(R.string.edit_text_label_password));
-            tvRepeatPassword.setText("Repita a senha");
-            btnChangePassword.setText("Salvar Senha");
+            tvRepeatPassword.setText(getString(R.string.edit_text_label_repeat_password));
+            btnChangePassword.setText(getString(R.string.button_text_save_password));
 
         } else {
             tvOldPassword.setVisibility(View.VISIBLE);
             etOldPassword.setVisibility(View.VISIBLE);
-            tvNewPassword.setText("Nova Senha");
-            tvRepeatPassword.setText("Repita a nova Senha");
-            btnChangePassword.setText("Alterar Senha");
+            tvNewPassword.setText(getString(R.string.edit_text_label_new_password));
+            tvRepeatPassword.setText(getString(R.string.edit_text_label_repeat_new_password));
+            btnChangePassword.setText(getString(R.string.button_text_change_password));
         }
     }
 
-    private void registerViews() {
+    @Override
+    protected void fillFields() {}
+
+    protected void registerWidgets() {
         final MyPredicate isDivergentPasswords = new MyPredicate() {
             public boolean test() {
                 String password = etNewPassword.getText().toString();
@@ -197,15 +169,5 @@ public class PasswordActivity extends AppCompatActivity implements OnClickListen
 
         btnChangePassword.setOnClickListener(this);
         btnCancelOperation.setOnClickListener(this);
-    }
-
-    private void setToolbar() {
-        myToolbar = (Toolbar) findViewById(R.id.my_toolbar);
-        myToolbar.setLogo(R.mipmap.icon);
-        setSupportActionBar(myToolbar);
-        if (getSupportActionBar() != null) {
-            getSupportActionBar().setDisplayShowHomeEnabled(true);
-            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        }
     }
 }
