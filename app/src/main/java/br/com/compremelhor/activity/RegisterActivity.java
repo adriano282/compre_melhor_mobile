@@ -1,25 +1,17 @@
 package br.com.compremelhor.activity;
 
-import android.app.AlertDialog;
-import android.app.ProgressDialog;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
-import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
 import android.text.TextWatcher;
 import android.util.Log;
-import android.view.Menu;
-import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
-import android.widget.Toast;
 
 import java.util.Calendar;
 
@@ -34,10 +26,9 @@ import br.com.compremelhor.model.User;
 import br.com.compremelhor.util.function.MyConsumer;
 import br.com.compremelhor.util.function.MyPredicate;
 
-import static br.com.compremelhor.util.Constants.PREFERENCES;
 import static br.com.compremelhor.util.Constants.SP_USER_ID;
 
-public class RegisterActivity extends AppCompatActivity {
+public class RegisterActivity extends ActivityTemplate<User> {
     private EditText etEmail;
     private EditText etPassword;
     private EditText etRepeatPassword;
@@ -48,39 +39,22 @@ public class RegisterActivity extends AppCompatActivity {
     private RadioButton rbCpf, rbCnpj;
     private RadioGroup rdGroup;
 
-    private ProgressDialog progressDialog;
-    private SharedPreferences preferences;
-
-    private DAOUser dao;
-
-    final UserResource resource = new UserResource(RegisterActivity.this);
-
     public void onCreate(Bundle state) {
+        setupOnCreateActivity(DAOUser.getInstance(this), new UserResource(this));
         super.onCreate(state);
         setContentView(R.layout.register);
 
         if (!resource.isConnectedOnInternet()) {
-            createDialogError();
+            createDialogErrorWithoutNetwork(R.string.err_without_connection_register_message);
             finish();
         }
 
-        preferences = getSharedPreferences(PREFERENCES, MODE_PRIVATE);
-        dao = DAOUser.getInstance(this);
-
         setToolbar();
         setWidgets();
-        registerViews();
+        registerWidgets();
     }
 
-    private AlertDialog createDialogError() {
-        return new AlertDialog.Builder(this)
-                .setMessage("Por favor, se conecte a internet para realizar o cadastro.")
-                .setTitle(R.string.header_dialog_error_message_without_internet)
-                .create();
-    }
-
-
-    private void registerViews() {
+    protected void registerWidgets() {
         final MyPredicate isDivergentPasswords = new MyPredicate() {
             public boolean test() {
                 String password = etPassword.getText().toString();
@@ -145,17 +119,9 @@ public class RegisterActivity extends AppCompatActivity {
     }
 
     @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case android.R.id.home:
-                finish();
-                return true;
-        }
+    protected void fillFields() {}
 
-        return super.onOptionsItemSelected(item);
-    }
-
-    private void setWidgets() {
+    protected void setWidgets() {
         etEmail = (EditText) findViewById(R.id.register_et_email);
         etPassword = (EditText) findViewById(R.id.register_et_password);
         etRepeatPassword = (EditText) findViewById(R.id.register_et_password2);
@@ -168,16 +134,6 @@ public class RegisterActivity extends AppCompatActivity {
         rdGroup = (RadioGroup) findViewById(R.id.register_rgRegister);
         btnSave = (Button) findViewById(R.id.btnRegister);
         btnSave.setEnabled(false);
-    }
-
-    private void setToolbar() {
-        Toolbar myToolbar = (Toolbar) findViewById(R.id.my_toolbar);
-        myToolbar.setLogo(R.mipmap.icon);
-        setSupportActionBar(myToolbar);
-        if (getSupportActionBar() != null) {
-            getSupportActionBar().setDisplayShowHomeEnabled(true);
-            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        }
     }
 
     private boolean validForm() {
@@ -194,20 +150,20 @@ public class RegisterActivity extends AppCompatActivity {
             valid = false;
         }
 
-        if (rbCpf.isChecked()) {
-            String regex = "([0-9]{3}[\\.]?[0-9]{3}[\\.]?[0-9]{3}[-]?[0-9]{2})";
+        if (rbCpf.isChecked() &&
+                !document.isEmpty() &&
+                !document.matches(getString(R.string.regex_pattern_cpf_document))) {
 
-            if (!document.isEmpty() && !document.matches(regex)) {
                 etDocument.setError(getString(R.string.err_cpf_document_invalid));
                 valid = false;
-            }
-        } else if (rbCnpj.isChecked()) {
-            String regex = "([0-9]{2}[\\.]?[0-9]{3}[\\.]?[0-9]{3}[\\/]?[0-9]{4}[-]?[0-9]{2})";
 
-            if (!document.isEmpty() && !document.matches(regex)) {
+        } else if (rbCnpj.isChecked() &&
+                !document.isEmpty()
+                && !document.matches(getString(R.string.regex_pattern_cnpj_document))) {
+
                 etDocument.setError(getString(R.string.err_cnpj_document_invalid));
                 valid = false;
-            }
+
         } else {
             rbCnpj.setError("!?");
             rbCpf.setError("!?");
@@ -220,12 +176,6 @@ public class RegisterActivity extends AppCompatActivity {
         }
 
         return valid;
-    }
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.action_bars_menu, menu);
-        return true;
     }
 
     private User getUserView() {
@@ -248,13 +198,6 @@ public class RegisterActivity extends AppCompatActivity {
         return user;
     }
 
-    private void showProgressDialog(String message) {
-        progressDialog = ProgressDialog
-                .show(RegisterActivity.this,
-                        getString(R.string.dialog_header_wait),message, true, false);
-    }
-
-
     private class MyOnClickListener implements View.OnClickListener {
         Handler handler = new Handler();
         @Override
@@ -262,7 +205,7 @@ public class RegisterActivity extends AppCompatActivity {
             final User user = getUserView();
 
             if (!resource.isConnectedOnInternet()) {
-                createDialogError();
+                createDialogErrorWithoutNetwork(R.string.err_without_connection_register_message);
                 return;
             }
 
@@ -270,7 +213,8 @@ public class RegisterActivity extends AppCompatActivity {
                 return;
             }
 
-            showProgressDialog("Validando Dados no Servidor...");
+            showProgressDialog(R.string.dialog_header_wait,
+                    R.string.dialog_content_text_validating_data_on_server);
 
             AsyncTask<Void, Void, Void> query = new AsyncTask<Void, Void, Void>() {
                 @Override
@@ -279,8 +223,8 @@ public class RegisterActivity extends AppCompatActivity {
                         handler.post(new Runnable() {
                             @Override
                             public void run() {
-                                etEmail.setError("Este e-mail já está cadastrado");
-                                progressDialog.dismiss();
+                                etEmail.setError(getString(R.string.err_email_already_used));
+                                dismissProgressDialog();
                             }
                         });
                         return null;
@@ -290,8 +234,8 @@ public class RegisterActivity extends AppCompatActivity {
                         handler.post(new Runnable() {
                             @Override
                             public void run() {
-                                etDocument.setError("Este documento já está cadastrado");
-                                progressDialog.dismiss();
+                                etDocument.setError(getString(R.string.err_document_already_registered));
+                                dismissProgressDialog();
                             }
                         });
                         return null;
@@ -300,7 +244,8 @@ public class RegisterActivity extends AppCompatActivity {
                     handler.post(new Runnable() {
                         @Override
                         public void run() {
-                            showProgressDialog("Realizando cadastro...");
+                            showProgressDialog(R.string.dialog_header_wait,
+                                    R.string.dialog_content_text_registering_on_server);
                         }
                     });
 
@@ -315,7 +260,7 @@ public class RegisterActivity extends AppCompatActivity {
                         handler.post(new Runnable() {
                             @Override
                             public void run() {
-                                Toast.makeText(RegisterActivity.this, "Você foi cadastrado com sucesso.", Toast.LENGTH_SHORT).show();
+                                showMessage(R.string.data_registered_successful_message);
                                 preferences.edit().putInt(SP_USER_ID, user.getId()).apply();
                                 Log.d("PREFERENCES_CHANGE", "USER_ID -> " + user.getId());
                             }
@@ -329,14 +274,10 @@ public class RegisterActivity extends AppCompatActivity {
                             Log.d("REST API", "Error in creation User: " + s);
                         }
                     }
-
                     return null;
                 }
             };
-
             query.execute();
-
-
         }
     }
 }

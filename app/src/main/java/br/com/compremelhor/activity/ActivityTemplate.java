@@ -15,6 +15,8 @@ import br.com.compremelhor.R;
 import br.com.compremelhor.api.integration.resource.Resource;
 import br.com.compremelhor.dao.IDAO;
 
+import static br.com.compremelhor.util.Constants.PREFERENCES;
+
 
 public abstract class ActivityTemplate<T> extends AppCompatActivity {
     private boolean configured = false;
@@ -36,6 +38,17 @@ public abstract class ActivityTemplate<T> extends AppCompatActivity {
         if (!configured) throw new RuntimeException("Activity resources weren't configured!");
         super.onCreate(savedInstanceState);
     }
+
+    protected void setupOnCreateActivity(IDAO<T> dao,
+                                         Resource<T> resource) {
+        this.toolbarId = R.id.my_toolbar;
+        this.preferences = getSharedPreferences(PREFERENCES, MODE_PRIVATE);
+        this.handler = new Handler();
+        this.dao = dao;
+        this.resource = resource;
+        configured = true;
+    }
+
 
     protected void setupOnCreateActivity(int toolbarId,
                                       SharedPreferences preferences,
