@@ -39,6 +39,7 @@ import br.com.compremelhor.service.CartService;
 
 import static br.com.compremelhor.util.Constants.CLIENT_SCANNER;
 import static br.com.compremelhor.util.Constants.EXTRA_CURRENT_QUANTITY_OF_ITEM;
+import static br.com.compremelhor.util.Constants.EXTRA_SER_PRODUCT;
 import static br.com.compremelhor.util.Constants.OTHERS_CODES;
 import static br.com.compremelhor.util.Constants.PREFERENCES;
 import static br.com.compremelhor.util.Constants.PRODUCT_MODE;
@@ -137,7 +138,7 @@ public class CartFragment extends android.support.v4.app.Fragment {
                             }
                             progressDialog.dismiss();
                             Intent intent1 = new Intent(getActivity(), ProductActivity.class);
-                            intent1.putExtra("product", p);
+                            intent1.putExtra(EXTRA_SER_PRODUCT, p);
                             startActivityForResult(intent1, REQUEST_CODE_CART_ITEM_ADDED);
                             return null;
                         }
@@ -153,6 +154,13 @@ public class CartFragment extends android.support.v4.app.Fragment {
                 break;
 
             case REQUEST_CODE_CART_ITEM_ADDED:
+                if (resultCode == Activity.RESULT_OK) {
+                    Log.d("ASYNC TASK", "CartFragment.OnActivityResult");
+                    new LoadCurrentCart().execute();
+                }
+                break;
+
+            case REQUEST_CODE_CART_ITEM_EDITED:
                 if (resultCode == Activity.RESULT_OK) {
                     Log.d("ASYNC TASK", "CartFragment.OnActivityResult");
                     new LoadCurrentCart().execute();
@@ -240,10 +248,33 @@ public class CartFragment extends android.support.v4.app.Fragment {
             switch (item) {
                 // For to do changes on item
                 case 0:
-                    intent = new Intent(getActivity(), ProductActivity.class);
-                    intent.putExtra(EXTRA_PURCHASE_ID, itemIdSelected);
-                    intent.putExtra(EXTRA_CURRENT_QUANTITY_OF_ITEM, currentQuantityOfItemSelected);
-                    startActivityForResult(intent, REQUEST_CODE_CART_ITEM_EDITED);
+                    AsyncTask<Void, Void, Void> request = new AsyncTask<Void, Void, Void>() {
+                        @Override
+                        protected Void doInBackground(Void... params) {
+                            PurchaseLine line = daoPurchaseLine.find(Integer.valueOf(itemIdSelected));
+                            if (line == null) throw new RuntimeException("CANNOT BE NULL");
+                            Product p = skuResource.getResource(line.getProduct().getId());
+                            if (p == null) {
+                                handler.post(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        Toast.makeText(getActivity(),
+                                                "Desculpe, ocorreu um erro inesperado ao tentar editar o item", Toast.LENGTH_SHORT).show();
+                                        progressDialog.dismiss();
+                                    }
+                                });
+                                return null;
+                            }
+                            progressDialog.dismiss();
+                            Intent intent = new Intent(getActivity(), ProductActivity.class);
+                            intent.putExtra(EXTRA_SER_PRODUCT, p);
+                            intent.putExtra(EXTRA_PURCHASE_ID, itemIdSelected);
+                            intent.putExtra(EXTRA_CURRENT_QUANTITY_OF_ITEM, currentQuantityOfItemSelected);
+                            startActivityForResult(intent, REQUEST_CODE_CART_ITEM_EDITED);
+                            return null;
+                        }
+                    };
+                    request.execute();
                     break;
 
                 case 1:

@@ -64,15 +64,13 @@ public abstract class AbstractDAO<T> implements IDAO<T> {
 
     public long insertOrUpdate(EntityModel o) {
         ContentValues values = bindContentValues(o);
-        int id = 0;
-        if (o.getId() == 0) {
-            id = (int) getDB().insert(TABLE, null, values);
+
+         if (o.getId() == 0) {
+            return getDB().insert(TABLE, null, values);
         } else {
-            id = getDB().update(TABLE, values,
+            return getDB().update(TABLE, values,
                     DatabaseHelper.User._ID + " = ?", new String[]{String.valueOf(o.getId())});
         }
-        o.setId(id);
-        return id;
     }
 
     public List<T> findAllByForeignId(String idName, int idValue) {
@@ -126,4 +124,13 @@ public abstract class AbstractDAO<T> implements IDAO<T> {
         }
         return db;
     }
+
+    public void cleanDatabase() {
+        for (String table : helper.TABLES) {
+            getDB().execSQL("DROP TABLE IF EXISTS " + table);
+        }
+
+        helper.onCreate(helper.getWritableDatabase());
+    }
+
 }

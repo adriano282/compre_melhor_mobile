@@ -14,11 +14,15 @@ import java.util.concurrent.ExecutionException;
 
 import br.com.compremelhor.R;
 import br.com.compremelhor.api.integration.ResponseServer;
+import br.com.compremelhor.api.integration.resource.impl.FreightResource;
 import br.com.compremelhor.api.integration.resource.impl.PurchaseLineResource;
 import br.com.compremelhor.api.integration.resource.impl.PurchaseResource;
+import br.com.compremelhor.dao.impl.DAOFreight;
 import br.com.compremelhor.dao.impl.DAOPurchase;
 import br.com.compremelhor.dao.impl.DAOPurchaseLine;
+import br.com.compremelhor.model.EntityModel;
 import br.com.compremelhor.model.Establishment;
+import br.com.compremelhor.model.Freight;
 import br.com.compremelhor.model.Purchase;
 import br.com.compremelhor.model.PurchaseLine;
 import br.com.compremelhor.model.User;
@@ -26,11 +30,13 @@ import br.com.compremelhor.model.User;
 public class CartService {
     private static CartService instance;
 
+    private DAOFreight daoFreight;
     private DAOPurchase daoPurchase;
     private DAOPurchaseLine daoItem;
 
     private PurchaseResource purchaseResource;
     private PurchaseLineResource itemResource;
+    private FreightResource freightResource;
 
     private Purchase purchase;
 
@@ -49,7 +55,9 @@ public class CartService {
             instance.context = context;
             instance.daoItem = DAOPurchaseLine.getInstance(context);
             instance.daoPurchase = DAOPurchase.getInstance(context);
+            instance.daoFreight = DAOFreight.getInstance(context);
 
+            instance.freightResource = new FreightResource("freights", context);
             instance.purchaseResource = new PurchaseResource("purchases", context);
             instance.handler = new Handler();
             instance.userId = userId;
@@ -72,7 +80,8 @@ public class CartService {
         AsyncTask<Void, Void, Boolean> request = new AsyncTask<Void, Void, Boolean>() {
             @Override
             protected Boolean doInBackground(Void... params) {
-                if (!getItems().add(item)) return false;
+                if (getItems().contains(item))
+                    return false;
 
                 ResponseServer<PurchaseLine> response = itemResource.createResource(item);
                 if (response.hasErrors()) {
@@ -82,6 +91,10 @@ public class CartService {
                 item.setId(response.getEntity().getId());
                 if (daoItem.insert(item) == -1)
                     throw new RuntimeException("An error occurred during the try of save on database");
+
+                TreeSet<PurchaseLine> lines = getItems();
+                lines.add(item);
+                purchase.setItems(lines);
 
                 return true;
             }
@@ -108,6 +121,7 @@ public class CartService {
         AsyncTask<Void, Void, Boolean> request = new AsyncTask<Void, Void, Boolean>() {
             @Override
             protected Boolean doInBackground(Void... params) {
+                if (item.getPurchase() == null) item.setPurchase(purchase);
                 ResponseServer<PurchaseLine> response = itemResource.updateResource(item);
                 if (response.hasErrors()) {
                     log(response);
@@ -137,6 +151,52 @@ public class CartService {
         } catch (ExecutionException e) {
             throw new RuntimeException("Error occurred during editing an item on cart: " + e);
         }
+    }
+
+    public boolean removeFreight() {
+        if (purchase.getFreight() == null) return false;
+
+        ResponseServer<Freight> responseServer = freightResource.deleteResource(purchase.getFreight());
+        if (responseServer.hasErrors()) {
+            log(responseServer);
+            return false;
+        }
+
+        daoFreight.delete(purchase.getFreight().getId());
+
+        boolean result = daoFreight.find(purchase.getFreight().getId()) == null;
+        purchase.setFreight(null);
+        return  result;
+    }
+
+    public boolean setupFreight(Freight freight) {
+        HashMap<String, String> params = new HashMap<>();
+        params.put("purchase.id", String.valueOf(purchase.getId()));
+
+        Freight freightOnServer = freightResource.getResource(params);
+
+        if (freightOnServer != null) {
+            freight.setId(freightOnServer.getId());
+            ResponseServer<Freight> responseServer = freightResource.updateResource(freight);
+            if (responseServer.hasErrors()) {
+                log(responseServer);
+                return false;
+            }
+        } else {
+            ResponseServer<Freight> responseServer = freightResource.createResource(freight);
+            if (responseServer.hasErrors()) {
+                log(responseServer);
+                return false;
+            }
+            freight.setId(responseServer.getEntity().getId());
+        }
+
+        if (daoFreight.insert(freight) != -1) {
+            purchase.setFreight(freight);
+            return true;
+        }
+
+        return false;
     }
 
     public boolean removeItem(final PurchaseLine item) {
@@ -197,12 +257,12 @@ public class CartService {
                     param.put("status", Purchase.Status.OPENED.toString());
 
                     purchase = purchaseResource.getResource(param);
-                    purchase.setEstablishment(establishment);
 
                     if (purchase == null) {
                         purchase = new Purchase();
                         User user = new User();
                         user.setId(userId);
+                        purchase.setEstablishment(establishment);
                         purchase.setUser(user);
                         purchase.setStatus(Purchase.Status.OPENED);
                         purchase.setDateCreated(Calendar.getInstance());
@@ -216,17 +276,26 @@ public class CartService {
                             }
                             throw new RuntimeException("Error on Server");
                         }
-                        daoPurchase.insertOrUpdate(purchase);
+
+                        purchase.setId(responseServer.getEntity().getId());
+                        daoPurchase.insert(purchase);
                         progressDialog.dismiss();
                         return null;
                     }
 
+                    purchase.setEstablishment(establishment);
                     daoPurchase.insert(purchase);
                     progressDialog.dismiss();
                     return null;
                 }
             };
-            request.execute();
+            try {
+                request.execute().get();
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            } catch (ExecutionException e) {
+                e.printStackTrace();
+            }
         } else {
             progressDialog.dismiss();
         }
@@ -240,13 +309,15 @@ public class CartService {
         instance.purchase.setTotalValue(total);
     }
 
-    private void log(ResponseServer<PurchaseLine> response) {
+    private void log(ResponseServer<? extends EntityModel> response) {
         Log.d("REST API", "Response Status: " + response.getStatusCode());
         for (String error : response.getErrors()) {
             Log.d("REST API", "Error: " + error);
         }
 
     }
+
+
     private void showProgressDialog(String message) {
         progressDialog = ProgressDialog
                 .show(context, context.getString(R.string.dialog_header_wait), message, true, false);

@@ -130,9 +130,9 @@ public class DataBind {
             freight.setId(getInt(cursor, DatabaseHelper.Freight._ID));
 
             Address address = DAOAddress.getInstance(context).find(getInt(cursor, DatabaseHelper.Freight._ADDRESS_ID));
-            freight.setAddress(address);
+            freight.setShipAddress(address);
 
-            freight.setTotalValueDrive(getBigDecimal(cursor, DatabaseHelper.Freight.TOTAL_VALUE_DRIVE));
+            freight.setValueRide(getBigDecimal(cursor, DatabaseHelper.Freight.TOTAL_VALUE_DRIVE));
 
             return freight;
         }

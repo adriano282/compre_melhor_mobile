@@ -54,23 +54,23 @@ public class PurchaseLineResource extends AbstractResource<PurchaseLine> {
         sb.append("{");
 
         if (purchaseLine.getQuantity() != null) {
-            sb.append("\"quantity\" : \"" + purchaseLine.getQuantity() + "\", ");
+            sb.append("\"quantity\" : \"" + purchaseLine.getQuantity() + "\"");
         }
 
         if (purchaseLine.getUnitaryPrice() != null) {
-            sb.append("\"unitPrice\" : \"" + purchaseLine.getUnitaryPrice() + "\", ");
+            sb.append(", \"unitPrice\" : \"" + purchaseLine.getUnitaryPrice() + "\"");
         }
 
         if (purchaseLine.getSubTotal() != null) {
-            sb.append("\"subTotal\" : \"" + purchaseLine.getSubTotal() + "\", ");
+            sb.append(", \"subTotal\" : \"" + purchaseLine.getSubTotal() + "\"");
         }
 
         if (purchaseLine.getStock() != null) {
-            sb.append("\"stock\" : { \"id\" : \"" +purchaseLine.getStock().getId() +"\"}, ");
+            sb.append(", \"stock\" : { \"id\" : \"" +purchaseLine.getStock().getId() +"\"} ");
         }
 
         if (purchaseLine.getPurchase() != null) {
-            sb.append("\"purchase\" : {\"id\" : \"" + purchaseLine.getPurchase().getId() + "\"}");
+            sb.append(", \"purchase\" : {\"id\" : \"" + purchaseLine.getPurchase().getId() + "\"}");
         }
 
         sb.append("}");

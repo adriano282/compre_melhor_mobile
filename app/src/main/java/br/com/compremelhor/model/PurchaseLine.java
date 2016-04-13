@@ -100,7 +100,8 @@ public class PurchaseLine extends EntityModel implements Comparable<PurchaseLine
 
     @Override
     public int compareTo(PurchaseLine another) {
-        return this.category.compareTo(another.getCategory());
+        return this.productName.concat(category)
+                .compareTo(another.getProductName().concat(category));
     }
 
     public Stock getStock() {

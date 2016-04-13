@@ -150,14 +150,18 @@ public class PartnerListActivity extends AppCompatActivity {
         public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
             Map<String, Object> partner = partners.get(position);
 
-            if (daoEstablishment
-                    .findByAttribute("name", partner.get(DatabaseHelper.Establishment.NAME).toString()) == null) {
+            Establishment est = daoEstablishment
+                    .findByAttribute("name", partner.get(DatabaseHelper.Establishment.NAME).toString());
+            if (est == null) {
                 Establishment establishment = new Establishment();
                 establishment.setId((int) partner.get(DatabaseHelper.Establishment._ID));
                 establishment.setName(partner.get(DatabaseHelper.Establishment.NAME).toString());
                 establishment.setDateCreated(Calendar.getInstance());
                 establishment.setLastUpdated(Calendar.getInstance());
                 daoEstablishment.insert(establishment);
+            } else if (est.getId() != (int) partner.get(DatabaseHelper.Establishment._ID)) {
+                est.setId((int) partner.get(DatabaseHelper.Establishment._ID));
+                daoEstablishment.updateByName(est);
             }
 
             preferences.edit()

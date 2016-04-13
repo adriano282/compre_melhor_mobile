@@ -4,9 +4,9 @@ import android.content.ContentValues;
 import android.content.Context;
 
 import br.com.compremelhor.dao.AbstractDAO;
-import br.com.compremelhor.util.DatabaseHelper;
 import br.com.compremelhor.model.EntityModel;
 import br.com.compremelhor.model.Establishment;
+import br.com.compremelhor.util.DatabaseHelper;
 
 public class DAOEstablishment extends AbstractDAO<Establishment> {
     private static DAOEstablishment instance;
@@ -29,5 +29,11 @@ public class DAOEstablishment extends AbstractDAO<Establishment> {
         values.put(DatabaseHelper.Establishment._ID, est.getId());
         values.put(DatabaseHelper.Establishment.NAME, est.getName());
         return values;
+    }
+
+    public long updateByName(EntityModel o) {
+        Establishment establishment = (Establishment) o;
+        return getDB().update(DatabaseHelper.Establishment.TABLE, bindContentValues(o),
+                DatabaseHelper.Establishment.NAME + " = ?", new String[] {establishment.getName()});
     }
 }

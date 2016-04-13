@@ -28,8 +28,8 @@ public class DAOFreight extends AbstractDAO<Freight> {
         ContentValues values = new ContentValues();
 
         values.put(DatabaseHelper.Freight._ID, f.getId());
-        values.put(DatabaseHelper.Freight.TOTAL_VALUE_DRIVE, f.getTotalValueDrive().doubleValue());
-        values.put(DatabaseHelper.Freight._ADDRESS_ID, f.getAddress().getId());
+        values.put(DatabaseHelper.Freight.TOTAL_VALUE_DRIVE, f.getValueRide().doubleValue());
+        values.put(DatabaseHelper.Freight._ADDRESS_ID, f.getShipAddress().getId());
         values.put(DatabaseHelper.Freight.DATE_CREATED, f.getDateCreated().getTimeInMillis());
         values.put(DatabaseHelper.Freight.LAST_UPDATED, f.getLastUpdated().getTimeInMillis());
 

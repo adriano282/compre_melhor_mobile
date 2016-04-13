@@ -4,7 +4,7 @@
     <string name="app_id">1621410234792107</string>
 
 
-    <!-- User's responses -->
+    <!-- User\'s responses -->
     <string name="yes">Sim</string>
     <string name="no">Não</string>
 
@@ -89,6 +89,9 @@
 
 
     <!-- Error messages -->
+    <string name="err_item_already_on_cart">Este item já esta no carrinho.</string>
+    <string name="err_while_trying_add_item_on_cart">"Desculpe, ocorreu um erro inesperado ao tentar adicionar este item"</string>
+    <string name="err_while_trying_edit_item_on_cart">"Desculpe, ocorreu um erro inesperado ao tentar editar este item"</string>
     <string name="err_document_already_registered">Este documento já está cadastrado</string>
     <string name="err_email_already_used">Este e-mail já está cadastrado</string>
     <string name="err_field_not_filled">Campo necessário não preenchido</string>
@@ -213,7 +216,7 @@
     <string name="action_bar_partner_label">Selecionar Local</string>
 
     <!-- Exception's messages -->
-    <string name="exception_message_user_cannot_be_null">User wouldn't be null here</string>
+    <string name="exception_message_user_cannot_be_null">User wouldn\'t be null here</string>
     <string name="exception_message_error_during_updating_resource">An Error occurred during try of update resource</string>
     <string name="exception_message_error_during_saving_entity_on_database">Exception during saving user in Database</string>
 

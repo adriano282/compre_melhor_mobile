@@ -90,10 +90,13 @@ public class ProductActivity extends ActivityTemplate<Stock> {
                 handler.post(new Runnable() {
                     @Override
                     public void run() {
-                        if (btnChangeOnCart.getText().toString().equals(getString(R.string.button_text_change_on_cart)))
-                            cartService.editItem(item);
-                        else
-                            cartService.addItem(item);
+                        if (btnChangeOnCart.getText().toString().equals(getString(R.string.button_text_change_on_cart))) {
+                            if (!cartService.editItem(item)) showMessage(R.string.err_while_trying_edit_item_on_cart);
+                        }
+                        else if (cartService.getItems().contains(item))
+                            showMessage(R.string.err_item_already_on_cart);
+                        else if (!cartService.addItem(item))
+                            showMessage(R.string.err_while_trying_add_item_on_cart);
                     }
                 });
 
