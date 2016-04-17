@@ -11,6 +11,10 @@ public class Freight extends EntityModel {
     private Purchase purchase;
     private FreightType type;
     private FreightSetup freightSetup;
+    private int version;
+
+    public void setVersion(int version) { this.version = version; }
+    public int getVersion() { return version; }
 
     public Freight() {}
 

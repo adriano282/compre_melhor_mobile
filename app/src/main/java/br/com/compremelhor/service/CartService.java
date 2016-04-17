@@ -23,9 +23,11 @@ import br.com.compremelhor.dao.impl.DAOPurchaseLine;
 import br.com.compremelhor.model.EntityModel;
 import br.com.compremelhor.model.Establishment;
 import br.com.compremelhor.model.Freight;
+import br.com.compremelhor.model.FreightSetup;
 import br.com.compremelhor.model.Purchase;
 import br.com.compremelhor.model.PurchaseLine;
 import br.com.compremelhor.model.User;
+import br.com.compremelhor.util.DatabaseHelper;
 
 public class CartService {
     private static CartService instance;
@@ -39,6 +41,9 @@ public class CartService {
     private FreightResource freightResource;
 
     private Purchase purchase;
+    private Freight freight;
+
+    private FreightSetup freightSetup;
 
     private Handler handler;
 
@@ -57,7 +62,6 @@ public class CartService {
             instance.daoPurchase = DAOPurchase.getInstance(context);
             instance.daoFreight = DAOFreight.getInstance(context);
 
-            instance.freightResource = new FreightResource("freights", context);
             instance.purchaseResource = new PurchaseResource("purchases", context);
             instance.handler = new Handler();
             instance.userId = userId;
@@ -67,6 +71,10 @@ public class CartService {
             if (instance.purchase != null) {
                 instance.itemResource = new PurchaseLineResource(
                         "purchases/" + instance.purchase.getId() +"/lines", context);
+
+                instance.freightResource = new FreightResource(
+                        "purchases/" + instance.purchase.getId() + "/freight", context);
+
             }
         }
         return instance;
@@ -154,22 +162,28 @@ public class CartService {
     }
 
     public boolean removeFreight() {
-        if (purchase.getFreight() == null) return false;
 
-        ResponseServer<Freight> responseServer = freightResource.deleteResource(purchase.getFreight());
+        Freight freight = daoFreight
+                .findByAttribute(DatabaseHelper.Freight._PURCHASE_ID, String.valueOf(purchase.getId()));
+
+        if (freight == null) return true;
+
+        ResponseServer<Freight> responseServer = freightResource.deleteResource(freight);
         if (responseServer.hasErrors()) {
             log(responseServer);
-            return false;
         }
 
-        daoFreight.delete(purchase.getFreight().getId());
+        daoFreight.delete(freight.getId());
 
-        boolean result = daoFreight.find(purchase.getFreight().getId()) == null;
+        boolean result = daoFreight.find(freight.getId()) == null;
         purchase.setFreight(null);
+
         return  result;
     }
 
-    public boolean setupFreight(Freight freight) {
+    public boolean persistFreight() {
+        freight.setPurchase(purchase);
+
         HashMap<String, String> params = new HashMap<>();
         params.put("purchase.id", String.valueOf(purchase.getId()));
 
@@ -182,6 +196,11 @@ public class CartService {
                 log(responseServer);
                 return false;
             }
+            if (daoFreight.insertOrUpdate(freight) != -1) {
+                purchase.setFreight(freight);
+                return true;
+            }
+
         } else {
             ResponseServer<Freight> responseServer = freightResource.createResource(freight);
             if (responseServer.hasErrors()) {
@@ -189,13 +208,11 @@ public class CartService {
                 return false;
             }
             freight.setId(responseServer.getEntity().getId());
+            if (daoFreight.insert(freight) != -1) {
+                purchase.setFreight(freight);
+                return true;
+            }
         }
-
-        if (daoFreight.insert(freight) != -1) {
-            purchase.setFreight(freight);
-            return true;
-        }
-
         return false;
     }
 
@@ -309,6 +326,12 @@ public class CartService {
         instance.purchase.setTotalValue(total);
     }
 
+    public Purchase getPurchase() {
+        return purchase == null ?
+                new Purchase() : purchase;
+    }
+
+
     private void log(ResponseServer<? extends EntityModel> response) {
         Log.d("REST API", "Response Status: " + response.getStatusCode());
         for (String error : response.getErrors()) {
@@ -322,4 +345,34 @@ public class CartService {
         progressDialog = ProgressDialog
                 .show(context, context.getString(R.string.dialog_header_wait), message, true, false);
     }
+
+    public Freight getFreight() {
+        freight = purchase.getFreight();
+        return freight;
+    }
+
+    public void setFreight(Freight freight) {
+        purchase.setFreight(freight);
+        getFreight();
+    }
+
+    public FreightSetup getFreightSetup() {
+        if (getFreight() != null && getFreight().getFreightSetup() != null)
+            freightSetup = getFreight().getFreightSetup();
+
+        return freightSetup;
+    }
+
+    public void loadCurrentFreight() {
+        if (getFreight() == null)
+            setFreight(new Freight());
+    }
+
+    public void setFreightSetup(FreightSetup freightSetup) {
+        if (getFreight() != null) {
+            freight.setFreightSetup(freightSetup);
+            getFreightSetup();
+        }
+    }
+
 }

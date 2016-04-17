@@ -23,6 +23,7 @@ import br.com.compremelhor.model.Code;
 import br.com.compremelhor.model.EntityModel;
 import br.com.compremelhor.model.Establishment;
 import br.com.compremelhor.model.Freight;
+import br.com.compremelhor.model.FreightSetup;
 import br.com.compremelhor.model.Manufacturer;
 import br.com.compremelhor.model.Product;
 import br.com.compremelhor.model.Purchase;
@@ -132,8 +133,24 @@ public class DataBind {
             Address address = DAOAddress.getInstance(context).find(getInt(cursor, DatabaseHelper.Freight._ADDRESS_ID));
             freight.setShipAddress(address);
 
-            freight.setValueRide(getBigDecimal(cursor, DatabaseHelper.Freight.TOTAL_VALUE_DRIVE));
 
+            Calendar calendar = getCalendar(cursor, DatabaseHelper.Freight.STARTING_DATE_TIME);
+            if (calendar != null) {
+                FreightSetup freightSetup = new FreightSetup();
+                freightSetup.setYear(calendar.get(Calendar.YEAR));
+                freightSetup.setMonth(calendar.get(Calendar.MONTH));
+                freightSetup.setDayOfMonth(calendar.get(Calendar.DAY_OF_MONTH));
+                freightSetup.setHour(calendar.get(Calendar.HOUR_OF_DAY));
+                freightSetup.setMinute(calendar.get(Calendar.MINUTE));
+                freight.setFreightSetup(freightSetup);
+            }
+
+            if (getString(cursor, DatabaseHelper.Freight.TYPE) != null) {
+                Freight.FreightType type = Freight.FreightType.valueOf(getString(cursor, DatabaseHelper.Freight.TYPE));
+                freight.setType(type);
+            }
+
+            freight.setValueRide(getBigDecimal(cursor, DatabaseHelper.Freight.TOTAL_VALUE_DRIVE));
             return freight;
         }
         else if (objectModel instanceof PurchaseLine) {
@@ -169,14 +186,18 @@ public class DataBind {
             User user = DAOUser.getInstance(context).find(getInt(cursor, DatabaseHelper.Purchase._USER_ID));
             purchase.setUser(user);
 
-            Freight freight = DAOFreight.getInstance(context).find(getInt(cursor, DatabaseHelper.Purchase._FREIGHT_ID));
-            purchase.setFreight(freight);
-
             List<PurchaseLine> list = DAOPurchaseLine
                     .getInstance(context)
                     .findAllByForeignId(DatabaseHelper.PurchaseLine._PURCHASE_ID, purchase.getId());
 
+            Freight freight;
+            freight = DAOFreight.getInstance(context)
+                    .findByAttribute(DatabaseHelper.Freight._PURCHASE_ID, String.valueOf(purchase.getId()));
+            purchase.setFreight(freight);
+
             purchase.setItems(new TreeSet<>(list));
+
+
             return purchase;
         }
 
@@ -184,11 +205,14 @@ public class DataBind {
     }
 
     private String getString(Cursor cursor, String column) {
+        if (cursor.getColumnIndex(column) == -1) return null;
         return cursor.getString(cursor.getColumnIndex(column));
     }
 
 
     private Long getLong(Cursor cursor, String column) {
+        if (cursor.getColumnIndex(column) == -1) return null;
+
         return cursor.getLong(cursor.getColumnIndex(column));
     }
 
@@ -200,9 +224,11 @@ public class DataBind {
         return cursor.getInt(cursor.getColumnIndex(column));
     }
     private Calendar getCalendar(Cursor cursor, String column) {
-        Calendar calendar = Calendar.getInstance();
-        calendar.setTime(new Date(getInt(cursor, column)));
-        return  calendar;
+        try {
+            Calendar calendar = Calendar.getInstance();
+            calendar.setTime(new Date(getLong(cursor, column)));
+            return  calendar;
+        } catch (Exception e) { return null; }
     }
     private boolean getBoolean(Cursor cursor, String column) {
         return cursor.getInt(cursor.getColumnIndex(column)) != 0;

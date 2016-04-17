@@ -2,6 +2,7 @@ package br.com.compremelhor.api.integration.resource.impl;
 
 import android.content.Context;
 
+import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 
 import br.com.compremelhor.api.integration.resource.AbstractResource;
@@ -30,16 +31,17 @@ public class FreightResource extends AbstractResource<Freight>{
         freight.setId(jsonObject.get("id").getAsInt());
         freight.setValueRide(jsonObject.get("valueRide").getAsBigDecimal());
 
-        JsonObject purchaseJson = jsonObject.get("purchase").getAsJsonObject();
-        if (purchaseJson != null) {
+        if (jsonObject.get("purchase") != null) {
+            JsonObject purchaseJson = jsonObject.get("purchase").getAsJsonObject();
             Purchase purchase = new Purchase();
             purchase.setId(purchaseJson.get("id").getAsInt());
 
             freight.setPurchase(purchase);
         }
 
-        JsonObject addressJson = jsonObject.get("address").getAsJsonObject();
-        if (addressJson != null) {
+
+        if (jsonObject.get("address") != null) {
+            JsonObject addressJson = jsonObject.get("address").getAsJsonObject();
             Address address = new Address();
             address.setId(addressJson.get("id").getAsInt());
             address.setStreet(addressJson.get("street").getAsString());
@@ -56,12 +58,30 @@ public class FreightResource extends AbstractResource<Freight>{
         }
 
         Freight.FreightType type = Freight.FreightType
-                .valueOf(jsonObject.get("type").getAsJsonObject().getAsString());
+                .valueOf(jsonObject.get("type").getAsString());
 
         freight.setType(type);
 
         FreightSetup freightSetup = new FreightSetup();
 
+        if (jsonObject.get("startingDate") != null) {
+            if (!jsonObject.get("startingDate").isJsonNull()) {
+                JsonArray dateArray = jsonObject.get("startingDate").getAsJsonArray();
+                freightSetup.setYear(dateArray.get(0).getAsInt());
+                freightSetup.setMonth(dateArray.get(1).getAsInt());
+                freightSetup.setDayOfMonth(dateArray.get(2).getAsInt());
+            }
+        }
+
+        if (jsonObject.get("startingTime") != null) {
+            if (!jsonObject.get("startingTime").isJsonNull()) {
+                JsonArray timeArray = jsonObject.get("startingTime").getAsJsonArray();
+                freightSetup.setHour(timeArray.get(0).getAsInt());
+                freightSetup.setMinute(timeArray.get(1).getAsInt());
+            }
+        }
+
+        freight.setFreightSetup(freightSetup);
         return freight;
     }
 
@@ -70,26 +90,53 @@ public class FreightResource extends AbstractResource<Freight>{
         StringBuilder sb = new StringBuilder();
         sb.append("{");
 
+        if (sb.length() > 1)
+            sb.append(", ");
         if (freight.getId() != 0) {
             sb.append("\"id\" : \"" + freight.getId() + "\"");
         }
 
         if (freight.getType() != null) {
-            sb.append(", \"type\" : \"" + freight.getType().toString() + "\"");
+            if (sb.length() > 1)
+                sb.append(", ");
+
+            sb.append("\"type\" : \"" + freight.getType().toString() + "\"");
         }
 
         if (freight.getValueRide() != null) {
-            sb.append(", \"valueRide\" : \"" + freight.getValueRide() + "\"");
+            if (sb.length() > 1)
+                sb.append(", ");
+
+            sb.append("\"valueRide\" : \"" + freight.getValueRide() + "\"");
         }
 
         if (freight.getShipAddress() != null) {
-            sb.append(", \"shipAddress\" : {\"id\" : \"" + freight.getShipAddress().getId() + "\" }" );
+            if (sb.length() > 1)
+                sb.append(", ");
+
+            sb.append("\"shipAddress\" : {\"id\" : \"" + freight.getShipAddress().getId() + "\" }" );
         }
 
         if (freight.getPurchase() != null) {
-            sb.append(", \"purchase\" : {\"id\" : \"" + freight.getPurchase().getId() + "\"}" );
+            if (sb.length() > 1)
+                sb.append(", ");
+
+            sb.append("\"purchase\" : {\"id\" : \"" + freight.getPurchase().getId() + "\"}" );
         }
 
+        if (freight.getFreightSetup() != null) {
+            if (sb.length() > 1)
+                sb.append(", ");
+
+            sb.append("\"startingDate\" : [ " +
+                    freight.getFreightSetup().getYear() +
+                    ", " + freight.getFreightSetup().getMonth() +
+                    ", " + freight.getFreightSetup().getDayOfMonth() + "] , ");
+
+            sb.append("\"startingTime\" : [ " +
+                    freight.getFreightSetup().getHour() +
+                    ", " + freight.getFreightSetup().getMinute() + "]");
+        }
         sb.append("}");
         return sb.toString();
     }

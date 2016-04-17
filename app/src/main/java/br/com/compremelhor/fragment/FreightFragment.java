@@ -1,13 +1,16 @@
 package br.com.compremelhor.fragment;
 
+import android.app.Activity;
 import android.app.DatePickerDialog;
 import android.app.TimePickerDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.text.format.DateFormat;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -19,36 +22,51 @@ import android.widget.DatePicker;
 import android.widget.LinearLayout;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
+import android.widget.TextView;
 import android.widget.TimePicker;
 import android.widget.Toast;
 
+import java.math.BigDecimal;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ExecutionException;
 
 import br.com.compremelhor.R;
 import br.com.compremelhor.activity.AddressListActivity;
 import br.com.compremelhor.dao.impl.DAOAddress;
-import br.com.compremelhor.util.DatabaseHelper;
+import br.com.compremelhor.dao.impl.DAOFreight;
 import br.com.compremelhor.model.Address;
+import br.com.compremelhor.model.Freight;
+import br.com.compremelhor.model.FreightSetup;
+import br.com.compremelhor.service.CartService;
+import br.com.compremelhor.util.DatabaseHelper;
 
 import static br.com.compremelhor.util.Constants.MENU_OPTION_ID_MANAGE_ADDRESS;
 import static br.com.compremelhor.util.Constants.PREFERENCES;
 import static br.com.compremelhor.util.Constants.REQUEST_CODE_ADDRESS_EDITED_OR_ADDED;
+import static br.com.compremelhor.util.Constants.SP_PARTNER_ID;
 import static br.com.compremelhor.util.Constants.SP_SELECTED_ADDRESS_ID;
 import static br.com.compremelhor.util.Constants.SP_USER_ID;
-
 
 public class FreightFragment extends Fragment {
     private SharedPreferences preferences;
     private Button btnDateShip;
     private Button btnTimeStartShip;
 
+    private TextView tvTotalValue;
+    private final String TAG = "freight_fragment";
     private RadioGroup radioGroup;
 
+    private CartService cartService;
+
+    private DAOAddress daoAddress;
+    private DAOFreight daoFreight;
+
+    private Address currentAddress;
     private boolean hasAddresses = false;
 
     public static FreightFragment newInstance(String mTag){
@@ -63,20 +81,62 @@ public class FreightFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
         setHasOptionsMenu(true);
+        Log.d(TAG, "onCreateView");
         return inflater.inflate(R.layout.fragment_freight, container, false);
     }
 
     @Override
     public void onStart() {
         super.onStart();
+        Log.d(TAG, "onStart");
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        Log.d(TAG, "onResume");
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        Log.d(TAG, "onPause");
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        Log.d(TAG, "onStop");
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        Log.d(TAG, "onDestroy");
+    }
+
+    @Override
+    public void onDetach() {
+        super.onDetach();
+        Log.d(TAG, "onDetach");
     }
 
     @Override
     public void onViewCreated(View view, Bundle state) {
+        Log.d(TAG, "onViewCreated");
         preferences = getActivity().getSharedPreferences(PREFERENCES, Context.MODE_PRIVATE);
+
+        daoAddress = DAOAddress.getInstance(getActivity());
+        daoFreight = DAOFreight.getInstance(getActivity());
+
+        int userId = preferences.getInt(SP_USER_ID, 0);
+        int partnerId = preferences.getInt(SP_PARTNER_ID, 0);
+        cartService = CartService.getInstance(getActivity(), userId, partnerId);
 
         btnDateShip = (Button) view.findViewById(R.id.btn_picker_day_of_ship);
         btnTimeStartShip = (Button) view.findViewById(R.id.btn_picker_start_hour_range);
+
+        tvTotalValue = (TextView) view.findViewById(R.id.tv_value_total_freight);
 
         radioGroup = (RadioGroup) view.findViewById(R.id.rg_type_freight);
         radioGroup.setOnCheckedChangeListener(new FreightTypeOnCheckedChangeListener());
@@ -84,7 +144,6 @@ public class FreightFragment extends Fragment {
         RadioGroup rgAddresses = new RadioGroup(getActivity());
         rgAddresses.setOnCheckedChangeListener(new AddressOnCheckedChangeListener());
 
-        int userId = preferences.getInt(SP_USER_ID, 0);
         List<Address> addresses = DAOAddress
                 .getInstance(getActivity())
                 .findAllByForeignId(DatabaseHelper.Address._USER_ID, userId);
@@ -94,14 +153,99 @@ public class FreightFragment extends Fragment {
 
         hasAddresses = !addresses.isEmpty();
 
+        if (cartService.getFreight() != null) {
+            currentAddress = cartService.getFreight().getshipAddress();
+
+            if (cartService.getFreightSetup() != null) {
+                FreightSetup freightSetup = cartService.getFreightSetup();
+                btnDateShip.setText(freightSetup.getDayOfMonth() + "/" + freightSetup.getMonth() + "/" + freightSetup.getYear());
+                btnTimeStartShip.setText(freightSetup.getHour() + ":" + freightSetup.getMinute());
+            }
+
+            if (cartService.getFreight().getType() == Freight.FreightType.SCHEDULED) {
+                radioGroup.check(R.id.rb_scheduled_freight);
+            } else if (cartService.getFreight().getType() == Freight.FreightType.EXPRESS) {
+                radioGroup.check(R.id.rb_express_freight);
+            }
+
+            if (cartService.getFreight().getValueRide() == null) {
+                tvTotalValue.setText("R$ 0.00");
+            } else {
+                tvTotalValue.setText("R$ " + cartService.getFreight().getValueRide().toString());
+            }
+        }
+
         for (Address ad : addresses) {
             RadioButton rb = new RadioButton(getActivity());
             rb.setId(ad.getId());
             rb.setText(ad.getAddressName() + " / " + ad.getZipcode());
+
+            if (currentAddress != null && currentAddress.getId() == ad.getId()) {
+                rb.setChecked(true);
+
+                cartService.loadCurrentFreight();
+
+                if (cartService.getFreight().getShipAddress() != null &&
+                        cartService.getFreight().getShipAddress() != currentAddress) {
+                    cartService.getFreight().setAshipAddress(currentAddress);
+                    cartService.getFreight().setVersion(1);
+                }
+            }
+
             rgAddresses.addView(rb);
         }
 
         ll.addView(rgAddresses);
+    }
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        Log.d(TAG, "onDestroyView");
+
+
+        if (cartService.getFreight() != null && cartService.getFreight().getShipAddress() == null) {
+            Toast.makeText(getActivity(), "Endereço não selecionado.", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        if (cartService.getFreight() != null &&
+                cartService.getFreight().getType() == Freight.FreightType.SCHEDULED &&
+                cartService.getFreightSetup() == null) {
+            Toast.makeText(getActivity(), "Horário não configurado para o frete agendado.", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        AsyncTask<Void, Void, Void> request = new AsyncTask<Void, Void, Void>() {
+            @Override
+            protected Void doInBackground(Void... params) {
+
+                if (cartService.getFreight() != null && cartService.getFreight().getVersion() == 0) return null;
+
+                if (cartService.getFreight() != null) {
+                    cartService.persistFreight();
+                    cartService.getFreight().setVersion(0);
+
+                } else if (daoFreight.findByAttribute(DatabaseHelper.Freight._PURCHASE_ID,
+                        String.valueOf(cartService.getPurchase().getId())) != null) {
+                    cartService.removeFreight();
+                }
+                return null;
+            }
+        };
+
+        try {
+            request.execute().get();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        } catch (ExecutionException e) {
+            e.printStackTrace();
+        }
+    }
+
+    @Override
+    public void onActivityCreated(Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
+        Log.d(TAG, "onActivityCreated");
     }
 
     @Override
@@ -130,6 +274,19 @@ public class FreightFragment extends Fragment {
                 radioGroup.clearCheck();
                 break;
         }
+    }
+
+
+    @Override
+    public void onAttach(Activity activity) {
+        super.onAttach(activity);
+        Log.d(TAG, "onAttach");
+    }
+
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        Log.d(TAG, "onCreate");
     }
 
     public void onClickedStartHourRangeShip(View view) {
@@ -169,7 +326,13 @@ public class FreightFragment extends Fragment {
             String sMinute = String.valueOf(minute).length() == 1 ?
                             "0" + minute :
                             "" + minute;
-            btnTimeStartShip.setText(hour +":" + sMinute);
+            btnTimeStartShip.setText(hour + ":" + sMinute);
+
+            if (cartService.getFreightSetup() == null) cartService.setFreightSetup(new FreightSetup());
+            cartService.getFreightSetup().setHour(hourOfDay);
+            cartService.getFreightSetup().setMinute(minute);
+
+            cartService.getFreight().setVersion(1);
         }
     }
 
@@ -179,6 +342,14 @@ public class FreightFragment extends Fragment {
             monthOfYear++;
             String month = String.valueOf(monthOfYear).length() == 1 ? "0" + monthOfYear : String.valueOf(monthOfYear);
             btnDateShip.setText(dayOfMonth + "/" + month + "/" + year);
+
+            if (cartService.getFreightSetup() == null) cartService.setFreightSetup(new FreightSetup());
+
+            cartService.getFreightSetup().setYear(year);
+            cartService.getFreightSetup().setMonth(Integer.valueOf(month));
+            cartService.getFreightSetup().setDayOfMonth(dayOfMonth);
+
+            cartService.getFreight().setVersion(1);
         }
     }
 
@@ -232,20 +403,8 @@ public class FreightFragment extends Fragment {
                     .putLong(SP_SELECTED_ADDRESS_ID, checkedId)
                     .apply();
 
-            /*
-               Here will be implemented the consult on API for
-               verify if selected address is on Establishment's ship range
-            */
-            if (true) {
-            /*
-                Verify the price of ship for the address selected
-            */
-            } else {
-            /*
-                Inform for the user tha unfortunately the address
-                selected doesn't is included on ship range
-            */
-            }
+            cartService.loadCurrentFreight();
+            cartService.getFreight().setAshipAddress(daoAddress.find(checkedId));
         }
     }
 
@@ -259,12 +418,27 @@ public class FreightFragment extends Fragment {
                     map.put(R.id.scheduled_freight_data, View.VISIBLE);
                     map.put(R.id.my_addresses, View.VISIBLE);
                     showViewsIfHasAddresses(map);
+
+                    cartService.loadCurrentFreight();
+                    if (cartService.getFreight().getType() != Freight.FreightType.SCHEDULED) {
+                        cartService.getFreight().setAshipAddress(currentAddress);
+                        cartService.getFreight().setType(Freight.FreightType.SCHEDULED);
+                        cartService.getFreight().setValueRide(BigDecimal.valueOf(35.00));
+
+                        cartService.getFreight().setVersion(1);
+                    }
+
+                    tvTotalValue.setText("R$ " + cartService.getFreight().getValueRide().toString());
                     break;
 
                 case R.id.rb_without_freight:
                     getView().findViewById(R.id.scheduled_freight_data).setVisibility(View.GONE);
                     getView().findViewById(R.id.my_addresses).setVisibility(View.GONE);
-                    preferences.edit().putLong(SP_SELECTED_ADDRESS_ID, 0);
+                    preferences.edit().putLong(SP_SELECTED_ADDRESS_ID, 0).apply();
+
+                    cartService.setFreight(null);
+                    cartService.setFreightSetup(null);
+                    tvTotalValue.setText("R$ 0.0");
                     break;
 
                 case R.id.rb_express_freight:
@@ -272,6 +446,16 @@ public class FreightFragment extends Fragment {
                     map.put(R.id.scheduled_freight_data, View.GONE);
                     map.put(R.id.my_addresses, View.VISIBLE);
                     showViewsIfHasAddresses(map);
+
+                    cartService.loadCurrentFreight();
+
+                    if (cartService.getFreight().getType() != Freight.FreightType.EXPRESS) {
+                        cartService.getFreight().setType(Freight.FreightType.EXPRESS);
+                        cartService.getFreight().setValueRide(BigDecimal.valueOf(20.00));
+                        cartService.setFreightSetup(null);
+                        cartService.getFreight().setVersion(1);
+                    }
+                    tvTotalValue.setText("R$ " + cartService.getFreight().getValueRide().toString());
                     break;
             }
         }

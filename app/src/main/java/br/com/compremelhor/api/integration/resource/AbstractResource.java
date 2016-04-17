@@ -114,30 +114,35 @@ public abstract class AbstractResource<T extends EntityModel> implements Resourc
         }
     }
 
+
     public T getResource(Map<String, String> params) {
-        StringBuilder sb = new StringBuilder();
-        Set<Map.Entry<String, String>> entries = params.entrySet();
-        for (Map.Entry<String, String> pair : entries) {
-
-            if (!validAttributeName(pair.getKey().trim()))
-                throw new IllegalArgumentException(
-                        "Unknown attribute name for User entity: " + pair.getKey().trim());
-
-            if (sb.length() == 0) sb.append("?");
-            else sb.append("&");
-
-            try {
-                sb.append(pair.getKey().trim())
-                        .append("=").append(URLEncoder.encode(pair.getValue(), "UTF-8"));
-
-            } catch (UnsupportedEncodingException e) {
-                e.printStackTrace();
-            }
-        }
-
+        URL url = null;
         try {
-            URL url = new URL(APPLICATION_ROOT.concat(RESOURCE_ROOT).concat("/find")
-                    .concat(sb.toString()));
+            if (params != null) {
+                StringBuilder sb = new StringBuilder();
+                Set<Map.Entry<String, String>> entries = params.entrySet();
+                for (Map.Entry<String, String> pair : entries) {
+
+                    if (!validAttributeName(pair.getKey().trim()))
+                        throw new IllegalArgumentException(
+                                "Unknown attribute name for User entity: " + pair.getKey().trim());
+
+                    if (sb.length() == 0) sb.append("?");
+                    else sb.append("&");
+
+                    try {
+                        sb.append(pair.getKey().trim())
+                                .append("=").append(URLEncoder.encode(pair.getValue(), "UTF-8"));
+
+                    } catch (UnsupportedEncodingException e) {
+                        e.printStackTrace();
+                    }
+                }
+                url = new URL(APPLICATION_ROOT.concat(RESOURCE_ROOT).concat("/find")
+                        .concat(sb.toString()));
+            } else {
+                url = new URL(APPLICATION_ROOT.concat(RESOURCE_ROOT));
+            }
 
             return doGET(url);
         } catch (MalformedURLException e) {

@@ -9,7 +9,7 @@ import android.database.sqlite.SQLiteOpenHelper;
  */
 public class DatabaseHelper extends SQLiteOpenHelper {
     private static final String DATABASE = "CompreMelhor.db";
-    private static int DATABASE_VERSION = 44;
+    private static int DATABASE_VERSION = 51;
 
     public final String[] TABLES;
 
@@ -104,8 +104,11 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     public interface Freight extends Domain {
         String  TABLE = "freight",
                 TOTAL_VALUE_DRIVE = "total_value_drive",
+                TYPE = "type",
+                STARTING_DATE_TIME = "starting_date_time",
+                _PURCHASE_ID = "_purchase_id",
                 _ADDRESS_ID = "_address_id";
-        String[] COLUMNS = new String[] {_ID, TOTAL_VALUE_DRIVE,
+        String[] COLUMNS = new String[] {_ID, TOTAL_VALUE_DRIVE, _PURCHASE_ID,
                 _ADDRESS_ID, DATE_CREATED, LAST_UPDATED};
     }
 
@@ -114,9 +117,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 STATUS = "status",
                 TOTAL_VALUE = "value_total",
                 _USER_ID = "_user_id",
-                _FREIGHT_ID = "_freight_id",
                 _ESTABLISHMENT_ID = "_establishment_id";
-        String[] COLUMNS = {_ID, STATUS, TOTAL_VALUE, _USER_ID, _FREIGHT_ID, _ESTABLISHMENT_ID, DATE_CREATED, LAST_UPDATED};
+        String[] COLUMNS = {_ID, STATUS, TOTAL_VALUE, _USER_ID, _ESTABLISHMENT_ID, DATE_CREATED, LAST_UPDATED};
     }
 
     public interface PurchaseLine extends Domain {
@@ -200,11 +202,16 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         db.execSQL("CREATE TABLE " + Freight.TABLE + " (" +
                 Freight._ID + " INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, " +
                 Freight.TOTAL_VALUE_DRIVE + " DECIMAL(10,2) NOT NULL DEFAULT 0.00, " +
+                Freight.TYPE + " VARCHAR(20) NOT NULL , " +
+                Freight.STARTING_DATE_TIME + " TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP, " +
+                Freight._PURCHASE_ID + " INTEGER NOT NULL, " +
                 Freight._ADDRESS_ID + " INTEGER NOT NULL, " +
                 Freight.DATE_CREATED + " TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP, " +
                 Freight.LAST_UPDATED + " TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP, " +
                 " FOREIGN KEY( " + Freight._ADDRESS_ID + ") " +
-                " REFERENCES " + Address.TABLE + "(" + Address._ID + "));");
+                " REFERENCES " + Address.TABLE + "(" + Address._ID + "), " +
+                " FOREIGN KEY( " + Freight._PURCHASE_ID + ") " +
+                " REFERENCES " + Purchase.TABLE + "(" + Purchase._ID + "));");
 
         db.execSQL("CREATE TABLE " + Establishment.TABLE + " (" +
                 Establishment._ID + " INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, " +
@@ -218,15 +225,12 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 Purchase.TOTAL_VALUE + " DECIMAL(10,2) NOT NULL DEFAULT 0.00, " +
                 Purchase._USER_ID + " INTEGER NOT NULL, " +
                 Purchase._ESTABLISHMENT_ID + " INTEGER NOT NULL, " +
-                Purchase._FREIGHT_ID + " INTEGER, " +
                 Purchase.DATE_CREATED + " TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL, " +
                 Purchase.LAST_UPDATED + " TIMESTAMP  DEFAULT CURRENT_TIMESTAMP NOT NULL, " +
                 " FOREIGN KEY( " + Purchase._USER_ID + ") " +
                 " REFERENCES " + User.TABLE + "(" + User._ID + "), " +
                 " FOREIGN KEY( " + Purchase._ESTABLISHMENT_ID + ") " +
-                " REFERENCES " + Establishment.TABLE + "(" + Establishment._ID + "), " +
-                " FOREIGN KEY( " + Purchase._FREIGHT_ID + ") " +
-                " REFERENCES " + Freight.TABLE + "(" + Freight._ID + "));");
+                " REFERENCES " + Establishment.TABLE + "(" + Establishment._ID + "));");
 
         db.execSQL("CREATE TABLE " + PurchaseLine.TABLE + " (" +
                 PurchaseLine._ID + " INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, " +

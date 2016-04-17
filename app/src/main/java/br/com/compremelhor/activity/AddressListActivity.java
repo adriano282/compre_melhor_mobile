@@ -50,7 +50,7 @@ public class AddressListActivity extends ActivityTemplate<Address> {
                 getSharedPreferences(PREFERENCES, MODE_PRIVATE),
                 new Handler(),
                 DAOAddress.getInstance(AddressListActivity.this),
-                new AddressResource(this, preferences.getInt(SP_USER_ID, 0)));
+                new AddressResource(this, getSharedPreferences(PREFERENCES, MODE_PRIVATE).getInt(SP_USER_ID, 0)));
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_address_list);
 

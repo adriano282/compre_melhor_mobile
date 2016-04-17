@@ -53,7 +53,8 @@ public class AddressActivity extends ActivityTemplate<Address> {
         setupOnCreateActivity(R.id.address_toolbar,
                 getSharedPreferences(PREFERENCES, MODE_PRIVATE), new Handler(),
                 DAOAddress.getInstance(AddressActivity.this),
-                new AddressResource(this, preferences.getInt(SP_USER_ID, 0)));
+                new AddressResource(this, getSharedPreferences(PREFERENCES, MODE_PRIVATE)
+                        .getInt(SP_USER_ID, 0)));
         super.onCreate(savedInstanceState);
 
         setContentView(R.layout.activity_address);
