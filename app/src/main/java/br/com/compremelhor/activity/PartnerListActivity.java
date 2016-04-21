@@ -2,13 +2,8 @@ package br.com.compremelhor.activity;
 
 import android.app.ProgressDialog;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
-import android.view.Menu;
-import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListAdapter;
@@ -25,75 +20,44 @@ import java.util.concurrent.ExecutionException;
 import br.com.compremelhor.R;
 import br.com.compremelhor.api.integration.resource.impl.PartnerResource;
 import br.com.compremelhor.dao.impl.DAOEstablishment;
-import br.com.compremelhor.util.DatabaseHelper;
 import br.com.compremelhor.model.Establishment;
+import br.com.compremelhor.util.DatabaseHelper;
 
-import static br.com.compremelhor.util.Constants.PREFERENCES;
+import static br.com.compremelhor.util.Constants.REQUEST_CODE_PURCHASE_FINISHED;
 import static br.com.compremelhor.util.Constants.SP_PARTNER_ID;
 
-/**
- * Created by adriano on 10/04/16.
- */
-public class PartnerListActivity extends AppCompatActivity {
-    private SharedPreferences preferences;
+public class PartnerListActivity extends ActivityTemplate<Establishment> {
     private List<Map<String, Object>> partners;
 
     private ListAdapter adapter;
     private ListView listView;
 
-    private PartnerResource partnerResource;
-    private DAOEstablishment daoEstablishment;
-    private ProgressDialog progressDialog;
-
     @Override
     public void onCreate(Bundle savedInstanceState) {
+        setupOnCreateActivity(
+                DAOEstablishment.getInstance(this),
+                new PartnerResource("partners", this)
+        );
+
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_partner_list);
-
-        preferences = getSharedPreferences(PREFERENCES, MODE_PRIVATE);
-        partnerResource = new PartnerResource("partners", this);
-
-        daoEstablishment = DAOEstablishment.getInstance(this);
-
         setToolbar();
-        setViews();
-        registerViews();
+        setWidgets();
+        registerWidgets();
     }
 
     @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.action_bars_menu, menu);
-        return true;
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (requestCode == REQUEST_CODE_PURCHASE_FINISHED) {
+            showMessage(R.string.purchase_concluded_successful_message);
+            finish();
+        }
     }
 
     @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        switch(item.getItemId()) {
-            case R.id.menu_settings:
-                return true;
-            case android.R.id.home:
-                finish();
-                return true;
-        }
-        return super.onOptionsItemSelected(item);
-    }
-
-    private void setToolbar() {
-        Toolbar myToolbar = (Toolbar) findViewById(R.id.partner_list_toolbar);
-        myToolbar.setLogo(R.mipmap.icon);
-        setSupportActionBar(myToolbar);
-        if (getSupportActionBar() != null) {
-            getSupportActionBar().setDisplayShowHomeEnabled(true);
-            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        }
-    }
-
-    private void setViews() {
+    protected void setWidgets() {
         partners = listPartners();
-
-        String[] from = {
-                DatabaseHelper.Establishment.NAME
-        };
+        String[] from = { DatabaseHelper.Establishment.NAME };
 
         int[] to = {R.id.tv_partner_name};
 
@@ -104,6 +68,14 @@ public class PartnerListActivity extends AppCompatActivity {
         listView.setAdapter(adapter);
     }
 
+    @Override
+    protected void registerWidgets() {
+        listView.setOnItemClickListener(new OnItemClickListener());
+    }
+
+    @Override
+    protected void fillFields() {}
+
     private List<Map<String, Object>> listPartners() {
         showProgressDialog(getString(R.string.dialog_content_text_loading_places));
 
@@ -111,7 +83,7 @@ public class PartnerListActivity extends AppCompatActivity {
             @Override
             protected List<Map<String, Object>> doInBackground(Void... params) {
                 partners = new ArrayList<>();
-                List<Establishment> partnersList = partnerResource.getAllResources(0, 5);
+                List<Establishment> partnersList = resource.getAllResources(0, 5);
                 Map<String, Object> partner;
 
                 for (Establishment item : partnersList) {
@@ -135,10 +107,6 @@ public class PartnerListActivity extends AppCompatActivity {
         }
     }
 
-    private void registerViews() {
-        listView.setOnItemClickListener(new OnItemClickListener());
-    }
-
     private void showProgressDialog(String message) {
         progressDialog = ProgressDialog
                 .show(PartnerListActivity.this,
@@ -150,7 +118,7 @@ public class PartnerListActivity extends AppCompatActivity {
         public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
             Map<String, Object> partner = partners.get(position);
 
-            Establishment est = daoEstablishment
+            Establishment est = dao
                     .findByAttribute("name", partner.get(DatabaseHelper.Establishment.NAME).toString());
             if (est == null) {
                 Establishment establishment = new Establishment();
@@ -158,10 +126,10 @@ public class PartnerListActivity extends AppCompatActivity {
                 establishment.setName(partner.get(DatabaseHelper.Establishment.NAME).toString());
                 establishment.setDateCreated(Calendar.getInstance());
                 establishment.setLastUpdated(Calendar.getInstance());
-                daoEstablishment.insert(establishment);
+                dao.insert(establishment);
             } else if (est.getId() != (int) partner.get(DatabaseHelper.Establishment._ID)) {
                 est.setId((int) partner.get(DatabaseHelper.Establishment._ID));
-                daoEstablishment.updateByName(est);
+                ((DAOEstablishment)dao).updateByName(est);
             }
 
             preferences.edit()
@@ -169,7 +137,7 @@ public class PartnerListActivity extends AppCompatActivity {
                     .apply();
 
             Intent intent = new Intent(PartnerListActivity.this, ShoppingActivity.class);
-            startActivity(intent);
+            startActivityForResult(intent, REQUEST_CODE_PURCHASE_FINISHED);
         }
     }
 }

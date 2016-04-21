@@ -46,6 +46,7 @@ public interface Constants {
     int REQUEST_CODE_CART_ITEM_EDITED = 12;
     int REQUEST_CODE_ADDRESS_EDITED_OR_ADDED = 13;
     int REQUEST_CODE_PAYMENT_PURCHASE_PAID = 14;
+    int REQUEST_CODE_PURCHASE_FINISHED = 15;
 
 
     // Constants for MENU OPTIONS on Action Bar

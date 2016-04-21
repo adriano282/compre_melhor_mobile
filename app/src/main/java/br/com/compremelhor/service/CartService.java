@@ -31,6 +31,7 @@ import br.com.compremelhor.util.DatabaseHelper;
 
 public class CartService {
     private static CartService instance;
+    private static final String TAG = "cartService";
 
     private DAOFreight daoFreight;
     private DAOPurchase daoPurchase;
@@ -54,6 +55,10 @@ public class CartService {
     private int userId;
     private int partnerId;
 
+    public static void invalidateInstance() {
+        instance = null;
+    }
+
     public static CartService getInstance(Context context, int userId, int partnerId) {
         if (instance == null) {
             instance = new CartService();
@@ -67,16 +72,15 @@ public class CartService {
             instance.userId = userId;
             instance.partnerId = partnerId;
             instance.loadCurrentPurchase();
-
             if (instance.purchase != null) {
                 instance.itemResource = new PurchaseLineResource(
                         "purchases/" + instance.purchase.getId() +"/lines", context);
 
                 instance.freightResource = new FreightResource(
                         "purchases/" + instance.purchase.getId() + "/freight", context);
-
             }
         }
+
         return instance;
     }
 
@@ -162,7 +166,6 @@ public class CartService {
     }
 
     public boolean removeFreight() {
-
         Freight freight = daoFreight
                 .findByAttribute(DatabaseHelper.Freight._PURCHASE_ID, String.valueOf(purchase.getId()));
 
@@ -306,6 +309,7 @@ public class CartService {
                     return null;
                 }
             };
+
             try {
                 request.execute().get();
             } catch (InterruptedException e) {
@@ -316,10 +320,39 @@ public class CartService {
         } else {
             progressDialog.dismiss();
         }
+
+        if (purchase.getTotalValue().doubleValue() == 0.0 ) refreshSubTotal();
     }
 
     public void closePurchase() {
+        loadCurrentFreight();
+        purchase.setStatus(Purchase.Status.READY);
 
+        AsyncTask<Void, Void, Void> request = new AsyncTask<Void, Void, Void>() {
+            @Override
+            protected Void doInBackground(Void... params) {
+                ResponseServer<Purchase> response = purchaseResource.updateResource(purchase);
+
+                if (response.hasErrors()) {
+                    log(response);
+                    return null;
+                }
+
+                if (daoPurchase.insertOrUpdate(purchase) == -1) {
+                    Log.i(TAG, "Error while updating the purchase on database");
+                    return null;
+                }
+                return null;
+            }
+        };
+
+        try {
+            request.execute().get();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        } catch (ExecutionException e) {
+            e.printStackTrace();
+        }
     }
 
     private void refreshSubTotal() {

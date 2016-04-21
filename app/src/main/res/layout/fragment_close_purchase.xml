@@ -83,6 +83,7 @@
 
     <Button
         android:onClick="onClickButtonClosePurchase"
+        android:enabled="false"
         android:id="@+id/btn_close_purchase"
         android:textSize="15dp"
         android:layout_marginTop="30dp"

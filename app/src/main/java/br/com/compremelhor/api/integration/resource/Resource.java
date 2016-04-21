@@ -1,5 +1,6 @@
 package br.com.compremelhor.api.integration.resource;
 
+import java.util.List;
 import java.util.Map;
 
 import br.com.compremelhor.api.integration.ResponseServer;
@@ -22,5 +23,6 @@ public interface Resource<T> {
     T getResource(int id);
     T getResource(String location);
     boolean isConnectedOnInternet();
+    List<T> getAllResources(int start, int size);
 
 }

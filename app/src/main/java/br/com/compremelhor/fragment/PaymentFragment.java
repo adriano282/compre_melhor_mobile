@@ -2,6 +2,7 @@ package br.com.compremelhor.fragment;
 
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -57,6 +58,7 @@ public class PaymentFragment extends Fragment {
     private AlertDialog alertDialogConfirmation;
 
     private SharedPreferences preferences;
+    private ProgressDialog progressDialog;
 
     private CartService cartService;
 
@@ -104,6 +106,9 @@ public class PaymentFragment extends Fragment {
         tvSubTotalFreight = (TextView) view.findViewById(R.id.tv_freight_sub_total);
         tvTotalPurchase = (TextView) view.findViewById(R.id.tv_value_total_purchase);
         btnClosePurchase = (Button) view.findViewById(R.id.btn_close_purchase);
+        optionsListener = new OptionsDialogOnClickListener();
+
+        alertDialogConfirmation = createDialogConfirmation();
 
     }
 
@@ -117,13 +122,18 @@ public class PaymentFragment extends Fragment {
             cartService.getFreight().getValueRide() : new BigDecimal(0.0);
         BigDecimal subTotalPurchase = cartService.getPurchase().getTotalValue();
 
+        if (subTotalPurchase == null) subTotalPurchase = new BigDecimal(0.0);
+
         total = totalFreight.doubleValue() + subTotalPurchase.doubleValue();
 
         tvSubTotalFreight.setText(nf.format(totalFreight.doubleValue()));
         tvSubTotalPurchase.setText(nf.format(subTotalPurchase.doubleValue()));
         tvTotalPurchase.setText(nf.format(total));
 
-        if (total == 0.0) {
+        if (subTotalPurchase.doubleValue() == 0.0) {
+            Toast.makeText(getActivity(), "Nenhum item adicionado ao carrinho.", Toast.LENGTH_SHORT).show();
+            btnClosePurchase.setEnabled(false);
+        } else if (cartService.getFreight() != null && !cartService.getFreight().isComplete()) {
             btnClosePurchase.setEnabled(false);
         }
         else {
@@ -134,6 +144,7 @@ public class PaymentFragment extends Fragment {
 
     public void onClickButtonClosePurchase(View v) {
         alertDialogConfirmation = createDialogConfirmation();
+        alertDialogConfirmation.show();
     }
 
     private PayPalOAuthScopes getOauthScopes() {
@@ -178,7 +189,10 @@ public class PaymentFragment extends Fragment {
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (requestCode == PaymentPayPalHelper.REQUEST_CODE_PAYMENT) {
+
             if (resultCode == Activity.RESULT_OK) {
+
+
                 PaymentConfirmation confirm =
                         data.getParcelableExtra(PaymentActivity.EXTRA_RESULT_CONFIRMATION);
                 if (confirm != null) {
@@ -194,9 +208,13 @@ public class PaymentFragment extends Fragment {
                          * For sample mobile backend interactions, see
                          * https://github.com/paypal/rest-api-sdk-python/tree/master/samples/mobile_backend
                          */
-                        displayResultText("PaymentConfirmation info received from PayPal");
 
+                        //displayResultText("Payment Confirmation info received from PayPal");//
                         cartService.closePurchase();
+                        CartService.invalidateInstance();
+                        getActivity().setResult(Activity.RESULT_OK);
+                        getActivity().finish();
+
                     } catch (JSONException e) {
                         Log.e(TAG, "an extremely unlikely failure occurred: ", e);
                     }
@@ -307,6 +325,12 @@ public class PaymentFragment extends Fragment {
                     break;
             }
         }
+    }
+
+    private void showProgressDialog(String message) {
+        progressDialog = ProgressDialog
+                .show(getActivity(),
+                        getString(R.string.dialog_header_wait), message, true, false);
     }
 
 }

@@ -84,7 +84,7 @@
         <TextView
             android:id="@+id/tv_value_total_purchase"
             android:textSize="30dp"
-            android:text="RS 90,00"
+            android:text="RS 0.0"
             android:textColor="#FFFFFF"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"

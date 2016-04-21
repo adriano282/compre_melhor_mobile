@@ -114,6 +114,7 @@
     <string name="password_updated_successful_message">Sua senha foi atualizada com sucesso.</string>
     <string name="address_removed_successful_message">Endereço excluído com sucesso!</string>
     <string name="data_registered_successful_message">Seus dados foram salvos com sucesso.</string>
+    <string name="purchase_concluded_successful_message">Compra concluída com sucesso! Para detalhes da entrega, vá para Minhas Compras</string>
 
 
     <!-- Dashboard page's resources -->

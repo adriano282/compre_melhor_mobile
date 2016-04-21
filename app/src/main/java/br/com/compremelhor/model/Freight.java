@@ -11,11 +11,21 @@ public class Freight extends EntityModel {
     private Purchase purchase;
     private FreightType type;
     private FreightSetup freightSetup;
+    private Boolean complete;
     private int version;
 
-    public void setVersion(int version) { this.version = version; }
-    public int getVersion() { return version; }
+    public int getVersion() {return version;}
+    public void setVersion(int version) { this.version = version;}
 
+    public Boolean isComplete() {
+        if (complete == null) return true;
+        
+        return complete;
+    }
+
+    public void setComplete(Boolean complete) {
+        this.complete = complete;
+    }
     public Freight() {}
 
     public Address getShipAddress() {

@@ -17,6 +17,9 @@ public class Purchase extends EntityModel {
     public Purchase() {}
 
     public BigDecimal getTotalValue() {
+        if (totalValue == null)
+            totalValue = new BigDecimal(0.0);
+
         return totalValue;
     }
 
@@ -65,7 +68,7 @@ public class Purchase extends EntityModel {
     }
 
     public enum Status {
-        OPENED, FINISHED, PENDING
+        OPENED, READY, SHIPPED, FINISHED;
     }
 
 }

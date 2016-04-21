@@ -208,20 +208,24 @@ public class FreightFragment extends Fragment {
 
         if (cartService.getFreight() != null && cartService.getFreight().getShipAddress() == null) {
             Toast.makeText(getActivity(), "Endereço não selecionado.", Toast.LENGTH_SHORT).show();
+            cartService.getFreight().setComplete(false);
             return;
         }
 
         if (cartService.getFreight() != null &&
                 cartService.getFreight().getType() == Freight.FreightType.SCHEDULED &&
                 cartService.getFreightSetup() == null) {
+            cartService.getFreight().setComplete(false);
             Toast.makeText(getActivity(), "Horário não configurado para o frete agendado.", Toast.LENGTH_SHORT).show();
             return;
         }
 
+        if (cartService.getFreight() != null)
+            cartService.getFreight().setComplete(true);
+
         AsyncTask<Void, Void, Void> request = new AsyncTask<Void, Void, Void>() {
             @Override
             protected Void doInBackground(Void... params) {
-
                 if (cartService.getFreight() != null && cartService.getFreight().getVersion() == 0) return null;
 
                 if (cartService.getFreight() != null) {
