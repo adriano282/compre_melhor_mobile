@@ -1,11 +1,5 @@
 package br.com.compremelhor.model;
 
-import com.j256.ormlite.table.DatabaseTable;
-
-/**
- * Created by adriano on 25/08/15.
- */
-@DatabaseTable(tableName = "manufacturer")
 public class Manufacturer extends EntityModel {
 
     String companyName;

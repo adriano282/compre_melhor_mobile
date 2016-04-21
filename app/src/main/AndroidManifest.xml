@@ -48,7 +48,7 @@
         <activity
             android:name=".activity.RegisterActivity"
             android:label="@string/register_label" />
-        <activity android:name=".activity.PaymentActivity" />
+        <activity android:name=".util.PaymentPayPalHelper" />
         <activity
             android:name=".activity.AddressListActivity"
             android:label="@string/title_my_addresses" />

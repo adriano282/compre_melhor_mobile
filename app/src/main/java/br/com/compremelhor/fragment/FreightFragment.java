@@ -53,6 +53,7 @@ import static br.com.compremelhor.util.Constants.SP_SELECTED_ADDRESS_ID;
 import static br.com.compremelhor.util.Constants.SP_USER_ID;
 
 public class FreightFragment extends Fragment {
+    private static FreightFragment instance;
     private SharedPreferences preferences;
     private Button btnDateShip;
     private Button btnTimeStartShip;
@@ -70,11 +71,13 @@ public class FreightFragment extends Fragment {
     private boolean hasAddresses = false;
 
     public static FreightFragment newInstance(String mTag){
-        FreightFragment freightFragment = new FreightFragment();
+        if (instance == null)
+            instance = new FreightFragment();
+
         Bundle args = new Bundle();
         args.putString("mTag", mTag);
-        freightFragment.setArguments(args);
-        return freightFragment;
+        instance.setArguments(args);
+        return instance;
     }
 
     @Override

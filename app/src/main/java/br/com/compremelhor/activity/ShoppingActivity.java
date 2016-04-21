@@ -1,8 +1,8 @@
 package br.com.compremelhor.activity;
 
-import android.support.v4.app.FragmentManager;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarActivity;
@@ -12,11 +12,18 @@ import android.view.View;
 
 import br.com.compremelhor.R;
 import br.com.compremelhor.fragment.CartFragment;
-import br.com.compremelhor.fragment.ClosePurchaseFragment;
+import br.com.compremelhor.fragment.PaymentFragment;
 import br.com.compremelhor.fragment.FreightFragment;
 
 public class ShoppingActivity extends ActionBarActivity {
+
+    private final String CART_FRAGMENT = "cart_fragment";
+    private final String FREIGHT_FRAGMENT = "freight_fragment";
+    private final String PAYMENT_FRAGMENT = "payment_fragment";
+
     private final String FREIGHT_FRAGMENT_TAG = "freight_fragment_tag";
+
+    private String currentFragment;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -32,7 +39,7 @@ public class ShoppingActivity extends ActionBarActivity {
     }
 
     public void onClickButtonClosePurchase(View v) {
-        ((ClosePurchaseFragment)getSupportFragmentManager().getFragments().get(0))
+        ((PaymentFragment)getSupportFragmentManager().getFragments().get(0))
                 .onClickButtonClosePurchase(v);
     }
 
@@ -71,9 +78,9 @@ public class ShoppingActivity extends ActionBarActivity {
 
         ab.setElevation(4);
 
-        Fragment cartFragment = new CartFragment();
-        Fragment freightFragment = FreightFragment.newInstance(FREIGHT_FRAGMENT_TAG);
-        Fragment closePurchaseFragment = new ClosePurchaseFragment();
+        Fragment cartFragment = CartFragment.newInstance(CART_FRAGMENT);
+        Fragment freightFragment = FreightFragment.newInstance(FREIGHT_FRAGMENT);
+        Fragment closePurchaseFragment = PaymentFragment.newInstance(PAYMENT_FRAGMENT);
 
         ab.addTab(ab.newTab().setText(R.string.cart).setTabListener(new MyTabsListener(cartFragment)));
         ab.addTab(ab.newTab().setText(R.string.freight).setTabListener(new MyTabsListener(freightFragment)));
@@ -85,6 +92,14 @@ public class ShoppingActivity extends ActionBarActivity {
 
         public MyTabsListener(Fragment fragment) {
             this.fragment = fragment;
+
+            if (fragment instanceof CartFragment) {
+                currentFragment = CART_FRAGMENT;
+            } else if (fragment instanceof  FreightFragment) {
+                currentFragment = FREIGHT_FRAGMENT;
+            } else {
+                currentFragment = PAYMENT_FRAGMENT;
+            }
         }
 
         @Override

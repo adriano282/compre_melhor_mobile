@@ -318,10 +318,14 @@ public class CartService {
         }
     }
 
+    public void closePurchase() {
+
+    }
+
     private void refreshSubTotal() {
         BigDecimal total = BigDecimal.valueOf(0.0);
         for (PurchaseLine line : getItems()) {
-            total.add(line.getSubTotal());
+            total = total.add(line.getSubTotal());
         }
         instance.purchase.setTotalValue(total);
     }

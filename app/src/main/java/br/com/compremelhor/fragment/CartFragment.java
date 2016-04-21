@@ -54,6 +54,8 @@ import static br.com.compremelhor.util.Constants.SP_USER_ID;
 
 
 public class CartFragment extends android.support.v4.app.Fragment {
+    private static CartFragment instance;
+
     private ExpandableListAdapter listAdapter;
     private ExpandableListView explicitView;
 
@@ -80,6 +82,16 @@ public class CartFragment extends android.support.v4.app.Fragment {
     private SKUResource skuResource;
     private CartService cartService;
     private Handler handler;
+
+    public static CartFragment newInstance(String mTag){
+        if (instance == null)
+            instance = new CartFragment();
+
+        Bundle args = new Bundle();
+        args.putString("mTag", mTag);
+        instance.setArguments(args);
+        return instance;
+    }
 
 
     @Override

@@ -77,6 +77,7 @@
 
     <!-- Confirmation's actions -->
     <string name="delete_confirmation_address">Você realmente deseja remover este endereço?</string>
+    <string name="close_purchase_confirmation">Após a compra ser fechada, não será possível reabrir a mesma. Você tem certeza que deseja fechar a compra?</string>
 
 
     <!-- TextView's messages texts -->
