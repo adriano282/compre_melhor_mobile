@@ -70,6 +70,6 @@ public class Product extends EntityModel {
     }
 
     public enum Unit {
-        CX, UN, M, L, SC, KG
+        CX, UN, M, L, SC, KG, PCT
     }
 }

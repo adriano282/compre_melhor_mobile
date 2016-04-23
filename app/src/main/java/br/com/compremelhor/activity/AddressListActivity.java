@@ -24,7 +24,7 @@ import br.com.compremelhor.R;
 import br.com.compremelhor.api.integration.ResponseServer;
 import br.com.compremelhor.api.integration.resource.impl.AddressResource;
 import br.com.compremelhor.dao.impl.DAOAddress;
-import br.com.compremelhor.util.DatabaseHelper;
+import br.com.compremelhor.util.helper.DatabaseHelper;
 import br.com.compremelhor.model.Address;
 
 import static br.com.compremelhor.util.Constants.EXTRA_ADDRESS_ID;

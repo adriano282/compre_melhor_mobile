@@ -9,6 +9,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 
 import br.com.compremelhor.R;
+import br.com.compremelhor.fragment.ChartPurchaseLinesFragment;
 import br.com.compremelhor.fragment.PurchaseLinesFragment;
 
 /**
@@ -56,9 +57,10 @@ public class PurchaseActivity extends ActionBarActivity  {
         ab.setElevation(4);
 
         Fragment purchaseLinesFragment = new PurchaseLinesFragment();
+        Fragment chartPurchaseLinesFragment = new ChartPurchaseLinesFragment();
 
         ab.addTab(ab.newTab().setText(R.string.action_bar_tab_list_items_purchase).setTabListener(new MyTabsListener(purchaseLinesFragment)));
-        ab.addTab(ab.newTab().setText(R.string.action_bar_tab_items_purchase_graphic).setTabListener(new MyTabsListener(purchaseLinesFragment)));
+        ab.addTab(ab.newTab().setText(R.string.action_bar_tab_items_purchase_graphic).setTabListener(new MyTabsListener(chartPurchaseLinesFragment)));
 
     }
 

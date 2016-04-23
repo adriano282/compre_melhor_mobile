@@ -43,7 +43,7 @@ import br.com.compremelhor.model.Address;
 import br.com.compremelhor.model.Freight;
 import br.com.compremelhor.model.FreightSetup;
 import br.com.compremelhor.service.CartService;
-import br.com.compremelhor.util.DatabaseHelper;
+import br.com.compremelhor.util.helper.DatabaseHelper;
 
 import static br.com.compremelhor.util.Constants.MENU_OPTION_ID_MANAGE_ADDRESS;
 import static br.com.compremelhor.util.Constants.PREFERENCES;
@@ -174,7 +174,7 @@ public class FreightFragment extends Fragment {
             if (cartService.getFreight().getValueRide() == null) {
                 tvTotalValue.setText("R$ 0.00");
             } else {
-                tvTotalValue.setText("R$ " + cartService.getFreight().getValueRide().toString());
+                tvTotalValue.setText(String.format("R$ %,.2f",cartService.getFreight().getValueRide().doubleValue()));
             }
         }
 
@@ -435,7 +435,7 @@ public class FreightFragment extends Fragment {
                         cartService.getFreight().setVersion(1);
                     }
 
-                    tvTotalValue.setText("R$ " + cartService.getFreight().getValueRide().toString());
+                    tvTotalValue.setText(String.format("R$ %,.2f",cartService.getFreight().getValueRide().doubleValue()));
                     break;
 
                 case R.id.rb_without_freight:
@@ -445,7 +445,7 @@ public class FreightFragment extends Fragment {
 
                     cartService.setFreight(null);
                     cartService.setFreightSetup(null);
-                    tvTotalValue.setText("R$ 0.0");
+                    tvTotalValue.setText("R$ 0.00");
                     break;
 
                 case R.id.rb_express_freight:
@@ -462,7 +462,7 @@ public class FreightFragment extends Fragment {
                         cartService.setFreightSetup(null);
                         cartService.getFreight().setVersion(1);
                     }
-                    tvTotalValue.setText("R$ " + cartService.getFreight().getValueRide().toString());
+                    tvTotalValue.setText(String.format("R$ %,.2f",cartService.getFreight().getValueRide().doubleValue()));
                     break;
             }
         }

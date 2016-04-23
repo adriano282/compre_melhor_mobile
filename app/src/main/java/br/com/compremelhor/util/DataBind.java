@@ -29,6 +29,7 @@ import br.com.compremelhor.model.Product;
 import br.com.compremelhor.model.Purchase;
 import br.com.compremelhor.model.PurchaseLine;
 import br.com.compremelhor.model.User;
+import br.com.compremelhor.util.helper.DatabaseHelper;
 
 /**
  * Created by adriano on 13/09/15.

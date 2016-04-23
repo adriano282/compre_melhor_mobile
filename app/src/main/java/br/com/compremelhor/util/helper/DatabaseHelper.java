@@ -1,4 +1,4 @@
-package br.com.compremelhor.util;
+package br.com.compremelhor.util.helper;
 
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
@@ -9,7 +9,7 @@ import android.database.sqlite.SQLiteOpenHelper;
  */
 public class DatabaseHelper extends SQLiteOpenHelper {
     private static final String DATABASE = "CompreMelhor.db";
-    private static int DATABASE_VERSION = 56;
+    private static int DATABASE_VERSION = 57;
 
     public final String[] TABLES;
 

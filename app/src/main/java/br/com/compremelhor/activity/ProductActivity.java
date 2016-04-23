@@ -61,7 +61,6 @@ public class ProductActivity extends ActivityTemplate<Stock> {
         int partnerId = preferences.getInt(SP_PARTNER_ID, 0);
 
         cartService = CartService.getInstance(this, userId, partnerId);
-        setToolbar();
         setWidgets();
         registerWidgets();
         fillFields();
@@ -115,7 +114,7 @@ public class ProductActivity extends ActivityTemplate<Stock> {
         tvCategory.setText(product.getCategory().getName());
         tvManufacturer.setText(product.getManufacturer().getCompanyName());
         tvName.setText(product.getName());
-        tvPriceUnitary.setText("R$ " + product.getPriceUnitary());
+        tvPriceUnitary.setText(String.format("R$ %,.2f", product.getPriceUnitary()));
         tvUnit.setText(product.getUnit().name());
         ivProduct.setImageBitmap(BitmapFactory.decodeResource(getResources(), R.drawable.ic_launcher));
 
@@ -134,7 +133,7 @@ public class ProductActivity extends ActivityTemplate<Stock> {
 
         String stringId = getIntent().getStringExtra(EXTRA_PURCHASE_ID);
 
-        itemId = stringId == null || stringId.isEmpty() ? 0 : Integer.valueOf(stringId);
+        itemId = stringId == null || stringId.isEmpty() ? 0 : Integer.valueOf(stringId.trim());
 
         if (itemId != 0)
             btnChangeOnCart.setText(getString(R.string.button_text_change_on_cart));
@@ -160,7 +159,7 @@ public class ProductActivity extends ActivityTemplate<Stock> {
 
             BigDecimal newSubTotal = item.getProduct().getPriceUnitary().multiply(bdNewValue);
             newSubTotal.setScale(2);
-            tvSubtotal.setText("RS " + newSubTotal);
+            tvSubtotal.setText(String.format("R$ %,.2f",newSubTotal));
         }
     }
 }

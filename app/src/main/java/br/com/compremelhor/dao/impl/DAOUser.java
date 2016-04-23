@@ -4,7 +4,7 @@ import android.content.ContentValues;
 import android.content.Context;
 
 import br.com.compremelhor.dao.AbstractDAO;
-import br.com.compremelhor.util.DatabaseHelper;
+import br.com.compremelhor.util.helper.DatabaseHelper;
 import br.com.compremelhor.model.EntityModel;
 import br.com.compremelhor.model.User;
 

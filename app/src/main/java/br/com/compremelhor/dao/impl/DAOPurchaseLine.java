@@ -3,10 +3,12 @@ package br.com.compremelhor.dao.impl;
 import android.content.ContentValues;
 import android.content.Context;
 
+import java.util.Date;
+
 import br.com.compremelhor.dao.AbstractDAO;
-import br.com.compremelhor.util.DatabaseHelper;
 import br.com.compremelhor.model.EntityModel;
 import br.com.compremelhor.model.PurchaseLine;
+import br.com.compremelhor.util.helper.DatabaseHelper;
 
 /**
  * Created by adriano on 05/04/16.
@@ -48,8 +50,7 @@ public class DAOPurchaseLine extends AbstractDAO<PurchaseLine> {
         if (pl.getDateCreated() != null)
             values.put(DatabaseHelper.PurchaseLine.DATE_CREATED, pl.getDateCreated().toString());
 
-        if (pl.getLastUpdated() != null)
-            values.put(DatabaseHelper.PurchaseLine.LAST_UPDATED, pl.getLastUpdated().toString());
+        values.put(DatabaseHelper.PurchaseLine.LAST_UPDATED, (new Date()).getTime());
 
         return values;
     }

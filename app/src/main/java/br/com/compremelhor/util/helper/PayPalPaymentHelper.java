@@ -1,8 +1,8 @@
-package br.com.compremelhor.util;
+package br.com.compremelhor.util.helper;
 
 import com.paypal.android.sdk.payments.PayPalConfiguration;
 
-public class PaymentPayPalHelper {
+public class PayPalPaymentHelper {
 
     private static final String CLIENT_ID = "AYpRz90S6zESSInoXzEA520g5wceI1xO9kjS7S9zTUTljYCCMiJ-bEL7KILw-RUSdp48CuLgD7nvSn3U";
     public static final String CONFIG_ENVIRONMENT =

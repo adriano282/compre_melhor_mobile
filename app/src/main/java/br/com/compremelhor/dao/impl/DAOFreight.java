@@ -8,7 +8,7 @@ import java.util.Calendar;
 import br.com.compremelhor.dao.AbstractDAO;
 import br.com.compremelhor.model.EntityModel;
 import br.com.compremelhor.model.Freight;
-import br.com.compremelhor.util.DatabaseHelper;
+import br.com.compremelhor.util.helper.DatabaseHelper;
 
 public class DAOFreight extends AbstractDAO<Freight> {
     private static DAOFreight instance;

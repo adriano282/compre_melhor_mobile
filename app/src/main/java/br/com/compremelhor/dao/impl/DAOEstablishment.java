@@ -6,7 +6,7 @@ import android.content.Context;
 import br.com.compremelhor.dao.AbstractDAO;
 import br.com.compremelhor.model.EntityModel;
 import br.com.compremelhor.model.Establishment;
-import br.com.compremelhor.util.DatabaseHelper;
+import br.com.compremelhor.util.helper.DatabaseHelper;
 
 public class DAOEstablishment extends AbstractDAO<Establishment> {
     private static DAOEstablishment instance;

@@ -18,7 +18,7 @@ import br.com.compremelhor.R;
 import br.com.compremelhor.api.integration.resource.impl.PurchaseResource;
 import br.com.compremelhor.dao.impl.DAOPurchase;
 import br.com.compremelhor.model.Purchase;
-import br.com.compremelhor.util.DatabaseHelper;
+import br.com.compremelhor.util.helper.DatabaseHelper;
 
 import static br.com.compremelhor.util.Constants.EXTRA_PARTNER_ID;
 import static br.com.compremelhor.util.Constants.EXTRA_PURCHASE_ID;

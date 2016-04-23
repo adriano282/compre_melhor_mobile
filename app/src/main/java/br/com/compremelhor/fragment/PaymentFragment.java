@@ -39,7 +39,7 @@ import br.com.compremelhor.R;
 import br.com.compremelhor.dao.impl.DAOEstablishment;
 import br.com.compremelhor.model.Establishment;
 import br.com.compremelhor.service.CartService;
-import br.com.compremelhor.util.PaymentPayPalHelper;
+import br.com.compremelhor.util.helper.PayPalPaymentHelper;
 
 import static br.com.compremelhor.util.Constants.PREFERENCES;
 import static br.com.compremelhor.util.Constants.SP_PARTNER_ID;
@@ -169,7 +169,7 @@ public class PaymentFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         Intent intent = new Intent(getActivity(), PayPalService.class);
-        intent.putExtra(PayPalService.EXTRA_PAYPAL_CONFIGURATION, PaymentPayPalHelper.config);
+        intent.putExtra(PayPalService.EXTRA_PAYPAL_CONFIGURATION, PayPalPaymentHelper.config);
         getActivity().startService(intent);
     }
 
@@ -188,7 +188,7 @@ public class PaymentFragment extends Fragment {
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (requestCode == PaymentPayPalHelper.REQUEST_CODE_PAYMENT) {
+        if (requestCode == PayPalPaymentHelper.REQUEST_CODE_PAYMENT) {
 
             if (resultCode == Activity.RESULT_OK) {
 
@@ -225,7 +225,7 @@ public class PaymentFragment extends Fragment {
                 Log.i(
                         TAG,
                         "An invalid Payment or PayPalConfiguration was submitted. Please see the docs.");
-            } else if (requestCode == PaymentPayPalHelper.REQUEST_CODE_FUTURE_PAYMENT) {
+            } else if (requestCode == PayPalPaymentHelper.REQUEST_CODE_FUTURE_PAYMENT) {
                 if (resultCode == Activity.RESULT_OK) {
                     PayPalAuthorization auth =
                             data.getParcelableExtra(PayPalFuturePaymentActivity.EXTRA_RESULT_AUTHORIZATION);
@@ -250,7 +250,7 @@ public class PaymentFragment extends Fragment {
                             "FuturePaymentExample",
                             "Probably the attempt to previously start the PayPalService had an invalid PayPalConfiguration. Please see the docs.");
                 }
-            } else if (requestCode == PaymentPayPalHelper.REQUEST_CODE_PROFILE_SHARING) {
+            } else if (requestCode == PayPalPaymentHelper.REQUEST_CODE_PROFILE_SHARING) {
                 if (resultCode == Activity.RESULT_OK) {
                     PayPalAuthorization auth =
                             data.getParcelableExtra(PayPalProfileSharingActivity.EXTRA_RESULT_AUTHORIZATION);
@@ -315,9 +315,9 @@ public class PaymentFragment extends Fragment {
                             getPurchaseToBuy(PayPalPayment.PAYMENT_INTENT_SALE);
 
                     intent = new Intent(getActivity(), PaymentActivity.class);
-                    intent.putExtra(PayPalService.EXTRA_PAYPAL_CONFIGURATION, PaymentPayPalHelper.config);
+                    intent.putExtra(PayPalService.EXTRA_PAYPAL_CONFIGURATION, PayPalPaymentHelper.config);
                     intent.putExtra(PaymentActivity.EXTRA_PAYMENT, purchaseToCharge);
-                    startActivityForResult(intent, PaymentPayPalHelper.REQUEST_CODE_PAYMENT);
+                    startActivityForResult(intent, PayPalPaymentHelper.REQUEST_CODE_PAYMENT);
                     break;
 
                 case DialogInterface.BUTTON_NEGATIVE:

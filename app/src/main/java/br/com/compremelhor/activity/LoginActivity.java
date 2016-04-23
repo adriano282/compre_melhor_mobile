@@ -35,7 +35,7 @@ import br.com.compremelhor.R;
 import br.com.compremelhor.api.integration.ResponseServer;
 import br.com.compremelhor.api.integration.resource.impl.UserResource;
 import br.com.compremelhor.dao.impl.DAOUser;
-import br.com.compremelhor.util.DatabaseHelper;
+import br.com.compremelhor.util.helper.DatabaseHelper;
 import br.com.compremelhor.model.User;
 
 import static br.com.compremelhor.util.Constants.KEEP_CONNECT_SP;

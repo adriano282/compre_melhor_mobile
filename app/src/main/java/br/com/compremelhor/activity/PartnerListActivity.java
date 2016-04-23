@@ -21,7 +21,7 @@ import br.com.compremelhor.R;
 import br.com.compremelhor.api.integration.resource.impl.PartnerResource;
 import br.com.compremelhor.dao.impl.DAOEstablishment;
 import br.com.compremelhor.model.Establishment;
-import br.com.compremelhor.util.DatabaseHelper;
+import br.com.compremelhor.util.helper.DatabaseHelper;
 
 import static br.com.compremelhor.util.Constants.REQUEST_CODE_PURCHASE_FINISHED;
 import static br.com.compremelhor.util.Constants.SP_PARTNER_ID;

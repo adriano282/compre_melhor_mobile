@@ -21,10 +21,8 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
+import java.util.TreeMap;
 import java.util.TreeSet;
 
 import br.com.compremelhor.R;
@@ -36,14 +34,16 @@ import br.com.compremelhor.dao.impl.DAOPurchaseLine;
 import br.com.compremelhor.model.Product;
 import br.com.compremelhor.model.PurchaseLine;
 import br.com.compremelhor.service.CartService;
+import br.com.compremelhor.util.helper.ComputePurchaseLinesHelper;
+import br.com.compremelhor.view.SkuListView;
 
 import static br.com.compremelhor.util.Constants.CLIENT_SCANNER;
 import static br.com.compremelhor.util.Constants.EXTRA_CURRENT_QUANTITY_OF_ITEM;
+import static br.com.compremelhor.util.Constants.EXTRA_PURCHASE_ID;
 import static br.com.compremelhor.util.Constants.EXTRA_SER_PRODUCT;
 import static br.com.compremelhor.util.Constants.OTHERS_CODES;
 import static br.com.compremelhor.util.Constants.PREFERENCES;
 import static br.com.compremelhor.util.Constants.PRODUCT_MODE;
-import static br.com.compremelhor.util.Constants.EXTRA_PURCHASE_ID;
 import static br.com.compremelhor.util.Constants.QR_CODE_MODE;
 import static br.com.compremelhor.util.Constants.REQUEST_CODE_CART_ITEM_ADDED;
 import static br.com.compremelhor.util.Constants.REQUEST_CODE_CART_ITEM_EDITED;
@@ -60,7 +60,7 @@ public class CartFragment extends android.support.v4.app.Fragment {
     private ExpandableListView explicitView;
 
     private List<String> listDataHeader = new ArrayList<>();
-    private HashMap<String, List<String>> listDataChild = new HashMap<>();
+    private TreeMap<String, List<String>> listDataChild = new TreeMap<>();
 
     private AlertDialog actionsProduct;
     private AlertDialog alertDialogConfirmation;
@@ -193,8 +193,15 @@ public class CartFragment extends android.support.v4.app.Fragment {
         explicitView.setOnChildClickListener(new ExpandableListView.OnChildClickListener() {
             public boolean onChildClick(ExpandableListView parent, View v,
                                         int groupPosition, int childPosition, long id) {
-                itemIdSelected = ((TextView)((LinearLayout) v).getChildAt(0)).getText().toString();
-                currentQuantityOfItemSelected = ((TextView)((LinearLayout) v).getChildAt(2)).getText().toString();
+                itemIdSelected = ((TextView)((LinearLayout) v).getChildAt(0)).getText().toString().trim();
+                currentQuantityOfItemSelected = ((TextView)((LinearLayout) v).getChildAt(2)).getText().toString().trim();
+
+                if (currentQuantityOfItemSelected.contains(":")) {
+                    currentQuantityOfItemSelected = currentQuantityOfItemSelected.substring(
+                            currentQuantityOfItemSelected.indexOf(":") + 1, currentQuantityOfItemSelected.indexOf(".")
+                    ).trim();
+                }
+
                 Log.d("ID", "ITEM ID " + itemIdSelected);
                 Log.d("ID", "QUANTITY " + currentQuantityOfItemSelected);
                 actionsProduct.show();
@@ -264,7 +271,7 @@ public class CartFragment extends android.support.v4.app.Fragment {
                     AsyncTask<Void, Void, Void> request = new AsyncTask<Void, Void, Void>() {
                         @Override
                         protected Void doInBackground(Void... params) {
-                            PurchaseLine line = daoPurchaseLine.find(Integer.valueOf(itemIdSelected));
+                            PurchaseLine line = daoPurchaseLine.find(Integer.valueOf(itemIdSelected.trim()));
                             if (line == null) throw new RuntimeException("CANNOT BE NULL");
                             Product p = skuResource.getResource(line.getProduct().getId());
                             if (p == null) {
@@ -354,16 +361,12 @@ public class CartFragment extends android.support.v4.app.Fragment {
 
         public void onPostExecute(Double valueTotal) {
             setWidgets();
-            tvValueTotal.setText("R$ " + valueTotal);
+            tvValueTotal.setText(String.format("R$ %,.2f",valueTotal));
             progressDialog.dismiss();
         }
 
         private double refreshListOnCurrentCart() {
             final TreeSet<PurchaseLine> items = cartService.getItems();
-
-            listDataChild = new HashMap<>();
-            listDataHeader = new ArrayList<>();
-
             handler.post(new Runnable() {
                 @Override
                 public void run() {
@@ -375,38 +378,11 @@ public class CartFragment extends android.support.v4.app.Fragment {
                 }
             });
 
-            Map<String, Double> sumByCategoryMap = new HashMap<>();
-            for (PurchaseLine line : items) {
-                String currentCategory = line.getCategory();
+            SkuListView slv = ComputePurchaseLinesHelper.getSkuListView(items);
 
-                if (!sumByCategoryMap.containsKey(line.getCategory())) {
-                    sumByCategoryMap.put(line.getCategory(), 0.0);
-                    listDataHeader.add(currentCategory);
-                    listDataChild.put(currentCategory, new ArrayList<String>());
-                }
-
-                sumByCategoryMap.put(currentCategory, sumByCategoryMap.get(currentCategory) + line.getSubTotal().doubleValue());
-                listDataChild
-                        .get(currentCategory)
-                        .add(line.getProductName() + "/" + line.getQuantity() + "/ R$" + line.getSubTotal() + "/" + line.getId());
-            }
-
-            Iterator<Map.Entry<String, Double>> iterator = sumByCategoryMap.entrySet().iterator();
-            double valueTotal = 0.0;
-            int i = 0;
-            while(iterator.hasNext()) {
-                Map.Entry<String, Double> pair = iterator.next();
-                String newHeader = pair.getKey() + "/R$ " + pair.getValue();
-
-                valueTotal += pair.getValue();
-
-                listDataChild.put(newHeader, listDataChild.get(listDataHeader.get(i)));
-                listDataChild.remove(listDataHeader.get(i));
-                listDataHeader.set(i, newHeader);
-
-                i++;
-            }
-            return valueTotal;
+            listDataChild = slv.getChildDataList();
+            listDataHeader = slv.getHeaderDataList();
+            return slv.getTotalValue();
         }
     }
 }
