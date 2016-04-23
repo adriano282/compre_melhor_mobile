@@ -61,7 +61,7 @@ public class CartFragment extends android.support.v4.app.Fragment {
 
     private List<String> listDataHeader = new ArrayList<>();
     private HashMap<String, List<String>> listDataChild = new HashMap<>();
-    
+
     private AlertDialog actionsProduct;
     private AlertDialog alertDialogConfirmation;
 
@@ -211,6 +211,7 @@ public class CartFragment extends android.support.v4.app.Fragment {
         tvPartnerName.setText(daoEstablishment.find(preferences.getInt(SP_PARTNER_ID, 0)).getName());
         tvValueTotal = (TextView) getView().findViewById(R.id.tv_value_total_purchase);
         btnAddProduct = (Button) getView().findViewById(R.id.btn_shopping_list_add);
+        btnAddProduct.setVisibility(View.VISIBLE);
 
         actionsProduct = createProductAlertDialog();
         alertDialogConfirmation = createDialogConfirmation();

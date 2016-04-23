@@ -52,7 +52,7 @@ public class DataBind {
         if (objectModel != null) {
             objectModel.setId(getInt(cursor, DatabaseHelper.Domain._ID));
             objectModel.setDateCreated(getCalendar(cursor, DatabaseHelper.Domain.DATE_CREATED));
-            objectModel.setDateCreated(getCalendar(cursor, DatabaseHelper.Domain.LAST_UPDATED));
+            objectModel.setLastUpdated(getCalendar(cursor, DatabaseHelper.Domain.LAST_UPDATED));
         }
 
         if (objectModel instanceof Address) {

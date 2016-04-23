@@ -69,6 +69,23 @@ public class Purchase extends EntityModel {
 
     public enum Status {
         OPENED, READY, SHIPPED, FINISHED;
+
+        public String getTranslatedValued() {
+            switch (this) {
+                case OPENED:
+                    return "ABERTO";
+
+                case READY:
+                    return "PARA SER ENTREGUE";
+
+                case SHIPPED:
+                    return "ENTREGUE";
+
+                case FINISHED:
+                    return "CONCLUÍDO";
+            }
+            return null;
+        }
     }
 
 }

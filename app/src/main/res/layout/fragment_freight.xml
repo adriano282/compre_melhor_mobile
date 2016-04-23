@@ -125,7 +125,7 @@
         <TextView
             android:id="@+id/tv_value_total_freight"
             android:textSize="30dp"
-            android:text="RS 00,00"
+            android:text="R$ 0.0"
             android:textColor="#FFFFFF"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"

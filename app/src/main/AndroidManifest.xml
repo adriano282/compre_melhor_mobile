@@ -45,10 +45,23 @@
         <activity
             android:name=".activity.ProductActivity"
             android:label="@string/action_bar_cart_item_label" />
+
+        <activity
+            android:name=".activity.PurchaseListActivity"
+            android:label="@string/action_bar_purchase_list" />
+
+        <activity android:name=".activity.PurchaseActivity"
+            android:label="@string/action_bar_purchase"
+            android:theme="@style/Theme.Example" >
+            <meta-data
+                android:name="android.support.UI_OPTIONS"
+                android:value="splitActionBarWhenNarrow" />
+        </activity>
+
         <activity
             android:name=".activity.RegisterActivity"
             android:label="@string/register_label" />
-        <activity android:name=".util.PaymentPayPalHelper" />
+
         <activity
             android:name=".activity.AddressListActivity"
             android:label="@string/title_my_addresses" />

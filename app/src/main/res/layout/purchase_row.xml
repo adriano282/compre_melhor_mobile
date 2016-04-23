@@ -1,0 +1,73 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:background="?android:selectableItemBackground" >
+
+    <TableLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content">
+
+        <TableRow>
+            <TextView style="?android:textAppearanceListItemSmall"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Estabelecimento: "
+                android:layout_weight="1"/>
+
+            <TextView style="?android:textAppearanceListItemSmall"
+                android:id="@+id/tv_purchase_row_establishment_name"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="Establishment's Name goes here" />
+        </TableRow>
+
+        <TableRow>
+            <TextView style="?android:textAppearanceListItemSmall"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="Data da Compra: " />
+
+            <TextView style="?android:textAppearanceListItemSmall"
+                android:id="@+id/tv_purchase_row_date"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="Date goes here!" />
+        </TableRow>
+
+        <TableRow>
+            <TextView style="?android:textAppearanceListItemSmall"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="Status: " />
+
+            <TextView style="?android:textAppearanceListItemSmall"
+                android:id="@+id/tv_purchase_row_status"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="Status" />
+        </TableRow>
+
+        <TableRow>
+            <TextView style="?android:textAppearanceListItemSmall"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+
+                android:text="Valor Total: " />
+            <TextView style="?android:textAppearanceListItemSmall"
+                android:id="@+id/tv_purchase_row_value_total"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+
+                android:text="Total gasto vai aqui!" />
+        </TableRow>
+    </TableLayout>
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="10sp" />
+</LinearLayout>

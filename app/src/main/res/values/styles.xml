@@ -18,20 +18,6 @@
         <item name="android:textColor">@color/editText</item>
         <item name="android:background">@drawable/edit_text_holo_dark</item>
     </style>
-
-    <style name="CardNumber" parent="@style/TextField">
-        <item name="android:layout_width">fill_parent</item>
-        <item name="android:inputType">numberDecimal</item>
-        <item name="android:hint">@string/cardNumber</item>
-    </style>
-
-    <style name="CVC" parent="@style/TextField">
-        <item name="android:inputType">numberDecimal</item>
-        <item name="android:hint">@string/cvc</item>
-        <item name="android:layout_weight">0.7</item>
-        <item name="android:layout_width">0dp</item>
-    </style>
-
     <style name="Button" parent="@android:style/Widget.Button">
         <item name="android:layout_height">wrap_content</item>
         <item name="android:paddingTop">12dp</item>
@@ -71,12 +57,6 @@
         <item name="android:entries">@array/year_array</item>
         <item name="android:layout_width">0dp</item>
         <item name="android:layout_weight">0.8</item>
-    </style>
-
-    <style name="Currency" parent="@style/Spinner">
-        <item name="android:entries">@array/currency_array</item>
-        <item name="android:layout_width">0dp</item>
-        <item name="android:layout_weight">1.0</item>
     </style>
 
     <style name="Header" parent="@android:style/Widget.TextView">

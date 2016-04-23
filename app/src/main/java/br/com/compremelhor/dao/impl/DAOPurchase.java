@@ -3,10 +3,12 @@ package br.com.compremelhor.dao.impl;
 import android.content.ContentValues;
 import android.content.Context;
 
+import java.util.Date;
+
 import br.com.compremelhor.dao.AbstractDAO;
-import br.com.compremelhor.util.DatabaseHelper;
 import br.com.compremelhor.model.EntityModel;
 import br.com.compremelhor.model.Purchase;
+import br.com.compremelhor.util.DatabaseHelper;
 
 public class DAOPurchase extends AbstractDAO<Purchase> {
     private static DAOPurchase instance;
@@ -17,6 +19,7 @@ public class DAOPurchase extends AbstractDAO<Purchase> {
 
         return instance;
     }
+
 
     private DAOPurchase(Context context) { super(context, Purchase.class, DatabaseHelper.Purchase.TABLE, DatabaseHelper.Purchase.COLUMNS); }
 
@@ -43,11 +46,16 @@ public class DAOPurchase extends AbstractDAO<Purchase> {
             values.put(DatabaseHelper.Purchase._ESTABLISHMENT_ID, purchase.getEstablishment().getId());
 
         if (purchase.getDateCreated() != null)
-            values.put(DatabaseHelper.Purchase.DATE_CREATED, purchase.getDateCreated().toString());
+            values.put(DatabaseHelper.Purchase.DATE_CREATED, purchase.getDateCreated().getTime().getTime());
+        else {
+            values.put(DatabaseHelper.Purchase.DATE_CREATED, (new Date()).getTime());
+        }
 
         if (purchase.getLastUpdated() != null)
-            values.put(DatabaseHelper.Purchase.LAST_UPDATED, purchase.getLastUpdated().toString());
-
+            values.put(DatabaseHelper.Purchase.LAST_UPDATED, purchase.getLastUpdated().getTime().getTime());
+        else {
+            values.put(DatabaseHelper.Purchase.LAST_UPDATED, (new Date()).getTime());
+        }
         return values;
     }
 

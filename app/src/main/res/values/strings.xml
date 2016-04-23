@@ -69,7 +69,7 @@
     <string name="dialog_content_text_running">Processando..</string>
     <string name="dialog_content_text_registering_on_server">Registrando no servidor...</string>
     <string name="dialog_content_text_validating_data_on_server">Validando Dados no Servidor...</string>
-
+    <string name="dialog_content_text_registering_data">Realizando Cadastro...</string>
 
     <!-- ProgressDialog's headers texts -->
     <string name="dialog_header_wait">Aguarde</string>
@@ -82,6 +82,7 @@
 
     <!-- TextView's messages texts -->
     <string name="address_list_is_empty">Você não possui nenhum endereço cadastrado.</string>
+    <string name="purchase_list_is_empty">Você ainda não concluiu nenhuma compra.</string>
 
 
     <!-- Regex Patterns -->
@@ -115,6 +116,7 @@
     <string name="address_removed_successful_message">Endereço excluído com sucesso!</string>
     <string name="data_registered_successful_message">Seus dados foram salvos com sucesso.</string>
     <string name="purchase_concluded_successful_message">Compra concluída com sucesso! Para detalhes da entrega, vá para Minhas Compras</string>
+    <string name="address_saved_successful_message">Endereço salvo com sucesso</string>
 
 
     <!-- Dashboard page's resources -->
@@ -146,13 +148,20 @@
     <string name="OTHER">Outro tipo de Código de Barras</string>
 
 
+    <!-- Label's name -->
+    <string name="action_bar_profile_label">Meus dados</string>
+    <string name="action_bar_purchase_list">Minhas Compras</string>
+    <string name="action_bar_change_password_label">Senha Login</string>
+    <string name="action_bar_purchase">Items</string>
+    <string name="action_bar_cart_item_label">Item Carrinho</string>
+
+
     <string name="manual">Inserir Código</string>
     <string name="read_type">Adionar Produto Por:</string>
     <string name="menu_settings">Configurações</string>
     <string name="cpf_type">CPF</string>
     <string name="cnpj_type">CNPJ</string>
-    <string name="action_bar_profile_label">Meus dados</string>
-    <string name="action_bar_change_password_label">Senha Login</string>
+
     <string name="btn_change_password_cancel_operation">Cancelar Operação</string>
     <string name="btn_change_password_commit_changes">Alterar senha</string>
 
@@ -170,7 +179,7 @@
     <string name="select_ship_address">Selecione o endereço de entrega</string>
     <string name="address_name">Título do Endereço</string>
     <string name="clear">Limpar</string>
-    <string name="address_saved_successfully">Endereço salvo com sucesso</string>
+
     <string name="without_freight">Sem Frete.</string>
     <string name="day_of_ship">Dia da Entrega</string>
     <string name="start_hour_range">A partir do horário:</string>
@@ -182,7 +191,7 @@
     <string name="label_label_category_product">Categoria</string>
     <string name="label_sub_total_product">Sub Total</string>
     <string name="select_quantity">Selecione Quantidade</string>
-    <string name="action_bar_cart_item_label">Item Carrinho</string>
+
     <string name="btn_label_add_item_to_cart">Colocar no Carrinho</string>
 
 
@@ -191,31 +200,16 @@
     <string name="cart_is_empty">Você não possui nenhum produto em seu carrinho.</string>
     <string name="user_document_is_null_message_error">Documento não informado</string>
 
-    <string name="addPayment">Add Payment Method</string>
-    <string name="paymentMethods">Payment Methods</string>
-
-    <string name="endingIn">Card ending in</string>
-    <string name="progressMessage">Creating Token&#8230;</string>
-    <string name="validationErrors">Validation Errors</string>
-
-    <string name="cardNumber">Card Number</string>
-    <string name="cvc">CVC</string>
-
-    <string name="ok">OK</string>
-
-    <string-array name="currency_array">
-        <item>Currency (optional)</item>
-        <item>Unspecified</item>
-        <item>USD</item>
-    </string-array>
 
     <string name="token_api">token_app DG4OjT9ciuPtHk1p7Fi/kg==</string>
     <string name="register_label">Cadastro</string>
     <string name="header_dialog_error_message_without_internet">Sem Conexão</string>
-    <string name="doing_register">Realizando Cadastro...</string>
+
 
     <string name="address_remove_error_message">Ocorreu um erro ao tentar excluir seu endereço</string>
     <string name="action_bar_partner_label">Selecionar Local</string>
+    <string name="action_bar_tab_list_items_purchase">Listagem</string>
+    <string name="action_bar_tab_items_purchase_graphic">Gráfico</string>
 
     <!-- Exception's messages -->
     <string name="exception_message_user_cannot_be_null">User wouldn\'t be null here</string>
