@@ -30,7 +30,7 @@
         </activity>
         <activity
             android:name=".activity.DashboardActivity"
-            android:theme="@android:style/Theme.NoTitleBar" />
+            android:label="@string/action_bar_dashboard_label"/>
         <activity
             android:name=".activity.ProfileActivity"
             android:label="@string/action_bar_profile_label" />

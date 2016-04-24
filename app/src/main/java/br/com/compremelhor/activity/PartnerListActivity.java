@@ -1,5 +1,6 @@
 package br.com.compremelhor.activity;
 
+import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.AsyncTask;
@@ -48,7 +49,7 @@ public class PartnerListActivity extends ActivityTemplate<Establishment> {
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (requestCode == REQUEST_CODE_PURCHASE_FINISHED) {
+        if (requestCode == REQUEST_CODE_PURCHASE_FINISHED && resultCode == Activity.RESULT_OK) {
             showMessage(R.string.purchase_concluded_successful_message);
             finish();
         }

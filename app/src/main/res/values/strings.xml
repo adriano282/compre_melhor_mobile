@@ -78,6 +78,7 @@
     <!-- Confirmation's actions -->
     <string name="delete_confirmation_address">Você realmente deseja remover este endereço?</string>
     <string name="close_purchase_confirmation">Após a compra ser fechada, não será possível reabrir a mesma. Você tem certeza que deseja fechar a compra?</string>
+    <string name="logout_action_confirmation">Você tem certeza que deseja sair?</string>
 
 
     <!-- TextView's messages texts -->
@@ -154,6 +155,7 @@
     <string name="action_bar_change_password_label">Senha Login</string>
     <string name="action_bar_purchase">Items</string>
     <string name="action_bar_cart_item_label">Item Carrinho</string>
+    <string name="action_bar_dashboard_label">Compre Melhor</string>
 
 
     <string name="manual">Inserir Código</string>
