@@ -11,7 +11,6 @@ import java.util.TreeSet;
 
 import br.com.compremelhor.dao.impl.DAOAddress;
 import br.com.compremelhor.dao.impl.DAOCategory;
-import br.com.compremelhor.dao.impl.DAOCode;
 import br.com.compremelhor.dao.impl.DAOEstablishment;
 import br.com.compremelhor.dao.impl.DAOFreight;
 import br.com.compremelhor.dao.impl.DAOManufacturer;
@@ -19,7 +18,6 @@ import br.com.compremelhor.dao.impl.DAOPurchaseLine;
 import br.com.compremelhor.dao.impl.DAOUser;
 import br.com.compremelhor.model.Address;
 import br.com.compremelhor.model.Category;
-import br.com.compremelhor.model.Code;
 import br.com.compremelhor.model.EntityModel;
 import br.com.compremelhor.model.Establishment;
 import br.com.compremelhor.model.Freight;
@@ -97,8 +95,7 @@ public class DataBind {
             Category category = DAOCategory.getInstance(context).find(getInt(cursor, DatabaseHelper.Product._CATEGORY_ID));
             p.setCategory(category);
 
-            Code code = DAOCode.getInstance(context).find(getInt(cursor, DatabaseHelper.Product._CODE_ID));
-            p.setCode(code);
+            p.setCode(getString(cursor, DatabaseHelper.Product.CODE));
 
             p.setUnit(Product.Unit.valueOf(getString(cursor, DatabaseHelper.Product.UNIT)));
 
@@ -111,14 +108,6 @@ public class DataBind {
             /* Miss the implementation of date field */
 
             return m;
-        } else if (objectModel instanceof Code) {
-            Code c = (Code) objectModel;
-
-            c.setId(getInt(cursor, DatabaseHelper.Code._ID));
-            c.setCode(getString(cursor, DatabaseHelper.Code.CODE));
-            c.setType(Code.CodeType.valueOf(getString(cursor, DatabaseHelper.Code.CODE_TYPE)));
-
-            return c;
         } else if (objectModel instanceof Establishment) {
             Establishment est = (Establishment) objectModel;
 
@@ -195,10 +184,7 @@ public class DataBind {
             freight = DAOFreight.getInstance(context)
                     .findByAttribute(DatabaseHelper.Freight._PURCHASE_ID, String.valueOf(purchase.getId()));
             purchase.setFreight(freight);
-
             purchase.setItems(new TreeSet<>(list));
-
-
             return purchase;
         }
 

@@ -9,7 +9,7 @@ import android.database.sqlite.SQLiteOpenHelper;
  */
 public class DatabaseHelper extends SQLiteOpenHelper {
     private static final String DATABASE = "CompreMelhor.db";
-    private static int DATABASE_VERSION = 57;
+    private static int DATABASE_VERSION = 59;
 
     public final String[] TABLES;
 
@@ -21,7 +21,6 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 Freight.TABLE,
                 Product.TABLE,
                 Category.TABLE,
-                Code.TABLE,
                 Manufacturer.TABLE,
                 Address.TABLE,
                 User.TABLE
@@ -43,13 +42,6 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         String[] COLUMNS = new String[] {_ID, COMPANY_NAME, DATE_CREATED, LAST_UPDATED};
     }
 
-    public interface Code extends Domain {
-        String  TABLE = "code",
-                CODE = "code",
-                CODE_TYPE = "code_type";
-        String[] COLUMNS = new String[] {_ID, CODE, CODE_TYPE, DATE_CREATED, LAST_UPDATED};
-    }
-
     public interface Category extends Domain {
         String  TABLE = "category",
                 NAME = "name";
@@ -61,11 +53,11 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 NAME = "name",
                 DESCRIPTION = "description",
                 UNIT = "unit",
+                CODE = "code",
                 _MANUFACTURER_ID = "_manufacturer_id",
-                _CODE_ID = "_code_id",
                 _CATEGORY_ID = "_category_id";
-        String[] COLUMNS = new String[] {_ID, NAME, DESCRIPTION, UNIT,
-                _MANUFACTURER_ID, _CODE_ID, _CATEGORY_ID, DATE_CREATED, LAST_UPDATED};
+        String[] COLUMNS = new String[] {_ID, NAME, DESCRIPTION, UNIT, CODE,
+                _MANUFACTURER_ID, _CATEGORY_ID, DATE_CREATED, LAST_UPDATED};
     }
 
     public interface Establishment extends Domain {
@@ -168,14 +160,6 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 Manufacturer.DATE_CREATED + " TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP, " +
                 Manufacturer.LAST_UPDATED + " TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP);");
 
-        db.execSQL("CREATE TABLE " + Code.TABLE + " (" +
-                Code._ID + " INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, " +
-                Code.CODE + " VARCHAR(20) UNIQUE NOT NULL, " +
-                Code.CODE_TYPE + " VARCHAR(10) NOT NULL, " +
-                Code.DATE_CREATED + " TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP, " +
-                Code.LAST_UPDATED + " TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP);");
-
-
         db.execSQL("CREATE TABLE " + Category.TABLE + " (" +
                 Category._ID + " INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, " +
                 Category.NAME + " VARCHAR(20), " +
@@ -187,15 +171,13 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 Product.NAME + " VARCHAR(20), " +
                 Product.DESCRIPTION + " TEXT, " +
                 Product.UNIT + " VARCHAR(10), " +
+                Product.CODE + " VARCHAR(20) NOT NULL, " +
                 Product._MANUFACTURER_ID + " INTEGER NOT NULL, " +
-                Product._CODE_ID + " INTEGER NOT NULL, " +
                 Product._CATEGORY_ID + " INTEGER NOT NULL, " +
                 Product.DATE_CREATED + " TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP, " +
                 Product.LAST_UPDATED + " TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP, " +
                 " FOREIGN KEY( " + Product._MANUFACTURER_ID + ") " +
                 " REFERENCES " + Manufacturer.TABLE + "(" + Manufacturer._ID + "), " +
-                " FOREIGN KEY( " + Product._CODE_ID + ") " +
-                " REFERENCES " + Code.TABLE + "(" + Code._ID + "), " +
                 " FOREIGN KEY( " + Product._CATEGORY_ID + ") " +
                 " REFERENCES " + Category.TABLE + "(" + Category._ID + "));");
 

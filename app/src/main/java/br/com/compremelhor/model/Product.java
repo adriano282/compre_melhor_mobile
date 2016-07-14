@@ -7,7 +7,7 @@ public class Product extends EntityModel {
     private String description;
     private Unit unit;
     private Manufacturer manufacturer;
-    private Code code;
+    private String code;
     private Category category;
     private BigDecimal priceUnitary;
 
@@ -53,11 +53,11 @@ public class Product extends EntityModel {
         return manufacturer;
     }
 
-    public Code getCode() {
+    public String getCode() {
         return code;
     }
 
-    public void setCode(Code code) {
+    public void setCode(String code) {
         this.code = code;
     }
 

@@ -136,7 +136,7 @@ public class CartFragment extends android.support.v4.app.Fragment {
                     AsyncTask<Void, Void, Void> request = new AsyncTask<Void, Void, Void>() {
                         @Override
                         protected Void doInBackground(Void... params) {
-                            Product p = skuResource.getResource("code.code", code);
+                            Product p = skuResource.getResource("code", code);
                             if (p == null) {
                                 handler.post(new Runnable() {
                                     @Override

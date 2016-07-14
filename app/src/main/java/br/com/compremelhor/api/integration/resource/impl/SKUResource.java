@@ -10,7 +10,6 @@ import java.util.HashMap;
 
 import br.com.compremelhor.api.integration.resource.AbstractResource;
 import br.com.compremelhor.model.Category;
-import br.com.compremelhor.model.Code;
 import br.com.compremelhor.model.Establishment;
 import br.com.compremelhor.model.Manufacturer;
 import br.com.compremelhor.model.Product;
@@ -58,20 +57,15 @@ public class SKUResource extends AbstractResource<Product> {
         product.setName(jsonObject.get("name").getAsString());
         product.setDescription(jsonObject.get("description").getAsString());
         product.setUnit(Product.Unit.valueOf(jsonObject.get("unit").getAsString()));
-
-
-        Code code = new Code();
-        code.setType(Code.CodeType.valueOf(jsonObject.get("code").getAsJsonObject().get("type").getAsString()));
-        code.setCode(jsonObject.get("code").getAsJsonObject().get("code").getAsString());
-        product.setCode(code);
+        product.setCode(jsonObject.get("code").getAsString());
 
         Manufacturer m = new Manufacturer();
         m.setCompanyName(jsonObject.get("manufacturer").getAsJsonObject().get("name").getAsString());
         product.setManufacturer(m);
 
-        if (jsonObject.get("categories").getAsJsonArray().get(0) != null) {
+        if (jsonObject.get("category") != null) {
             Category category = new Category();
-            category.setName(jsonObject.get("categories").getAsJsonArray().get(0).getAsJsonObject().get("name").getAsString());
+            category.setName(jsonObject.get("category").getAsJsonObject().get("name").getAsString());
             product.setCategory(category);
         }
         product.setPriceUnitary(getPriceUnitaryBySkuIdAndPartnerId(jsonObject.get("id").getAsString(), "Supermercado da Gente"));
@@ -86,6 +80,6 @@ public class SKUResource extends AbstractResource<Product> {
 
     @Override
     public String[] getColumnNames() {
-        return new String[]{"id", "name", "description", "unit", "typeCode", "code", "code.code", "manufacturerId"};
+        return new String[]{"id", "name", "description", "unit", "typeCode", "code", "manufacturerId"};
     }
 }
