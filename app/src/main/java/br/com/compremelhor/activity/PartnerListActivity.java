@@ -19,9 +19,13 @@ import java.util.Map;
 import java.util.concurrent.ExecutionException;
 
 import br.com.compremelhor.R;
+import br.com.compremelhor.api.integration.resource.Resource;
+import br.com.compremelhor.api.integration.resource.impl.FreightTypeResource;
 import br.com.compremelhor.api.integration.resource.impl.PartnerResource;
 import br.com.compremelhor.dao.impl.DAOEstablishment;
+import br.com.compremelhor.dao.impl.DAOFreightType;
 import br.com.compremelhor.model.Establishment;
+import br.com.compremelhor.model.FreightType;
 import br.com.compremelhor.util.helper.DatabaseHelper;
 
 import static br.com.compremelhor.util.Constants.REQUEST_CODE_PURCHASE_FINISHED;
@@ -33,12 +37,16 @@ public class PartnerListActivity extends ActivityTemplate<Establishment> {
     private ListAdapter adapter;
     private ListView listView;
 
+    private int selectedPartner;
+    private Resource<FreightType> freightTypeResource;
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         setupOnCreateActivity(
                 DAOEstablishment.getInstance(this),
                 new PartnerResource("partners", this)
         );
+
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_partner_list);
@@ -77,6 +85,52 @@ public class PartnerListActivity extends ActivityTemplate<Establishment> {
     @Override
     protected void fillFields() {}
 
+    private void getAndPersistFreightTypes() {
+        showProgressDialog(getString(R.string.looking_for_freight_types));
+        freightTypeResource = new FreightTypeResource(this, selectedPartner);
+        final DAOFreightType daoFreightType = DAOFreightType.getInstance(this);
+        AsyncTask<Void, Void, Void> request = new AsyncTask<Void, Void, Void>() {
+            @Override
+            protected Void doInBackground(Void... params) {
+                List<FreightType> freightTypeList = new ArrayList<>();
+                freightTypeList = freightTypeResource.getAllResources(0, 30);
+
+                for (FreightType ft : freightTypeList) {
+                        FreightType fromDb;
+                        if ((fromDb = daoFreightType.find(ft.getId())) == null
+                                || fromDb.getLastUpdated().before(ft.getLastUpdated())) {
+
+                            boolean insert = false;
+                            if (fromDb == null) {
+                                fromDb = new FreightType();
+                                insert = true;
+                            }
+
+                            fromDb.setId(ft.getId());
+                            fromDb.setDescription(ft.getDescription());
+                            fromDb.setEstablishmentId(selectedPartner);
+                            fromDb.setDateCreated(ft.getDateCreated());
+                            fromDb.setScheduled(ft.isScheduled());
+                            fromDb.setDelayInWorkdays(ft.getDelayInWorkdays());
+                            fromDb.setTypeName(ft.getTypeName());
+                            fromDb.setRideValue(ft.getRideValue());
+                            fromDb.setAvailabilityScheduleWorkDays(ft.getAvailabilityScheduleWorkDays());
+                            fromDb.setLastUpdated(Calendar.getInstance());
+
+                            if (insert)
+                                daoFreightType.insert(fromDb);
+                            else
+                                daoFreightType.insertOrUpdate(fromDb);
+                        }
+                }
+
+                progressDialog.dismiss();
+                return null;
+            }
+        };
+        request.execute();
+    }
+
     private List<Map<String, Object>> listPartners() {
         showProgressDialog(getString(R.string.dialog_content_text_loading_places));
 
@@ -104,7 +158,7 @@ public class PartnerListActivity extends ActivityTemplate<Establishment> {
         } catch (InterruptedException e) {
             return null;
         } catch (ExecutionException e) {
-            throw new RuntimeException("Error occurred during editing an item on cart: " + e);
+            throw new RuntimeException("Error occurred during loading partner: " + e);
         }
     }
 
@@ -119,8 +173,11 @@ public class PartnerListActivity extends ActivityTemplate<Establishment> {
         public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
             Map<String, Object> partner = partners.get(position);
 
+
             Establishment est = dao
                     .findByAttribute("name", partner.get(DatabaseHelper.Establishment.NAME).toString());
+
+
             if (est == null) {
                 Establishment establishment = new Establishment();
                 establishment.setId((int) partner.get(DatabaseHelper.Establishment._ID));
@@ -133,12 +190,16 @@ public class PartnerListActivity extends ActivityTemplate<Establishment> {
                 ((DAOEstablishment)dao).updateByName(est);
             }
 
+            selectedPartner = (int) partner.get(DatabaseHelper.Establishment._ID);
             preferences.edit()
-                    .putInt(SP_PARTNER_ID, (int) partner.get(DatabaseHelper.Establishment._ID))
+                    .putInt(SP_PARTNER_ID, selectedPartner)
                     .apply();
 
+
+            getAndPersistFreightTypes();
             Intent intent = new Intent(PartnerListActivity.this, ShoppingActivity.class);
-            startActivityForResult(intent, REQUEST_CODE_PURCHASE_FINISHED);
+            startActivity(intent);
+            finish();
         }
     }
 }

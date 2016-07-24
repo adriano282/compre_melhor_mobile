@@ -67,6 +67,7 @@
     <string name="dialog_content_text_loading_places">Carregando locais...</string>
     <string name="dialog_content_text_removing_address">Excluindo endereço...</string>
     <string name="dialog_content_text_running">Processando..</string>
+    <string name="looking_for_freight_types">Carregando tipos de fretes...</string>
     <string name="dialog_content_text_registering_on_server">Registrando no servidor...</string>
     <string name="dialog_content_text_validating_data_on_server">Validando Dados no Servidor...</string>
     <string name="dialog_content_text_registering_data">Realizando Cadastro...</string>

@@ -239,6 +239,7 @@ public class LoginActivity extends Activity {
             }
 
             putUserId(user);
+            finish();
             return user;
         }
     }

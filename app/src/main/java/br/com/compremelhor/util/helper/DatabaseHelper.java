@@ -9,7 +9,7 @@ import android.database.sqlite.SQLiteOpenHelper;
  */
 public class DatabaseHelper extends SQLiteOpenHelper {
     private static final String DATABASE = "CompreMelhor.db";
-    private static int DATABASE_VERSION = 59;
+    private static int DATABASE_VERSION = 67;
 
     public final String[] TABLES;
 
@@ -23,7 +23,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 Category.TABLE,
                 Manufacturer.TABLE,
                 Address.TABLE,
-                User.TABLE
+                User.TABLE,
+                FreightType.TABLE
         };
     }
 
@@ -64,6 +65,18 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         String  TABLE = "establishment",
                 NAME = "name";
         String[] COLUMNS = new String[] {_ID, NAME, DATE_CREATED, LAST_UPDATED};
+    }
+
+    public interface FreightType extends Domain {
+        String TABLE = "freight_type",
+                TYPE_NAME = "type_name",
+                DESCRIPTION = "description",
+                RIDE_VALUE = "ride_value",
+                SCHEDULED = "scheduled",
+                DELAY_WORK_DAYS = "delay_workdays",
+                AVAILABILITY_SCHEDULE_WORK_DAYS = "availability_schedule_workdays",
+                _ESTABLISHMENT_ID = "establishment_id";
+        String[] COLUMNS = new String[] {_ID, TYPE_NAME, DESCRIPTION, RIDE_VALUE, SCHEDULED, DELAY_WORK_DAYS, AVAILABILITY_SCHEDULE_WORK_DAYS, _ESTABLISHMENT_ID, DATE_CREATED, LAST_UPDATED};
     }
 
     public interface Address extends Domain {
@@ -200,6 +213,18 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 Establishment.NAME + " VARCHAR(20) NOT NULL, " +
                 Establishment.DATE_CREATED + " TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP, " +
                 Establishment.LAST_UPDATED + " TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP);");
+
+        db.execSQL("CREATE TABLE " + FreightType.TABLE + " (" +
+                FreightType._ID + " INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, " +
+                FreightType.TYPE_NAME + " VARCHAR(20) NOT NULL, " +
+                FreightType.DESCRIPTION + " VARCHAR(255) , " +
+                FreightType.RIDE_VALUE + " DECIMAL(10,2) NOT NULL DEFAULT 0.00, " +
+                FreightType.SCHEDULED  + " INT(1) DEFAULT 0, " +
+                FreightType.DELAY_WORK_DAYS + " INT(11) DEFAULT 0, " +
+                FreightType.AVAILABILITY_SCHEDULE_WORK_DAYS + " INT(11) DEFAULT 0, " +
+                FreightType._ESTABLISHMENT_ID + " INT(11) NOT NULL, " +
+                FreightType.DATE_CREATED + " TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP, " +
+                FreightType.LAST_UPDATED + " TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP);");
 
         db.execSQL("CREATE TABLE " + Purchase.TABLE + " (" +
                 Purchase._ID + " INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, " +

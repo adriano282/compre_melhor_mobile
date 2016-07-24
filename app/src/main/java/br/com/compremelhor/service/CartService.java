@@ -18,16 +18,17 @@ import br.com.compremelhor.api.integration.resource.impl.FreightResource;
 import br.com.compremelhor.api.integration.resource.impl.PurchaseLineResource;
 import br.com.compremelhor.api.integration.resource.impl.PurchaseResource;
 import br.com.compremelhor.dao.impl.DAOFreight;
+import br.com.compremelhor.dao.impl.DAOFreightType;
 import br.com.compremelhor.dao.impl.DAOPurchase;
 import br.com.compremelhor.dao.impl.DAOPurchaseLine;
 import br.com.compremelhor.model.EntityModel;
 import br.com.compremelhor.model.Establishment;
 import br.com.compremelhor.model.Freight;
 import br.com.compremelhor.model.FreightSetup;
+import br.com.compremelhor.model.FreightType;
 import br.com.compremelhor.model.Purchase;
 import br.com.compremelhor.model.PurchaseLine;
 import br.com.compremelhor.model.User;
-import br.com.compremelhor.util.helper.DatabaseHelper;
 
 public class CartService {
     private static CartService instance;
@@ -36,6 +37,7 @@ public class CartService {
     private DAOFreight daoFreight;
     private DAOPurchase daoPurchase;
     private DAOPurchaseLine daoItem;
+    private DAOFreightType daoFreightType;
 
     private PurchaseResource purchaseResource;
     private PurchaseLineResource itemResource;
@@ -43,9 +45,7 @@ public class CartService {
 
     private Purchase purchase;
     private Freight freight;
-
-    private FreightSetup freightSetup;
-
+    private FreightType freightType;
     private Handler handler;
 
     private ProgressDialog progressDialog;
@@ -66,6 +66,7 @@ public class CartService {
             instance.daoItem = DAOPurchaseLine.getInstance(context);
             instance.daoPurchase = DAOPurchase.getInstance(context);
             instance.daoFreight = DAOFreight.getInstance(context);
+            instance.daoFreightType = DAOFreightType.getInstance(context);
 
             instance.purchaseResource = new PurchaseResource("purchases", context);
             instance.handler = new Handler();
@@ -127,6 +128,12 @@ public class CartService {
         }
     }
 
+    public void setFreightType(FreightType freightType) {
+        this.freightType = freightType;
+    }
+
+    public FreightType getFreightType() { return freightType; }
+
     public boolean editItem(final PurchaseLine item) {
         showProgressDialog(context.getString(R.string.dialog_content_text_changing_item_on_cart));
 
@@ -165,27 +172,9 @@ public class CartService {
         }
     }
 
-    public boolean removeFreight() {
-        Freight freight = daoFreight
-                .findByAttribute(DatabaseHelper.Freight._PURCHASE_ID, String.valueOf(purchase.getId()));
-
-        if (freight == null) return true;
-
-        ResponseServer<Freight> responseServer = freightResource.deleteResource(freight);
-        if (responseServer.hasErrors()) {
-            log(responseServer);
-        }
-
-        daoFreight.delete(freight.getId());
-
-        boolean result = daoFreight.find(freight.getId()) == null;
-        purchase.setFreight(null);
-
-        return  result;
-    }
-
     public boolean persistFreight() {
         freight.setPurchase(purchase);
+        freight.setFreightTypeId(freightType.getId());
 
         HashMap<String, String> params = new HashMap<>();
         params.put("purchase.id", String.valueOf(purchase.getId()));
@@ -325,8 +314,8 @@ public class CartService {
     }
 
     public void closePurchase() {
-        loadCurrentFreight();
-        purchase.setStatus(Purchase.Status.READY);
+        getFreight();
+        purchase.setStatus(Purchase.Status.PAID);
 
         AsyncTask<Void, Void, Void> request = new AsyncTask<Void, Void, Void>() {
             @Override
@@ -390,19 +379,16 @@ public class CartService {
 
     public void setFreight(Freight freight) {
         purchase.setFreight(freight);
-        getFreight();
+        this.freight = freight;
     }
 
     public FreightSetup getFreightSetup() {
-        if (getFreight() != null && getFreight().getFreightSetup() != null)
-            freightSetup = getFreight().getFreightSetup();
+        Freight f = getFreight();
 
-        return freightSetup;
-    }
+        if (f != null)
+            return f.getFreightSetup();
 
-    public void loadCurrentFreight() {
-        if (getFreight() == null)
-            setFreight(new Freight());
+        return null;
     }
 
     public void setFreightSetup(FreightSetup freightSetup) {

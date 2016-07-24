@@ -7,10 +7,16 @@ import java.math.BigDecimal;
  */
 public class Freight extends EntityModel {
     private Address shipAddress;
-    private BigDecimal valueRide;
+    private BigDecimal rideValue;
     private Purchase purchase;
-    private FreightType type;
+    private String type;
     private FreightSetup freightSetup;
+
+    public Boolean getComplete() {
+        return complete;
+    }
+
+    private int freightTypeId;
     private Boolean complete;
     private int version;
 
@@ -44,14 +50,6 @@ public class Freight extends EntityModel {
         this.purchase = purchase;
     }
 
-    public FreightType getType() {
-        return type;
-    }
-
-    public void setType(FreightType type) {
-        this.type = type;
-    }
-
     public FreightSetup getFreightSetup() {
         return freightSetup;
     }
@@ -68,15 +66,28 @@ public class Freight extends EntityModel {
         this.shipAddress = shipAddress;
     }
 
-    public BigDecimal getValueRide() {
-        return valueRide;
+    public BigDecimal getRideValue() {
+        return rideValue;
     }
 
-    public void setValueRide(BigDecimal valueRide) {
-        this.valueRide = valueRide;
+    public void setRideValue(BigDecimal rideValue) {
+        this.rideValue = rideValue;
     }
 
-    public enum FreightType {
-        EXPRESS, SCHEDULED;
+    public String getType() {
+        return type;
     }
+
+    public void setType(String type) {
+        this.type = type;
+    }
+
+    public int getFreightTypeId() {
+        return freightTypeId;
+    }
+
+    public void setFreightTypeId(int freightTypeId) {
+        this.freightTypeId = freightTypeId;
+    }
+
 }

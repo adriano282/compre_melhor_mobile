@@ -30,7 +30,7 @@ public class DAOFreight extends AbstractDAO<Freight> {
         ContentValues values = new ContentValues();
 
         values.put(DatabaseHelper.Freight._ID, f.getId());
-        values.put(DatabaseHelper.Freight.TOTAL_VALUE_DRIVE, f.getValueRide().doubleValue());
+        values.put(DatabaseHelper.Freight.TOTAL_VALUE_DRIVE, f.getRideValue().doubleValue());
         values.put(DatabaseHelper.Freight._ADDRESS_ID, f.getShipAddress().getId());
         values.put(DatabaseHelper.Freight.TYPE, f.getType() != null ? f.getType().toString() : "");
         values.put(DatabaseHelper.Freight._PURCHASE_ID, f.getPurchase().getId());

@@ -13,35 +13,18 @@
         android:layout_height="match_parent"
         android:layout_weight="1">
 
-        <TextView
-            android:text="@string/freight_type"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content" />
-
-        <RadioGroup
-            android:id="@+id/rg_type_freight"
+        <LinearLayout
+            android:id="@+id/ll_freight_types"
+            android:layout_marginTop="20dp"
             android:orientation="vertical"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content">
 
-            <RadioButton
-                android:id="@+id/rb_without_freight"
-                android:text="@string/without_freight"
-                android:layout_width="wrap_content"
+            <TextView
+                android:text="@string/freight_type"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content" />
-
-            <RadioButton
-                android:id="@+id/rb_express_freight"
-                android:text="@string/express_freight"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content" />
-
-            <RadioButton
-                android:id="@+id/rb_scheduled_freight"
-                android:text="@string/scheduled_freight"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content" />
-        </RadioGroup>
+        </LinearLayout>
 
         <LinearLayout
             android:id="@+id/my_addresses"

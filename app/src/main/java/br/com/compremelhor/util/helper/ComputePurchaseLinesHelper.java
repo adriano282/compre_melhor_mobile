@@ -32,7 +32,8 @@ public class ComputePurchaseLinesHelper {
                 listDataChild.put(currentCategory, new ArrayList<String>());
             }
 
-            sumByCategoryMap.put(currentCategory, sumByCategoryMap.get(currentCategory) + line.getSubTotal().doubleValue());
+            sumByCategoryMap.put(currentCategory,
+                    Double.valueOf(String.format("%,.2f", (sumByCategoryMap.get(currentCategory) + line.getSubTotal().doubleValue()))));
 
             String name = line.getProductName();
             listDataChild
@@ -64,7 +65,8 @@ public class ComputePurchaseLinesHelper {
         }
 
         SkuListView slv = new SkuListView();
-        slv.setTotalValue(valueTotal);
+
+        slv.setTotalValue(Double.valueOf(String.format("%,.2f", valueTotal)));
         slv.setChildDataList(listDataChild);
         slv.setHeaderDataList(listDataHeader);
         return slv;

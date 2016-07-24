@@ -29,7 +29,7 @@ public class FreightResource extends AbstractResource<Freight>{
         Freight freight = new Freight();
 
         freight.setId(jsonObject.get("id").getAsInt());
-        freight.setValueRide(jsonObject.get("valueRide").getAsBigDecimal());
+        freight.setRideValue(jsonObject.get("rideValue").getAsBigDecimal());
 
         if (jsonObject.get("purchase") != null) {
             JsonObject purchaseJson = jsonObject.get("purchase").getAsJsonObject();
@@ -57,10 +57,10 @@ public class FreightResource extends AbstractResource<Freight>{
             freight.setAshipAddress(address);
         }
 
-        Freight.FreightType type = Freight.FreightType
-                .valueOf(jsonObject.get("type").getAsString());
-
-        freight.setType(type);
+        if (jsonObject.get("freightType") != null) {
+            freight.setFreightTypeId(jsonObject.get("freightType").getAsJsonObject().get("id").getAsInt());
+            freight.setType(jsonObject.get("freightType").getAsJsonObject().get("typeName").getAsString());
+        }
 
         FreightSetup freightSetup = new FreightSetup();
 
@@ -100,15 +100,21 @@ public class FreightResource extends AbstractResource<Freight>{
             if (sb.length() > 1)
                 sb.append(", ");
 
-            sb.append("\"type\" : \"" + freight.getType().toString() + "\"");
+            sb.append("\"type\" : \"" + freight.getType() + "\"");
         }
 
-        if (freight.getValueRide() != null) {
+        if (freight.getRideValue() != null) {
             if (sb.length() > 1)
                 sb.append(", ");
 
-            sb.append("\"valueRide\" : \"" + freight.getValueRide() + "\"");
+
+            sb.append("\"rideValue\" : \"" + freight.getRideValue() + "\"");
         }
+
+        if (sb.length() > 1)
+            sb.append(", ");
+
+        sb.append("\"freightType\" : {\"id\" : \"" + freight.getFreightTypeId() + "\" }" );
 
         if (freight.getShipAddress() != null) {
             if (sb.length() > 1)

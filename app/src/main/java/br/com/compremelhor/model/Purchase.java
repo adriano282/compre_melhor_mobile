@@ -68,21 +68,21 @@ public class Purchase extends EntityModel {
     }
 
     public enum Status {
-        OPENED, READY, SHIPPED, FINISHED;
+        OPENED, PAID, SHIPPED, PURCHASE_SEPARATED;
 
         public String getTranslatedValued() {
             switch (this) {
                 case OPENED:
                     return "ABERTO";
 
-                case READY:
-                    return "PARA SER ENTREGUE";
+                case PAID:
+                    return "PAGA";
 
                 case SHIPPED:
                     return "ENTREGUE";
 
-                case FINISHED:
-                    return "CONCLUÍDO";
+                case PURCHASE_SEPARATED:
+                    return "COMPRA SEPARADA";
             }
             return null;
         }

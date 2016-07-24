@@ -46,6 +46,11 @@ public class UserResource extends AbstractResource<User> {
             if (sb.length() > 1) sb.append(",");
             sb.append("\"document\" : \"" + user.getDocument() + "\"");
         }
+        if (user.getName() != null) {
+            if (sb.length() > 1) sb.append(",");
+            sb.append("\"name\" : \"" + user.getName() + "\"");
+        }
+
         if (user.getTypeDocument() != null) {
             if (sb.length() > 1) sb.append(",");
             sb.append("\"documentType\" : \"" + user.getTypeDocument() + "\"");

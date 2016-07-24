@@ -22,6 +22,7 @@ import br.com.compremelhor.model.EntityModel;
 import br.com.compremelhor.model.Establishment;
 import br.com.compremelhor.model.Freight;
 import br.com.compremelhor.model.FreightSetup;
+import br.com.compremelhor.model.FreightType;
 import br.com.compremelhor.model.Manufacturer;
 import br.com.compremelhor.model.Product;
 import br.com.compremelhor.model.Purchase;
@@ -57,7 +58,6 @@ public class DataBind {
         if (objectModel instanceof Address) {
             Address ad = (Address) objectModel;
 
-            ad.setId(getInt(cursor, DatabaseHelper.Address._ID));
             ad.setState(getString(cursor, DatabaseHelper.Address.STATE));
             ad.setStreet(getString(cursor, DatabaseHelper.Address.STREET));
             ad.setZipcode(getString(cursor, DatabaseHelper.Address.ZIPCODE));
@@ -71,7 +71,6 @@ public class DataBind {
         } else if (objectModel instanceof User) {
             User user = (User) objectModel;
 
-            user.setId(getInt(cursor, DatabaseHelper.User._ID));
             user.setName(getString(cursor, DatabaseHelper.User.NAME));
             user.setDocument(getString(cursor, DatabaseHelper.User.DOCUMENT));
             user.setEmail(getString(cursor, DatabaseHelper.User.EMAIL));
@@ -83,7 +82,6 @@ public class DataBind {
         } else if (objectModel instanceof Product) {
             Product p = (Product) objectModel;
 
-            p.setId(getInt(cursor, DatabaseHelper.Product._ID));
             p.setDescription(getString(cursor, DatabaseHelper.Product.DESCRIPTION));
             p.setName(getString(cursor, DatabaseHelper.Product.NAME));
 
@@ -103,7 +101,6 @@ public class DataBind {
         } else if (objectModel instanceof Manufacturer) {
             Manufacturer m = (Manufacturer) objectModel;
 
-            m.setId(getInt(cursor, DatabaseHelper.Manufacturer._ID));
             m.setCompanyName(getString(cursor, DatabaseHelper.Manufacturer.COMPANY_NAME));
             /* Miss the implementation of date field */
 
@@ -111,14 +108,11 @@ public class DataBind {
         } else if (objectModel instanceof Establishment) {
             Establishment est = (Establishment) objectModel;
 
-            est.setId(getInt(cursor, DatabaseHelper.Establishment._ID));
             est.setName(getString(cursor, DatabaseHelper.Establishment.NAME));
 
             return est;
         } else if (objectModel instanceof Freight) {
             Freight freight = (Freight) objectModel;
-
-            freight.setId(getInt(cursor, DatabaseHelper.Freight._ID));
 
             Address address = DAOAddress.getInstance(context).find(getInt(cursor, DatabaseHelper.Freight._ADDRESS_ID));
             freight.setShipAddress(address);
@@ -136,12 +130,24 @@ public class DataBind {
             }
 
             if (getString(cursor, DatabaseHelper.Freight.TYPE) != null) {
-                Freight.FreightType type = Freight.FreightType.valueOf(getString(cursor, DatabaseHelper.Freight.TYPE));
+                String type = getString(cursor, DatabaseHelper.Freight.TYPE);
                 freight.setType(type);
             }
 
-            freight.setValueRide(getBigDecimal(cursor, DatabaseHelper.Freight.TOTAL_VALUE_DRIVE));
+            freight.setRideValue(getBigDecimal(cursor, DatabaseHelper.Freight.TOTAL_VALUE_DRIVE));
             return freight;
+        }
+        else if (objectModel instanceof FreightType) {
+            FreightType ft = (FreightType) objectModel;
+
+            ft.setTypeName(getString(cursor, DatabaseHelper.FreightType.TYPE_NAME));
+            ft.setDelayInWorkdays(getInt(cursor, DatabaseHelper.FreightType.DELAY_WORK_DAYS));
+            ft.setAvailabilityScheduleWorkDays(getInt(cursor, DatabaseHelper.FreightType.AVAILABILITY_SCHEDULE_WORK_DAYS));
+            ft.setScheduled(getBoolean(cursor, DatabaseHelper.FreightType.SCHEDULED));
+            ft.setRideValue(getBigDecimal(cursor, DatabaseHelper.FreightType.RIDE_VALUE));
+            ft.setEstablishmentId(getInt(cursor, DatabaseHelper.FreightType._ESTABLISHMENT_ID));
+            ft.setDescription(getString(cursor, DatabaseHelper.FreightType.DESCRIPTION));
+            return ft;
         }
         else if (objectModel instanceof PurchaseLine) {
             PurchaseLine pl = (PurchaseLine) objectModel;
@@ -162,7 +168,6 @@ public class DataBind {
         } else if (objectModel instanceof Purchase) {
             Purchase purchase = (Purchase) objectModel;
 
-            purchase.setId(getInt(cursor, DatabaseHelper.Purchase._ID));
             purchase.setStatus(Purchase.Status.valueOf(getString(cursor, DatabaseHelper.Purchase.STATUS)));
 
             Establishment establishment = DAOEstablishment

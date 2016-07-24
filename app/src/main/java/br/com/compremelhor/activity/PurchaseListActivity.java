@@ -96,7 +96,7 @@ public class PurchaseListActivity extends ActivityListTemplate<Purchase> {
             item.put(DatabaseHelper.Purchase.STATUS, p.getStatus().getTranslatedValued());
 
             Double totalValue = p.getTotalValue().doubleValue() +
-                    (p.getFreight() != null ? p.getFreight().getValueRide().doubleValue() : 0.0);
+                    (p.getFreight() != null ? p.getFreight().getRideValue().doubleValue() : 0.0);
 
             item.put(DatabaseHelper.Purchase.TOTAL_VALUE,
                     String.format("R$ %,.2f", totalValue));

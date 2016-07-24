@@ -119,7 +119,7 @@ public class PaymentFragment extends Fragment {
         NumberFormat nf = NumberFormat.getCurrencyInstance();
 
         BigDecimal totalFreight = cartService.getFreight() != null ?
-            cartService.getFreight().getValueRide() : new BigDecimal(0.0);
+            cartService.getFreight().getRideValue() : new BigDecimal(0.0);
         BigDecimal subTotalPurchase = cartService.getPurchase().getTotalValue();
 
         if (subTotalPurchase == null) subTotalPurchase = new BigDecimal(0.0);
