@@ -57,6 +57,21 @@
             <TextView style="?android:textAppearanceListItemSmall"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="Última atualização: " />
+
+            <TextView style="?android:textAppearanceListItemSmall"
+                android:id="@+id/tv_purchase_row_last_updated"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="Date goes here!" />
+        </TableRow>
+
+        <TableRow>
+            <TextView style="?android:textAppearanceListItemSmall"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
 
                 android:text="Valor Total: " />
             <TextView style="?android:textAppearanceListItemSmall"

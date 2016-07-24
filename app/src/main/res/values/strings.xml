@@ -60,6 +60,7 @@
 
 
     <!-- ProgressDialog's content texts -->
+    <string name="dialog_content_sync_purchases">Sincronizando compras com o servidor...</string>
     <string name="dialog_content_text_changing_item_on_cart">Alterando item no carrinho...</string>
     <string name="dialog_content_text_removing_item_on_cart">Removendo item do carrinho...</string>
     <string name="dialog_content_text_putting_item_on_cart">Inserindo item no carrinho...</string>

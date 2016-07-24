@@ -114,6 +114,51 @@ public abstract class AbstractResource<T extends EntityModel> implements Resourc
         }
     }
 
+    public List<T> getAllResources(Map<String, String> params) {
+        URL url = null;
+        try {
+            if (params != null) {
+                StringBuilder sb = new StringBuilder();
+                Set<Map.Entry<String, String>> entries = params.entrySet();
+                for (Map.Entry<String, String> pair : entries) {
+
+                    if (!validAttributeName(pair.getKey().trim()))
+                        throw new IllegalArgumentException(
+                                "Unknown attribute name for User entity: " + pair.getKey().trim());
+
+                    if (sb.length() == 0) sb.append("?");
+                    else sb.append("&");
+
+                    try {
+                        sb.append(pair.getKey().trim())
+                                .append("=").append(URLEncoder.encode(pair.getValue(), "UTF-8"));
+
+                    } catch (UnsupportedEncodingException e) {
+                        e.printStackTrace();
+                    }
+                }
+                url = new URL(APPLICATION_ROOT.concat(RESOURCE_ROOT).concat("/findAll")
+                        .concat(sb.toString()));
+            } else {
+                url = new URL(APPLICATION_ROOT.concat(RESOURCE_ROOT));
+            }
+
+            JsonElement jsonElement = getResource(url);
+
+            JsonArray jsonArray =  jsonElement.getAsJsonArray();
+            List<T> entities = new ArrayList<>();
+
+            for (int i = 0; i < jsonArray.size(); i++) {
+                entities.add(bindResourceFromJson(jsonArray.get(i).getAsJsonObject()));
+            }
+            return entities;
+        } catch (MalformedURLException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
 
     public T getResource(Map<String, String> params) {
         URL url = null;
@@ -143,7 +188,6 @@ public abstract class AbstractResource<T extends EntityModel> implements Resourc
             } else {
                 url = new URL(APPLICATION_ROOT.concat(RESOURCE_ROOT));
             }
-
             return doGET(url);
         } catch (MalformedURLException e) {
             throw new RuntimeException(e);
@@ -158,28 +202,8 @@ public abstract class AbstractResource<T extends EntityModel> implements Resourc
         try {
             url = new URL(APPLICATION_ROOT.concat(RESOURCE_ROOT)
                     .concat("?start=" + start + "0&size=" + size));
-            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-            connection.setInstanceFollowRedirects(false);
-            connection.setRequestMethod(HTTPMethods.GET.toString());
-            connection.setRequestProperty("Authorization", "token_app DG4OjT9ciuPtHk1p7Fi/kg==");
-            connection.setRequestProperty("Content-Type", "application/json");
 
-            if (connection.getResponseCode() != HttpURLConnection.HTTP_OK) {
-                log(connection, url);
-                return null;
-            }
-
-            BufferedReader br =
-                    new BufferedReader(new InputStreamReader(connection.getInputStream()));
-
-            String line;
-            StringBuilder sb = new StringBuilder();
-
-            while ((line = br.readLine()) != null) {
-                sb.append(line);
-            }
-
-            JsonElement json =  new JsonParser().parse(sb.toString());
+            JsonElement json =  getResource(url);
             JsonArray jsonArray = json.getAsJsonArray();
 
             List<T> entities = new ArrayList<>();
@@ -187,8 +211,6 @@ public abstract class AbstractResource<T extends EntityModel> implements Resourc
             for (int i = 0; i < jsonArray.size(); i++) {
                 entities.add(bindResourceFromJson(jsonArray.get(i).getAsJsonObject()));
             }
-
-            connection.disconnect();
             return entities;
         } catch (MalformedURLException e) {
             throw new RuntimeException(e);
@@ -240,7 +262,7 @@ public abstract class AbstractResource<T extends EntityModel> implements Resourc
         return getResource(id);
     }
 
-    protected T doGET(URL url) throws IOException {
+    private JsonElement getResource(URL url) throws IOException {
         HttpURLConnection connection = (HttpURLConnection) url.openConnection();
         connection.setInstanceFollowRedirects(false);
         connection.setRequestMethod(HTTPMethods.GET.toString());
@@ -262,12 +284,15 @@ public abstract class AbstractResource<T extends EntityModel> implements Resourc
         while ((line = br.readLine()) != null) {
             sb.append(line);
         }
+        connection.disconnect();
+        return new JsonParser().parse(sb.toString());
+    }
 
-        JsonElement json =  new JsonParser().parse(sb.toString());
+    protected T doGET(URL url) throws IOException {
+        JsonElement json =  getResource(url);
         JsonObject jsonObject = json.getAsJsonObject();
 
         T t = bindResourceFromJson(jsonObject);
-        connection.disconnect();
         return t;
     }
 
@@ -279,6 +304,7 @@ public abstract class AbstractResource<T extends EntityModel> implements Resourc
         Log.d("NETWORK", "Type: " + ni.getSubtype());
         return ni.isConnected();
     }
+
     private ResponseServer<T> pushOnServer(T entity, HTTPMethods method) {
         if (method == HTTPMethods.GET || method == HTTPMethods.DELETE)
             throw new RuntimeException("GET || DELETE Method on method for push Data on Server");
