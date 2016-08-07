@@ -4,6 +4,7 @@ import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
@@ -13,6 +14,7 @@ import android.widget.TextView;
 import java.math.BigDecimal;
 import java.util.Calendar;
 import java.util.HashMap;
+import java.util.concurrent.ExecutionException;
 
 import br.com.compremelhor.R;
 import br.com.compremelhor.api.integration.resource.impl.StockResource;
@@ -22,14 +24,15 @@ import br.com.compremelhor.model.Stock;
 import br.com.compremelhor.service.CartService;
 
 import static br.com.compremelhor.util.Constants.EXTRA_CURRENT_QUANTITY_OF_ITEM;
-import static br.com.compremelhor.util.Constants.EXTRA_SER_PRODUCT;
 import static br.com.compremelhor.util.Constants.EXTRA_PURCHASE_ID;
+import static br.com.compremelhor.util.Constants.EXTRA_SER_PRODUCT;
 import static br.com.compremelhor.util.Constants.PREFERENCES;
+import static br.com.compremelhor.util.Constants.ROOT_RESOURCE_STOCK;
 import static br.com.compremelhor.util.Constants.SP_PARTNER_ID;
 import static br.com.compremelhor.util.Constants.SP_USER_ID;
-import static br.com.compremelhor.util.Constants.ROOT_RESOURCE_STOCK;
 
 public class ProductActivity extends ActivityTemplate<Stock> {
+    private static final String TAG = "productActivity";
     private ImageView ivProduct;
 
     private TextView tvName;
@@ -48,6 +51,7 @@ public class ProductActivity extends ActivityTemplate<Stock> {
     private int itemId;
 
     public void onCreate(Bundle savedInstanceState) {
+        Log.d(TAG, "onCreate");
         setupOnCreateActivity(R.id.my_toolbar,
                 getSharedPreferences(PREFERENCES, MODE_PRIVATE),
                 new Handler(),
@@ -67,6 +71,7 @@ public class ProductActivity extends ActivityTemplate<Stock> {
     }
 
     public void onClickChangeOnCart(View view) {
+        Log.d(TAG, "onClickChangeOnCart");
         item.setQuantity(new BigDecimal(npQuantity.getValue()));
         item.setSubTotal(item.getQuantity().multiply(item.getProduct().getPriceUnitary()));
 
@@ -77,6 +82,7 @@ public class ProductActivity extends ActivityTemplate<Stock> {
         item.setCategory(item.getProduct().getCategory().getName());
         item.setId(itemId);
         item.setProductName(item.getProduct().getName());
+        item.setProductCode(item.getProduct().getCode());
 
         AsyncTask<Void, Void, Void> request = new AsyncTask<Void, Void, Void>() {
             @Override
@@ -86,16 +92,22 @@ public class ProductActivity extends ActivityTemplate<Stock> {
                 paramsStock.put("skuPartner.partner.id", String.valueOf(preferences.getInt(SP_PARTNER_ID, 0)));
                 Stock stock = resource.getResource(paramsStock);
                 item.setStock(stock);
+
+
+
                 handler.post(new Runnable() {
                     @Override
                     public void run() {
                         if (btnChangeOnCart.getText().toString().equals(getString(R.string.button_text_change_on_cart))) {
-                            if (!cartService.editItem(item)) showMessage(R.string.err_while_trying_edit_item_on_cart);
-                        }
-                        else if (cartService.getItems().contains(item))
+                            if (!cartService.editItem(item))
+                                showMessage(R.string.err_while_trying_edit_item_on_cart);
+                        } else if (cartService.getItems().contains(item)) {
                             showMessage(R.string.err_item_already_on_cart);
-                        else if (!cartService.addItem(item))
+
+                        } else if (!cartService.addItem(item))
                             showMessage(R.string.err_while_trying_add_item_on_cart);
+                        else
+                            showMessage(R.string.product_added_successful_message);
                     }
                 });
 
@@ -104,10 +116,17 @@ public class ProductActivity extends ActivityTemplate<Stock> {
                 return null;
             }
         };
-        request.execute();
+        try {
+            request.execute().get();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        } catch (ExecutionException e) {
+            e.printStackTrace();
+        }
     }
 
     protected void fillFields() {
+        Log.d(TAG, "fillFields");
         Product product = (Product) getIntent().getSerializableExtra(EXTRA_SER_PRODUCT);
 
         item.setProduct(product);
@@ -118,9 +137,35 @@ public class ProductActivity extends ActivityTemplate<Stock> {
         tvUnit.setText(product.getUnit().name());
         ivProduct.setImageBitmap(BitmapFactory.decodeResource(getResources(), R.drawable.ic_launcher));
 
+        AsyncTask<Void, Void, Void> request = new AsyncTask<Void, Void, Void>() {
+            @Override
+            protected Void doInBackground(Void... params) {
+                HashMap<String, String> paramsStock = new HashMap<>();
+                paramsStock.put("skuPartner.sku.id", String.valueOf(item.getProduct().getId()));
+                paramsStock.put("skuPartner.partner.id", String.valueOf(preferences.getInt(SP_PARTNER_ID, 0)));
+                Stock stock = resource.getResource(paramsStock);
+                item.setStock(stock);
+                return null;
+            }
+        };
+
+
+        try {
+            showProgressDialog(R.string.dialog_header_wait, R.string.dialog_content_text_loading_product);
+            request.execute().get();
+            dismissProgressDialog();
+
+
+            npQuantity.setMaxValue(item.getStock().getQuantity().intValue() > 100 ? 100 : item.getStock().getQuantity().intValue());
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        } catch (ExecutionException e) {
+            e.printStackTrace();
+        }
     }
 
     protected void setWidgets() {
+        Log.d(TAG, "setWidgets");
         ivProduct = (ImageView) findViewById(R.id.iv_product);
         tvCategory = (TextView) findViewById(R.id.tv_product_category);
         tvManufacturer = (TextView) findViewById(R.id.tv_product_manufacturer);
@@ -146,6 +191,7 @@ public class ProductActivity extends ActivityTemplate<Stock> {
     }
 
     protected void registerWidgets() {
+        Log.d(TAG, "registerWidgets");
         npQuantity.setOnValueChangedListener(new OnValueChangeListener());
     }
 

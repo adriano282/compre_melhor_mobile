@@ -10,8 +10,17 @@ public class PurchaseLine extends EntityModel implements Comparable<PurchaseLine
     private Product product;
     private Purchase purchase;
     private String productName;
+    private String productCode;
     private String category;
     private Stock stock;
+
+    public String getProductCode() {
+        return productCode;
+    }
+
+    public void setProductCode(String productCode) {
+        this.productCode = productCode;
+    }
 
     public Purchase getPurchase() {
         return purchase;

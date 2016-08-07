@@ -134,6 +134,8 @@ public class DataBind {
                 freight.setType(type);
             }
 
+            freight.setVersion(getInt(cursor, DatabaseHelper.Freight.VERSION));
+            freight.setComplete(getBoolean(cursor, DatabaseHelper.Freight.COMPLETED));
             freight.setRideValue(getBigDecimal(cursor, DatabaseHelper.Freight.TOTAL_VALUE_DRIVE));
             return freight;
         }
@@ -159,6 +161,8 @@ public class DataBind {
             pl.setDateCreated(getCalendar(cursor, DatabaseHelper.PurchaseLine.LAST_UPDATED));
             pl.setCategory(getString(cursor, DatabaseHelper.PurchaseLine.CATEGORY));
             pl.setProductName(getString(cursor, DatabaseHelper.PurchaseLine.PRODUCT_NAME));
+            pl.setProductCode(getString(cursor, DatabaseHelper.PurchaseLine.PRODUCT_CODE));
+
 
             Product p = new Product();
             p.setId(getInt(cursor, DatabaseHelper.PurchaseLine._PRODUCT_ID));
@@ -184,12 +188,14 @@ public class DataBind {
             List<PurchaseLine> list = DAOPurchaseLine
                     .getInstance(context)
                     .findAllByForeignId(DatabaseHelper.PurchaseLine._PURCHASE_ID, purchase.getId());
-
-            Freight freight;
-            freight = DAOFreight.getInstance(context)
-                    .findByAttribute(DatabaseHelper.Freight._PURCHASE_ID, String.valueOf(purchase.getId()));
-            purchase.setFreight(freight);
             purchase.setItems(new TreeSet<>(list));
+
+            if (purchase.getFreight() != null) {
+                Freight freight;
+                freight = DAOFreight.getInstance(context).find(purchase.getFreight().getId());
+                purchase.setFreight(freight);
+            }
+
             return purchase;
         }
 

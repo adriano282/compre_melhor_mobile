@@ -1,4 +1,4 @@
-package br.com.compremelhor.util.helper;
+package br.com.compremelhor.util.helper.dialog;
 
 import android.app.ProgressDialog;
 import android.content.Context;
@@ -18,12 +18,11 @@ public class ProgressDialogHelper {
 
     private ProgressDialogHelper() {}
 
-    public static ProgressDialogHelper getInstance(@NonNull Context context, String message) {
+    public static ProgressDialogHelper getInstance(@NonNull Context context) {
         if (instance == null) {
             instance = new ProgressDialogHelper(); }
 
         instance.context = context;
-        instance.message = message;
         return instance;
     }
 
@@ -34,8 +33,13 @@ public class ProgressDialogHelper {
                         message, true, false);
     }
 
-    public void dismissProgressDialog() {
-        if (progressDialog.isShowing())
-            progressDialog.dismiss();
+    public ProgressDialogHelper setMessage(String message) {
+        this.message = message;
+        return instance;
+    }
+
+    public static void dismissProgressDialog() {
+        if (instance != null && instance.progressDialog.isShowing())
+            instance.progressDialog.dismiss();
     }
 }

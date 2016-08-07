@@ -29,6 +29,7 @@ public interface Constants {
 
     String SP_SELECTED_ADDRESS_ID = "selected_address_id_sp";
     String SP_PARTNER_ID = "sp_partner_id";
+    String SP_PARTNER_NAME = "sp_partner_name";
     String SP_USER_ID = "user_id";
     String SP_FACEBOOK_USER_ID = "facebook_user_id";
     String SP_LOGGED_ON_FACEBOOK = "is_logged_on_facebook";
@@ -49,8 +50,13 @@ public interface Constants {
     int REQUEST_CODE_PAYMENT_PURCHASE_PAID = 14;
     int REQUEST_CODE_PURCHASE_FINISHED = 15;
     int REQUEST_CODE_PURCHASE_VIEWED = 16;
+    int REQUEST_CODE_UNVAILABLE_PRODUCTS_ISSUE = 17;
 
 
     // Constants for MENU OPTIONS on Action Bar
     int MENU_OPTION_ID_MANAGE_ADDRESS = 1;
+
+    String CART_FRAGMENT = "cart_fragment";
+    String FREIGHT_FRAGMENT = "freight_fragment";
+    String PAYMENT_FRAGMENT = "payment_fragment";
 }

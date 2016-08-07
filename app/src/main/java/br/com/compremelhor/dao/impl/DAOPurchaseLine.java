@@ -37,6 +37,7 @@ public class DAOPurchaseLine extends AbstractDAO<PurchaseLine> {
 
         values.put(DatabaseHelper.PurchaseLine.CATEGORY, pl.getCategory());
         values.put(DatabaseHelper.PurchaseLine.PRODUCT_NAME, pl.getProductName());
+        values.put(DatabaseHelper.PurchaseLine.PRODUCT_CODE, pl.getProductCode());
         values.put(DatabaseHelper.PurchaseLine.UNITARY_PRICE, pl.getQuantity().toString());
         values.put(DatabaseHelper.PurchaseLine.QUANTITY, pl.getQuantity().toString());
         values.put(DatabaseHelper.PurchaseLine.SUB_TOTAL, pl.getSubTotal().toString());

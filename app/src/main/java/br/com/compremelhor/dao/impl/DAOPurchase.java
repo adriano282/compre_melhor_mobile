@@ -51,12 +51,18 @@ public class DAOPurchase extends AbstractDAO<Purchase> {
             values.put(DatabaseHelper.Purchase.DATE_CREATED, (new Date()).getTime());
         }
 
+        if (purchase.getFreight() != null) {
+            values.put(DatabaseHelper.Purchase._FREIGHT_ID, purchase.getFreight().getId());
+        }
         values.put(DatabaseHelper.Purchase.LAST_UPDATED, (new Date()).getTime());
 
         return values;
     }
 
     public Purchase getOpenedPurchase() {
+        Purchase p;
+        p = findByAttribute(DatabaseHelper.Purchase.STATUS, Purchase.Status.STARTED_TRANSACTION.toString());
+        if (p != null) return p;
         return findByAttribute(DatabaseHelper.Purchase.STATUS, Purchase.Status.OPENED.toString());
     }
 }

@@ -5,7 +5,6 @@ import android.app.TimePickerDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.text.format.DateFormat;
@@ -30,7 +29,6 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.ExecutionException;
 
 import br.com.compremelhor.R;
 import br.com.compremelhor.activity.AddressListActivity;
@@ -143,25 +141,25 @@ public class FreightFragment extends Fragment {
         super.onDestroyView();
         Log.d(TAG, "onDestroyView");
 
-        if (cartService.getFreight() == null) {
+        if (cartService.getFreight() == null || cartService.getFreightType() == null) {
             Toast.makeText(getActivity(), "Frete não selecionado.", Toast.LENGTH_SHORT).show();
             return;
         }
+
         if (cartService.getFreight().getShipAddress() == null) {
             Toast.makeText(getActivity(), "Endereço não selecionado.", Toast.LENGTH_SHORT).show();
             cartService.getFreight().setComplete(false);
-            return;
-        }
+            return; }
 
         if (cartService.getFreightType().isScheduled() &&
-                cartService.getFreightSetup() == null) {
+                cartService.getFreightSetup(true) == null) {
             cartService.getFreight().setComplete(false);
             Toast.makeText(getActivity(), "Horário não configurado para o frete agendado.", Toast.LENGTH_SHORT).show();
-            return;
-        }
+            return; }
 
-        cartService.getFreight().setComplete(true);
-        persistFreightInBackground();
+        if (!cartService.getFreight().getComplete()) {
+            cartService.getFreight().setComplete(true);
+            cartService.persistFreightInBackground(); }
 
     }
 
@@ -237,14 +235,7 @@ public class FreightFragment extends Fragment {
     private class OnTimeSetListener implements TimePickerDialog.OnTimeSetListener {
         @Override
         public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
-            String hour = String.valueOf(hourOfDay).length() == 1 ?
-                            "0" + hourOfDay :
-                            "" + hourOfDay;
-
-            String sMinute = String.valueOf(minute).length() == 1 ?
-                            "0" + minute :
-                            "" + minute;
-            btnTimeStartShip.setText(hour + ":" + sMinute);
+            btnTimeStartShip.setText(getHourFormatted(hourOfDay, minute));
 
             if (cartService.getFreightSetup() == null) cartService.setFreightSetup(new FreightSetup());
             cartService.getFreightSetup().setHour(hourOfDay);
@@ -254,17 +245,31 @@ public class FreightFragment extends Fragment {
         }
     }
 
+    private String getFormattedDate(int year, int monthOfYear, int dayOfMonth) {
+        monthOfYear++;
+        String month = String.valueOf(monthOfYear).length() == 1 ? "0" + monthOfYear : String.valueOf(monthOfYear);
+        return dayOfMonth + "/" + month + "/" + year;
+    }
+
+    private String getHourFormatted(int hourOfDay, int minute) {
+        String hour = String.valueOf(hourOfDay).length() == 1 ?
+                "0" + hourOfDay :
+                "" + hourOfDay;
+
+        String sMinute = String.valueOf(minute).length() == 1 ?
+                "0" + minute :
+                "" + minute;
+        return hour + ":" + sMinute;
+    }
+
     private class OnDateSetListener implements DatePickerDialog.OnDateSetListener {
         @Override
         public void onDateSet(DatePicker view, int year, int monthOfYear, int dayOfMonth) {
-            monthOfYear++;
-            String month = String.valueOf(monthOfYear).length() == 1 ? "0" + monthOfYear : String.valueOf(monthOfYear);
-            btnDateShip.setText(dayOfMonth + "/" + month + "/" + year);
-
+            btnDateShip.setText(getFormattedDate(year, monthOfYear, dayOfMonth));
             if (cartService.getFreightSetup() == null) cartService.setFreightSetup(new FreightSetup());
 
             cartService.getFreightSetup().setYear(year);
-            cartService.getFreightSetup().setMonth(Integer.valueOf(month));
+            cartService.getFreightSetup().setMonth(Integer.valueOf(++monthOfYear));
             cartService.getFreightSetup().setDayOfMonth(dayOfMonth);
 
             cartService.getFreight().setVersion(1);
@@ -330,12 +335,17 @@ public class FreightFragment extends Fragment {
         for (Address ad : addresses) {
             RadioButton rb = new RadioButton(getActivity());
             rb.setId(ad.getId());
-            rb.setText(ad.getAddressName() + " / " + ad.getZipcode());
+
+            String street = ad.getStreet();
+            street = street.length() > 15 ? street.substring(0, 15).concat("...") : street;
+
+            rb.setText(street + " / " + ad.getZipcode());
 
             if (currentAddress != null && currentAddress.getId() == ad.getId()) {
                 rb.setChecked(true);
 
-                if (cartService.getFreight().getShipAddress() != null &&
+                if (cartService.getFreight() != null &&
+                        cartService.getFreight().getShipAddress() != null &&
                         cartService.getFreight().getShipAddress() != currentAddress) {
                     cartService.getFreight().setAshipAddress(currentAddress);
                     cartService.getFreight().setVersion(1);
@@ -349,13 +359,15 @@ public class FreightFragment extends Fragment {
     }
 
     private void setUpFreightSetupView() {
+        FreightSetup freightSetup;
         if (cartService.getFreightSetup() != null) {
-            FreightSetup freightSetup = cartService.getFreightSetup();
+            freightSetup = cartService.getFreightSetup(); }
+        else {
+            freightSetup = cartService.getFreightSetupFromDB(); }
 
-
-            btnDateShip.setText(freightSetup.getDayOfMonth() + "/" + freightSetup.getMonth() + "/" + freightSetup.getYear());
-            btnTimeStartShip.setText(freightSetup.getHour() + ":" + freightSetup.getMinute());
-        }
+        if (freightSetup != null) {
+            btnDateShip.setText(getFormattedDate(freightSetup.getYear(), freightSetup.getMonth(), freightSetup.getDayOfMonth()));
+            btnTimeStartShip.setText(getHourFormatted(freightSetup.getHour(), freightSetup.getMinute())); }
     }
 
     private void addRadioButtonForFreightTypes() {
@@ -422,7 +434,8 @@ public class FreightFragment extends Fragment {
     }
 
     private void setCartService(int userId, int partnerId) {
-        cartService = CartService.getInstance(getActivity(), userId, partnerId);
+        cartService =  CartService.getInstance(getActivity(), userId, partnerId);
+
     }
 
     private void upgradeTotalValueView() {
@@ -432,30 +445,6 @@ public class FreightFragment extends Fragment {
         }
         tvTotalValue.setText(String.format("R$ %,.2f", cartService.getFreight().getRideValue().doubleValue()));
     }
-
-    private void persistFreightInBackground() {
-        AsyncTask<Void, Void, Void> request = new AsyncTask<Void, Void, Void> () {
-            @Override
-            protected Void doInBackground(Void... params) {
-
-                if (cartService.getFreight() == null
-                        || cartService.getFreight().getVersion() == 0) return null;
-
-                cartService.persistFreight();
-                cartService.getFreight().setVersion(0);
-                return null;
-            }
-        };
-
-        try {
-            request.execute().get();
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        } catch (ExecutionException e) {
-            e.printStackTrace();
-        }
-    }
-
 
     private class FreightTypeOnCheckedChangeListener implements RadioGroup.OnCheckedChangeListener {
         @Override
@@ -474,14 +463,15 @@ public class FreightFragment extends Fragment {
             map.put(R.id.my_addresses, View.VISIBLE);
             showViewsIfHasAddresses(map);
 
-            btnDateShip.setText("Selecione");
+            Freight f = cartService.getFreight();
 
-            Freight f = new Freight();
+            if (f == null) f = new Freight();
 
             f.setAshipAddress(currentAddress);
             f.setType(ft.getTypeName());
             f.setRideValue(ft.getRideValue());
             f.setVersion(1);
+
             cartService.setFreight(f);
             cartService.setFreightType(ft);
             upgradeTotalValueView();

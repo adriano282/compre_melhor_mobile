@@ -60,11 +60,15 @@
 
         <activity
             android:name=".activity.RegisterActivity"
-            android:label="@string/register_label" />
+            android:label="@string/action_bar_register_label" />
 
         <activity
             android:name=".activity.AddressListActivity"
-            android:label="@string/title_my_addresses" />
+            android:label="@string/action_bar_my_addresses_label" />
+
+        <activity android:name=".activity.ExpiredCartItemsActivity"
+            android:label="@string/action_bar_expired_items_label" />
+
         <activity android:name=".activity.AddressActivity" />
         <activity android:name="com.facebook.FacebookActivity" />
     </application>

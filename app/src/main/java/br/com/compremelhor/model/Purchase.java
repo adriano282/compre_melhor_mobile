@@ -68,7 +68,7 @@ public class Purchase extends EntityModel {
     }
 
     public enum Status {
-        OPENED, PAID, SHIPPED, PURCHASE_SEPARATED;
+        OPENED, PAID, SHIPPED, PURCHASE_SEPARATED, STARTED_TRANSACTION;
 
         public String getTranslatedValued() {
             switch (this) {

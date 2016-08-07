@@ -34,6 +34,8 @@ public class DAOFreight extends AbstractDAO<Freight> {
         values.put(DatabaseHelper.Freight._ADDRESS_ID, f.getShipAddress().getId());
         values.put(DatabaseHelper.Freight.TYPE, f.getType() != null ? f.getType().toString() : "");
         values.put(DatabaseHelper.Freight._PURCHASE_ID, f.getPurchase().getId());
+        values.put(DatabaseHelper.Freight.COMPLETED, f.isComplete());
+        values.put(DatabaseHelper.Freight.VERSION, f.getVersion());
 
         if (f.getFreightSetup() != null) {
             Calendar startingDate = Calendar.getInstance();

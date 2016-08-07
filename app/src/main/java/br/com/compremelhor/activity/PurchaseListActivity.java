@@ -137,13 +137,13 @@ public class PurchaseListActivity extends ActivityListTemplate<Purchase> {
 
         Map<String, Object> item;
 
-        SimpleDateFormat dt = new SimpleDateFormat("dd-mm-yyyy hh:mm:ss");
+        SimpleDateFormat dt = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
         for (Purchase p : listPurchases) {
             item = new HashMap<>();
 
             item.put(DatabaseHelper.Purchase._ESTABLISHMENT_ID, p.getEstablishment().getId());
             item.put(DatabaseHelper.Establishment.NAME, p.getEstablishment().getName());
-            item.put(DatabaseHelper.Purchase.DATE_CREATED, p.getDateCreated().getTime());
+            item.put(DatabaseHelper.Purchase.DATE_CREATED, dt.format(p.getDateCreated().getTime()));
             item.put(DatabaseHelper.Purchase.LAST_UPDATED, dt.format(p.getLastUpdated().getTime()));
             item.put(DatabaseHelper.Purchase.STATUS, p.getStatus().getTranslatedValued());
 

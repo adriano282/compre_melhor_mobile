@@ -4,7 +4,8 @@ import com.paypal.android.sdk.payments.PayPalConfiguration;
 
 public class PayPalPaymentHelper {
 
-    private static final String CLIENT_ID = "AYpRz90S6zESSInoXzEA520g5wceI1xO9kjS7S9zTUTljYCCMiJ-bEL7KILw-RUSdp48CuLgD7nvSn3U";
+    private static final String CLIENT_ID = "AQ-DL3pTmwUJTf5Q6SOb7IolMIpcKJ3tS7K8rYqyRQ23vAtt5tHcit3tcyrnfpOuBe1Scc7M6lXupsK5";
+
     public static final String CONFIG_ENVIRONMENT =
             PayPalConfiguration.ENVIRONMENT_SANDBOX;
     public static final String CONFIG_CLIENT_ID = CLIENT_ID;

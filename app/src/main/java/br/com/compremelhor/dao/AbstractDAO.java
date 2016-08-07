@@ -5,6 +5,7 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -16,7 +17,7 @@ import br.com.compremelhor.util.helper.DatabaseHelper;
 /**
  * Created by adriano on 25/08/15.
  */
-public abstract class AbstractDAO<T> implements IDAO<T> {
+public abstract class AbstractDAO<T> implements IDAO<T>, Serializable {
     private DatabaseHelper helper;
     private SQLiteDatabase db;
     private DataBind dataBind;

@@ -9,7 +9,7 @@ import android.database.sqlite.SQLiteOpenHelper;
  */
 public class DatabaseHelper extends SQLiteOpenHelper {
     private static final String DATABASE = "CompreMelhor.db";
-    private static int DATABASE_VERSION = 67;
+    private static int DATABASE_VERSION = 76;
 
     public final String[] TABLES;
 
@@ -111,9 +111,11 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 TOTAL_VALUE_DRIVE = "total_value_drive",
                 TYPE = "type",
                 STARTING_DATE_TIME = "starting_date_time",
+                VERSION = "version",
+                COMPLETED = "completed",
                 _PURCHASE_ID = "_purchase_id",
                 _ADDRESS_ID = "_address_id";
-        String[] COLUMNS = new String[] {_ID, TOTAL_VALUE_DRIVE, _PURCHASE_ID,
+        String[] COLUMNS = new String[] {_ID, TOTAL_VALUE_DRIVE, VERSION, COMPLETED, STARTING_DATE_TIME, _PURCHASE_ID,
                 _ADDRESS_ID, DATE_CREATED, LAST_UPDATED};
     }
 
@@ -121,9 +123,10 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         String  TABLE = "purchase",
                 STATUS = "status",
                 TOTAL_VALUE = "value_total",
+                _FREIGHT_ID = "_freight_id",
                 _USER_ID = "_user_id",
                 _ESTABLISHMENT_ID = "_establishment_id";
-        String[] COLUMNS = {_ID, STATUS, TOTAL_VALUE, _USER_ID, _ESTABLISHMENT_ID, DATE_CREATED, LAST_UPDATED};
+        String[] COLUMNS = {_ID, STATUS, TOTAL_VALUE, _FREIGHT_ID, _USER_ID, _ESTABLISHMENT_ID, DATE_CREATED, LAST_UPDATED};
     }
 
     public interface PurchaseLine extends Domain {
@@ -133,9 +136,10 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 SUB_TOTAL = "sub_total",
                 CATEGORY = "category",
                 PRODUCT_NAME = "product_name",
+                PRODUCT_CODE = "product_code",
                 _PRODUCT_ID = "_product_id",
                 _PURCHASE_ID = "_purchase_id";
-        String[] COLUMNS = {_ID, QUANTITY, UNITARY_PRICE, SUB_TOTAL, CATEGORY, PRODUCT_NAME, _PRODUCT_ID, _PURCHASE_ID, DATE_CREATED, LAST_UPDATED};
+        String[] COLUMNS = {_ID, QUANTITY, UNITARY_PRICE, SUB_TOTAL, CATEGORY, PRODUCT_NAME, PRODUCT_CODE, _PRODUCT_ID, _PURCHASE_ID, DATE_CREATED, LAST_UPDATED};
     }
 
     @Override
@@ -199,6 +203,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 Freight.TOTAL_VALUE_DRIVE + " DECIMAL(10,2) NOT NULL DEFAULT 0.00, " +
                 Freight.TYPE + " VARCHAR(20) NOT NULL , " +
                 Freight.STARTING_DATE_TIME + " TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP, " +
+                Freight.COMPLETED + " INT(1), " +
+                Freight.VERSION + " INT(10), " +
                 Freight._PURCHASE_ID + " INTEGER NOT NULL, " +
                 Freight._ADDRESS_ID + " INTEGER NOT NULL, " +
                 Freight.DATE_CREATED + " TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP, " +
@@ -230,10 +236,13 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 Purchase._ID + " INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, " +
                 Purchase.STATUS + " VARCHAR(10) NOT NULL, " +
                 Purchase.TOTAL_VALUE + " DECIMAL(10,2) NOT NULL DEFAULT 0.00, " +
+                Purchase._FREIGHT_ID + " INTEGER, " +
                 Purchase._USER_ID + " INTEGER NOT NULL, " +
                 Purchase._ESTABLISHMENT_ID + " INTEGER NOT NULL, " +
                 Purchase.DATE_CREATED + " TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL, " +
                 Purchase.LAST_UPDATED + " TIMESTAMP  DEFAULT CURRENT_TIMESTAMP NOT NULL, " +
+                " FOREIGN KEY( " + Purchase._FREIGHT_ID + ") " +
+                " REFERENCES " + Freight.TABLE + "(" + Freight._ID + "), " +
                 " FOREIGN KEY( " + Purchase._USER_ID + ") " +
                 " REFERENCES " + User.TABLE + "(" + User._ID + "), " +
                 " FOREIGN KEY( " + Purchase._ESTABLISHMENT_ID + ") " +
@@ -246,6 +255,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 PurchaseLine.SUB_TOTAL + " DECIMAL(10,2) NOT NULL DEFAULT 0.00, " +
                 PurchaseLine.CATEGORY + " VARCHAR(20), " +
                 PurchaseLine.PRODUCT_NAME + " VARCHAR(20), " +
+                PurchaseLine.PRODUCT_CODE + " VARCHAR(20), " +
                 PurchaseLine._PRODUCT_ID + " INTEGER, " +
                 PurchaseLine._PURCHASE_ID + " INTEGER, " +
                 PurchaseLine.DATE_CREATED + " TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP, " +

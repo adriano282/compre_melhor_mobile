@@ -8,6 +8,7 @@ import com.google.gson.JsonObject;
 import java.util.Calendar;
 
 import br.com.compremelhor.api.integration.resource.AbstractResource;
+import br.com.compremelhor.model.Freight;
 import br.com.compremelhor.model.Purchase;
 import br.com.compremelhor.model.User;
 
@@ -31,18 +32,24 @@ public class PurchaseResource extends AbstractResource<Purchase>{
         purchase.setId(jsonObject.get("id").getAsInt());
         purchase.setStatus(Purchase.Status.valueOf(jsonObject.get("status").getAsString()));
 
-        if (jsonObject.get("totalValue") != null) {
+        if (!isJsonNullField(jsonObject, "totalValue")) {
             purchase.setTotalValue(jsonObject.get("totalValue").getAsBigDecimal());
         }
 
-        if (jsonObject.get("user") != null) {
+        if (!isJsonNullField(jsonObject, "user")) {
             User user = new User();
             user.setId(jsonObject.get("user").getAsJsonObject().get("id").getAsInt());
             purchase.setUser(user);
         }
 
+        if (!isJsonNullField(jsonObject, "freight")) {
+            Freight freight = new Freight();
+            freight.setId(jsonObject.get("freight").getAsJsonObject().get("id").getAsInt());
+            purchase.setFreight(freight);
+        }
+
         Calendar dateCreated = Calendar.getInstance();
-        if (jsonObject.get("dateCreated") != null) {
+        if (!isJsonNullField(jsonObject, "dateCreated")) {
             JsonArray data = jsonObject.get("dateCreated").getAsJsonArray();
             dateCreated.set(data.get(0).getAsInt(), data.get(1).getAsInt(), data.get(2).getAsInt(),
                     data.get(3).getAsInt(), data.get(4).getAsInt());
@@ -50,7 +57,7 @@ public class PurchaseResource extends AbstractResource<Purchase>{
         }
 
         Calendar lastUpdated = Calendar.getInstance();
-        if (jsonObject.get("lastUpdated") != null) {
+        if (!isJsonNullField(jsonObject, "lastUpdated")) {
             JsonArray data = jsonObject.get("lastUpdated").getAsJsonArray();
             lastUpdated.set(data.get(0).getAsInt(),data.get(1).getAsInt(), data.get(2).getAsInt(),
                     data.get(3).getAsInt(), data.get(4).getAsInt());
@@ -62,11 +69,17 @@ public class PurchaseResource extends AbstractResource<Purchase>{
         return purchase;
     }
 
+
     @Override
     public String bindJsonFromEntity(Purchase purchase) {
         StringBuilder sb = new StringBuilder();
         sb.append("{");
 
+        if (purchase.getId() != 0) {
+            sb.append("\"id\" : \"" + purchase.getId() + "\"");
+        }
+
+        if (sb.length() > 1) sb.append(",");
         if (purchase.getStatus() != null) {
             sb.append("\"status\" : \"" + purchase.getStatus() + "\"");
         }

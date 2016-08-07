@@ -12,22 +12,19 @@ public class Freight extends EntityModel {
     private String type;
     private FreightSetup freightSetup;
 
-    public Boolean getComplete() {
+    public boolean getComplete() {
         return complete;
     }
 
     private int freightTypeId;
-    private Boolean complete;
+    private boolean complete;
     private int version;
 
     public int getVersion() {return version;}
     public void setVersion(int version) { this.version = version;}
 
-    public Boolean isComplete() {
-        if (complete == null) return true;
-        
-        return complete;
-    }
+    public boolean isComplete() {
+        return complete; }
 
     public void setComplete(Boolean complete) {
         this.complete = complete;

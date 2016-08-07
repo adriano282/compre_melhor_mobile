@@ -2,13 +2,11 @@ package br.com.compremelhor.fragment;
 
 import android.app.Activity;
 import android.app.AlertDialog;
-import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -25,7 +23,6 @@ import com.paypal.android.sdk.payments.PayPalPayment;
 import com.paypal.android.sdk.payments.PayPalProfileSharingActivity;
 import com.paypal.android.sdk.payments.PayPalService;
 import com.paypal.android.sdk.payments.PaymentActivity;
-import com.paypal.android.sdk.payments.PaymentConfirmation;
 
 import org.json.JSONException;
 
@@ -36,16 +33,19 @@ import java.util.HashSet;
 import java.util.Set;
 
 import br.com.compremelhor.R;
+import br.com.compremelhor.activity.ExpiredCartItemsActivity;
 import br.com.compremelhor.dao.impl.DAOEstablishment;
 import br.com.compremelhor.model.Establishment;
 import br.com.compremelhor.service.CartService;
 import br.com.compremelhor.util.helper.PayPalPaymentHelper;
+import br.com.compremelhor.util.helper.dialog.ProgressDialogHelper;
 
 import static br.com.compremelhor.util.Constants.PREFERENCES;
+import static br.com.compremelhor.util.Constants.REQUEST_CODE_UNVAILABLE_PRODUCTS_ISSUE;
 import static br.com.compremelhor.util.Constants.SP_PARTNER_ID;
 import static br.com.compremelhor.util.Constants.SP_USER_ID;
 
-public class PaymentFragment extends Fragment {
+public class PaymentFragment extends android.support.v4.app.Fragment  {
     private static PaymentFragment instance;
     private static final String TAG = "payment";
 
@@ -58,15 +58,15 @@ public class PaymentFragment extends Fragment {
     private AlertDialog alertDialogConfirmation;
 
     private SharedPreferences preferences;
-    private ProgressDialog progressDialog;
 
     private CartService cartService;
 
     private Double total;
 
     private int partnerId;
+    private int userId;
 
-    public static PaymentFragment newInstance(String mTag){
+    public static PaymentFragment newInstance(String mTag) {
         if (instance == null)
             instance = new PaymentFragment();
 
@@ -76,18 +76,28 @@ public class PaymentFragment extends Fragment {
         return instance;
     }
 
+
     @Override
     public void onViewCreated(View view, Bundle savedState) {
+        Log.d(TAG, "onViewCreated");
+
         preferences = getActivity().getSharedPreferences(PREFERENCES, Context.MODE_PRIVATE);
         partnerId = preferences.getInt(SP_PARTNER_ID, 0);
-        cartService = CartService.getInstance(getActivity(),
-                preferences.getInt(SP_USER_ID, 0),
-                partnerId);
+        userId = preferences.getInt(SP_USER_ID, 0);
         setWidgets(view);
         fillFields();
     }
 
+    @Override
+    public void onActivityCreated(Bundle savedInstanceState) {
+        Log.d(TAG, "onActivityCreated");
+        super.onActivityCreated(savedInstanceState);
+
+
+    }
+
     private AlertDialog createDialogConfirmation() {
+        Log.d(TAG, "createDialogConfirmation");
         return new AlertDialog.Builder(getActivity())
                 .setMessage(R.string.close_purchase_confirmation)
                 .setPositiveButton(R.string.yes, optionsListener)
@@ -97,11 +107,13 @@ public class PaymentFragment extends Fragment {
 
     @Override
     public void onDestroy() {
+        Log.d(TAG, "onDestroy");
         getActivity().stopService(new Intent(getActivity(), PayPalService.class));
         super.onDestroy();
     }
 
     public void setWidgets(View view) {
+        Log.d(TAG, "setWidgets");
         tvSubTotalPurchase = (TextView) view.findViewById(R.id.tv_purchase_sub_total);
         tvSubTotalFreight = (TextView) view.findViewById(R.id.tv_freight_sub_total);
         tvTotalPurchase = (TextView) view.findViewById(R.id.tv_value_total_purchase);
@@ -113,6 +125,7 @@ public class PaymentFragment extends Fragment {
     }
 
     public void fillFields() {
+        Log.d(TAG, "fillFields");
         if (cartService == null)
             throw new RuntimeException("CartService can not be null here: fillFields PaymentFragment's method");
 
@@ -143,8 +156,26 @@ public class PaymentFragment extends Fragment {
 
 
     public void onClickButtonClosePurchase(View v) {
-        alertDialogConfirmation = createDialogConfirmation();
-        alertDialogConfirmation.show();
+        Log.d(TAG, "onClickButtonClosePurchase");
+
+
+        ProgressDialogHelper
+                .getInstance(getActivity())
+                .setMessage(getString(R.string.dialog_content_text_starting_transaction))
+                .showWaitProgressDialog();
+
+
+
+
+        if (cartService.startTransaction(true)) {
+            ProgressDialogHelper.dismissProgressDialog();
+            alertDialogConfirmation = createDialogConfirmation();
+            alertDialogConfirmation.show();
+        } else {
+            ProgressDialogHelper.dismissProgressDialog();
+            Intent intent = new Intent(getActivity(), ExpiredCartItemsActivity.class);
+            startActivityForResult(intent, REQUEST_CODE_UNVAILABLE_PRODUCTS_ISSUE);
+        }
     }
 
     private PayPalOAuthScopes getOauthScopes() {
@@ -161,25 +192,34 @@ public class PaymentFragment extends Fragment {
         Establishment partner = DAOEstablishment.getInstance(getActivity()).find(partnerId);
         return new PayPalPayment(
                 new BigDecimal(total), "BRL", "Compra by CompreMelhor - " +
-                "Estabelcimento: " + partner.getName(), paymentIntent
+                "Estabelecimento: " + partner.getName(), paymentIntent
         );
     }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
+        Log.d(TAG, "onCreate");
         super.onCreate(savedInstanceState);
         Intent intent = new Intent(getActivity(), PayPalService.class);
         intent.putExtra(PayPalService.EXTRA_PAYPAL_CONFIGURATION, PayPalPaymentHelper.config);
         getActivity().startService(intent);
+
+        preferences = getActivity().getSharedPreferences(PREFERENCES, Activity.MODE_PRIVATE);
+        int userId = preferences.getInt(SP_USER_ID, 0);
+        int partnerId = preferences.getInt(SP_PARTNER_ID, 0);
+
+        cartService = CartService.getInstance(getActivity(), userId, partnerId);
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle state) {
+        Log.d(TAG, "onCreateView");
         return inflater.inflate(R.layout.fragment_close_purchase, container, false);
     }
 
     protected void displayResultText(String result) {
+        Log.d(TAG, "displayResultText");
         Toast.makeText(
                 getActivity().getApplicationContext(),
                 result, Toast.LENGTH_LONG)
@@ -188,17 +228,31 @@ public class PaymentFragment extends Fragment {
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (requestCode == PayPalPaymentHelper.REQUEST_CODE_PAYMENT) {
+        Log.d(TAG, "onActivityResult");
+        cartService = CartService.getInstance(getActivity(), userId, partnerId);
+        if (requestCode == REQUEST_CODE_UNVAILABLE_PRODUCTS_ISSUE) {
+          if (requestCode == Activity.RESULT_OK) {
+              onClickButtonClosePurchase(null);
+          } else {
+              cartService.getExpiredItems(true);
+              cartService.loadCurrentPurchase();
+              fillFields();
+              Toast.makeText(getActivity(), "Carrinho atualizado com sucesso.", Toast.LENGTH_SHORT).show();
+
+          }
+        } else if (requestCode == PayPalPaymentHelper.REQUEST_CODE_PAYMENT) {
 
             if (resultCode == Activity.RESULT_OK) {
 
 
-                PaymentConfirmation confirm =
+    /**            PaymentConfirmation confirm =
                         data.getParcelableExtra(PaymentActivity.EXTRA_RESULT_CONFIRMATION);
                 if (confirm != null) {
                     try {
+
                         Log.i(TAG, confirm.toJSONObject().toString(4));
                         Log.i(TAG, confirm.getPayment().toJSONObject().toString(4));
+**/
                         /**
                          *  TODO: send 'confirm' (and possibly confirm.getPayment() to your server for verification
                          * or consent completion.
@@ -210,15 +264,21 @@ public class PaymentFragment extends Fragment {
                          */
 
                         //displayResultText("Payment Confirmation info received from PayPal");//
-                        cartService.closePurchase();
+                        cartService.closePurchase(true);
+
+                        Toast.makeText(getActivity(), getString(R.string.purchase_done_successful_message),
+                                Toast.LENGTH_LONG).show();
                         CartService.invalidateInstance();
                         getActivity().setResult(Activity.RESULT_OK);
                         getActivity().finish();
 
-                    } catch (JSONException e) {
+
+/**                    } catch (JSONException e) {
                         Log.e(TAG, "an extremely unlikely failure occurred: ", e);
-                    }
+                        }
+
                 }
+ **/
             } else if (resultCode == Activity.RESULT_CANCELED) {
                 Log.i(TAG, "The user canceled.");
             } else if (resultCode == PaymentActivity.RESULT_EXTRAS_INVALID) {
@@ -311,13 +371,16 @@ public class PaymentFragment extends Fragment {
             Intent intent;
             switch (item) {
                 case DialogInterface.BUTTON_POSITIVE:
-                    PayPalPayment purchaseToCharge =
+
+/**                    PayPalPayment purchaseToCharge =
                             getPurchaseToBuy(PayPalPayment.PAYMENT_INTENT_SALE);
 
                     intent = new Intent(getActivity(), PaymentActivity.class);
                     intent.putExtra(PayPalService.EXTRA_PAYPAL_CONFIGURATION, PayPalPaymentHelper.config);
                     intent.putExtra(PaymentActivity.EXTRA_PAYMENT, purchaseToCharge);
                     startActivityForResult(intent, PayPalPaymentHelper.REQUEST_CODE_PAYMENT);
+**/
+                    onActivityResult(1, Activity.RESULT_OK, null);
                     break;
 
                 case DialogInterface.BUTTON_NEGATIVE:
@@ -326,11 +389,4 @@ public class PaymentFragment extends Fragment {
             }
         }
     }
-
-    private void showProgressDialog(String message) {
-        progressDialog = ProgressDialog
-                .show(getActivity(),
-                        getString(R.string.dialog_header_wait), message, true, false);
-    }
-
 }

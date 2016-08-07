@@ -242,6 +242,12 @@ public abstract class AbstractResource<T extends EntityModel> implements Resourc
         }
     }
     public T getResource(int id) {
+
+        if (id == 0)  {
+            Log.d("REST API", "Query was just canceled because id is 0");
+            return null;
+        }
+
         try {
             URL url = new URL(APPLICATION_ROOT
                     .concat(RESOURCE_ROOT)
@@ -290,6 +296,8 @@ public abstract class AbstractResource<T extends EntityModel> implements Resourc
 
     protected T doGET(URL url) throws IOException {
         JsonElement json =  getResource(url);
+        if (json == null) return null;
+
         JsonObject jsonObject = json.getAsJsonObject();
 
         T t = bindResourceFromJson(jsonObject);
@@ -346,6 +354,8 @@ public abstract class AbstractResource<T extends EntityModel> implements Resourc
                 }
                 else if (connection.getResponseCode() == HttpURLConnection.HTTP_NOT_FOUND) {
                     responseServer.setErrors(Arrays.asList("entity.not.found.error.message"));
+                } else if (connection.getResponseCode() == HttpURLConnection.HTTP_INTERNAL_ERROR) {
+                    responseServer.setErrors(Arrays.asList("internal.server.error"));
                 }
 
                 connection.disconnect();
@@ -379,6 +389,9 @@ public abstract class AbstractResource<T extends EntityModel> implements Resourc
         return Arrays.asList(getColumnNames()).contains(attributeName.trim());
     }
 
+    protected boolean isJsonNullField(JsonObject json, String fieldName) {
+        return json.get(fieldName) == null || json.get(fieldName).isJsonNull();
+    }
 
     private void log(HttpURLConnection connection, URL url) throws IOException {
         Log.d("REST API", "GET " + RESOURCE_ROOT + "/" + url.getQuery());

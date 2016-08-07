@@ -1,14 +1,17 @@
 package br.com.compremelhor.service;
 
-import android.app.ProgressDialog;
 import android.content.Context;
 import android.os.AsyncTask;
 import android.os.Handler;
 import android.util.Log;
 
+import java.io.Serializable;
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.TreeSet;
 import java.util.concurrent.ExecutionException;
 
@@ -17,8 +20,9 @@ import br.com.compremelhor.api.integration.ResponseServer;
 import br.com.compremelhor.api.integration.resource.impl.FreightResource;
 import br.com.compremelhor.api.integration.resource.impl.PurchaseLineResource;
 import br.com.compremelhor.api.integration.resource.impl.PurchaseResource;
+import br.com.compremelhor.api.integration.resource.impl.SKUResource;
+import br.com.compremelhor.api.integration.resource.impl.SyncResource;
 import br.com.compremelhor.dao.impl.DAOFreight;
-import br.com.compremelhor.dao.impl.DAOFreightType;
 import br.com.compremelhor.dao.impl.DAOPurchase;
 import br.com.compremelhor.dao.impl.DAOPurchaseLine;
 import br.com.compremelhor.model.EntityModel;
@@ -26,31 +30,33 @@ import br.com.compremelhor.model.Establishment;
 import br.com.compremelhor.model.Freight;
 import br.com.compremelhor.model.FreightSetup;
 import br.com.compremelhor.model.FreightType;
+import br.com.compremelhor.model.Product;
 import br.com.compremelhor.model.Purchase;
 import br.com.compremelhor.model.PurchaseLine;
+import br.com.compremelhor.model.Sync;
 import br.com.compremelhor.model.User;
+import br.com.compremelhor.util.helper.DatabaseHelper;
+import br.com.compremelhor.util.helper.dialog.ProgressDialogHelper;
 
-public class CartService {
+public class CartService implements Serializable {
     private static CartService instance;
     private static final String TAG = "cartService";
 
     private DAOFreight daoFreight;
     private DAOPurchase daoPurchase;
     private DAOPurchaseLine daoItem;
-    private DAOFreightType daoFreightType;
 
     private PurchaseResource purchaseResource;
     private PurchaseLineResource itemResource;
     private FreightResource freightResource;
+    private SKUResource skuResource;
 
     private Purchase purchase;
     private Freight freight;
     private FreightType freightType;
+
     private Handler handler;
-
-    private ProgressDialog progressDialog;
-
-    private Context context;
+    transient private Context context;
 
     private int userId;
     private int partnerId;
@@ -60,35 +66,85 @@ public class CartService {
     }
 
     public static CartService getInstance(Context context, int userId, int partnerId) {
+        Log.d(TAG, "getInstance");
+        boolean wasItNull = false;
         if (instance == null) {
+            Log.d(TAG, "instance is null");
             instance = new CartService();
-            instance.context = context;
-            instance.daoItem = DAOPurchaseLine.getInstance(context);
-            instance.daoPurchase = DAOPurchase.getInstance(context);
-            instance.daoFreight = DAOFreight.getInstance(context);
-            instance.daoFreightType = DAOFreightType.getInstance(context);
-
-            instance.purchaseResource = new PurchaseResource("purchases", context);
-            instance.handler = new Handler();
+            wasItNull = true;
             instance.userId = userId;
             instance.partnerId = partnerId;
-            instance.loadCurrentPurchase();
-            if (instance.purchase != null) {
-                instance.itemResource = new PurchaseLineResource(
-                        "purchases/" + instance.purchase.getId() +"/lines", context);
+            instance.handler = new Handler();
+        }
 
-                instance.freightResource = new FreightResource(
-                        "purchases/" + instance.purchase.getId() + "/freight", context);
-            }
+        instance.context = context;
+        instance.daoItem = DAOPurchaseLine.getInstance(context);
+        instance.daoPurchase = DAOPurchase.getInstance(context);
+        instance.daoFreight = DAOFreight.getInstance(context);
+        instance.purchaseResource = new PurchaseResource("purchases", context);
+        instance.skuResource = new SKUResource(context);
+
+        if (wasItNull) {
+            instance.loadCurrentPurchase();
+        }
+
+        if (instance.purchase != null) {
+            instance.itemResource = new PurchaseLineResource(
+                    "purchases/" + instance.purchase.getId() +"/lines", context);
+
+            instance.freightResource = new FreightResource(
+                    "purchases/" + instance.purchase.getId() + "/freight", context);
         }
 
         return instance;
     }
 
+    public List<PurchaseLine> getExpiredItems(final boolean delete) {
+        Log.d(TAG, "getExpiredItems");
+        final SyncResource syncResource = new SyncResource(context);
+
+        AsyncTask<Void, Void, List<PurchaseLine>> request = new AsyncTask<Void, Void, List<PurchaseLine>>() {
+            @Override
+            protected List<PurchaseLine> doInBackground(Void... p) {
+
+                Map<String, String> params = new HashMap<>();
+                params.put("mobileUserIdRef", String.valueOf(userId));
+                params.put("entityName", "purchaseLine");
+
+                List<PurchaseLine> lines = new ArrayList<>();
+
+                List<Sync> syncs = syncResource.getAllResources(params);
+                for (Sync c : syncs) {
+                    PurchaseLine line = daoItem.find(c.getEntityId());
+                    lines.add(line);
+
+                    if (delete) {
+                        daoItem.delete(line.getId());
+                        syncResource.deleteResource(c);
+                    }
+                }
+                return lines;
+            }
+        };
+
+        try {
+            return request.execute().get();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        } catch (ExecutionException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
     public boolean addItem(final PurchaseLine item) {
+        Log.d(TAG, "addItem");
         if (item.getPurchase() == null) { item.setPurchase(purchase);}
 
-        showProgressDialog(context.getString(R.string.dialog_content_text_putting_item_on_cart));
+        ProgressDialogHelper
+                .getInstance(context)
+                .setMessage(context.getString(R.string.dialog_content_text_putting_item_on_cart))
+                .showWaitProgressDialog();
 
         AsyncTask<Void, Void, Boolean> request = new AsyncTask<Void, Void, Boolean>() {
             @Override
@@ -115,7 +171,7 @@ public class CartService {
             @Override
             protected void onPostExecute(Boolean aBoolean) {
                 refreshSubTotal();
-                progressDialog.dismiss();
+                ProgressDialogHelper.dismissProgressDialog();
             }
         };
 
@@ -129,13 +185,47 @@ public class CartService {
     }
 
     public void setFreightType(FreightType freightType) {
+        Log.d(TAG, "setFreightType");
         this.freightType = freightType;
     }
 
-    public FreightType getFreightType() { return freightType; }
+    public FreightType getFreightType() {
+        Log.d(TAG, "getFreightType");
+        return freightType; }
+
+    public PurchaseLine getItem(int itemId) {
+        return DAOPurchaseLine.getInstance(context).find(itemId);
+    }
+
+    public Product getProduct(String code) {
+        return skuResource.getResource("code", code);
+    }
+
+    public boolean containsProduct(String code) {
+        for (PurchaseLine line : getItems()) {
+            line = daoItem.find(line.getId());
+
+            if (line != null
+                    && line.getProductCode() != null
+                    && line.getProductCode().equals(code))
+               return true;
+        }
+        return false;
+    }
+
+    public Product getProduct(int itemId) {
+        PurchaseLine line;
+        if ((line = getItem(itemId)) != null)
+            return skuResource.getResource(line.getProduct().getId());
+        return null;
+    }
 
     public boolean editItem(final PurchaseLine item) {
-        showProgressDialog(context.getString(R.string.dialog_content_text_changing_item_on_cart));
+        Log.d(TAG, "editItem");
+        ProgressDialogHelper
+                .getInstance(context)
+                .setMessage(context.getString(R.string.dialog_content_text_changing_item_on_cart))
+                .showWaitProgressDialog();
 
         AsyncTask<Void, Void, Boolean> request = new AsyncTask<Void, Void, Boolean>() {
             @Override
@@ -159,7 +249,7 @@ public class CartService {
             @Override
             protected void onPostExecute(Boolean aBoolean) {
                 refreshSubTotal();
-                progressDialog.dismiss();
+                ProgressDialogHelper.dismissProgressDialog();
             }
         };
 
@@ -173,6 +263,7 @@ public class CartService {
     }
 
     public boolean persistFreight() {
+        Log.d(TAG, "persistFreight");
         freight.setPurchase(purchase);
         freight.setFreightTypeId(freightType.getId());
 
@@ -208,8 +299,21 @@ public class CartService {
         return false;
     }
 
-    public boolean removeItem(final PurchaseLine item) {
-//        showProgressDialog(context.getString(R.string.dialog_content_text_removing_item_on_cart));
+    public boolean removeItem(int itemId) {
+        Log.d(TAG, "removeItem");
+
+        handler.post(new Runnable() {
+            @Override
+            public void run() {
+                ProgressDialogHelper
+                        .getInstance(context)
+                        .setMessage(context.getString(R.string.dialog_content_text_removing_item_on_cart))
+                        .showWaitProgressDialog();
+            }
+        });
+
+        final PurchaseLine item = daoItem.find(itemId);
+        if (item == null) return false;
 
         AsyncTask<Void, Void, Boolean> request = new AsyncTask<Void, Void, Boolean>() {
             @Override
@@ -228,7 +332,7 @@ public class CartService {
             @Override
             protected void onPostExecute(Boolean aBoolean) {
                 refreshSubTotal();
-  //              progressDialog.dismiss();
+                ProgressDialogHelper.dismissProgressDialog();
             }
         };
 
@@ -242,6 +346,7 @@ public class CartService {
     }
 
     public TreeSet<PurchaseLine> getItems() {
+        Log.d(TAG, "getItems");
         TreeSet<PurchaseLine> items = purchase.getItems();
 
         if (items == null)
@@ -250,8 +355,13 @@ public class CartService {
         return items;
     }
 
-    private void loadCurrentPurchase() {
-        showProgressDialog(context.getString(R.string.dialog_content_text_starting_item_on_cart));
+    public void loadCurrentPurchase() {
+        Log.d(TAG, "loadCurrentPurchase");
+        ProgressDialogHelper
+                .getInstance(context)
+                .setMessage(context.getString(R.string.dialog_content_text_starting_item_on_cart))
+                .showWaitProgressDialog();
+
         purchase = daoPurchase.getOpenedPurchase();
 
         if (purchase == null) {
@@ -288,13 +398,18 @@ public class CartService {
 
                         purchase.setId(responseServer.getEntity().getId());
                         daoPurchase.insert(purchase);
-                        progressDialog.dismiss();
+
+
+                        ProgressDialogHelper.dismissProgressDialog();
                         return null;
                     }
 
+
                     purchase.setEstablishment(establishment);
+                    purchase.setFreight(daoFreight.findByAttribute(DatabaseHelper.Freight._PURCHASE_ID, String.valueOf(purchase.getId())));
                     daoPurchase.insert(purchase);
-                    progressDialog.dismiss();
+                    refreshSubTotal();
+                    ProgressDialogHelper.dismissProgressDialog();
                     return null;
                 }
             };
@@ -307,13 +422,59 @@ public class CartService {
                 e.printStackTrace();
             }
         } else {
-            progressDialog.dismiss();
+            ProgressDialogHelper.dismissProgressDialog();
         }
 
         if (purchase.getTotalValue().doubleValue() == 0.0 ) refreshSubTotal();
     }
 
-    public void closePurchase() {
+    public boolean startTransaction(boolean showWaitingDialog) {
+        Log.d(TAG, "startTransaction");
+        if (showWaitingDialog) {
+        }
+
+
+        getFreight();
+        purchase.setStatus(Purchase.Status.STARTED_TRANSACTION);
+
+        AsyncTask<Void, Void, Boolean> request = new AsyncTask<Void, Void, Boolean>() {
+            @Override
+            protected Boolean doInBackground(Void... params) {
+                ResponseServer<Purchase> response = purchaseResource.updateResource(purchase);
+
+                if (response.hasErrors()) {
+                    log(response);
+                    return false;
+                }
+
+                if (daoPurchase.insertOrUpdate(purchase) == -1) {
+                    Log.i(TAG, "Error while updating the purchase on database");
+                    return false;
+                }
+                return true;
+            }
+        };
+
+        try {
+            boolean result = request.execute().get();
+            handler.post(new Runnable() {
+                @Override
+                public void run() {
+                    ProgressDialogHelper.dismissProgressDialog();
+                }
+            });
+
+            return result;
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        } catch (ExecutionException e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
+
+    public void closePurchase(boolean showStatusMessage) {
+        Log.d(TAG, "closePurchase");
         getFreight();
         purchase.setStatus(Purchase.Status.PAID);
 
@@ -344,15 +505,16 @@ public class CartService {
         }
     }
 
-    private void refreshSubTotal() {
+    private void refreshSubTotal() {Log.d(TAG, "refreshSubTotal");
+
         BigDecimal total = BigDecimal.valueOf(0.0);
         for (PurchaseLine line : getItems()) {
             total = total.add(line.getSubTotal());
         }
-        instance.purchase.setTotalValue(total);
+        purchase.setTotalValue(total);
     }
 
-    public Purchase getPurchase() {
+    public Purchase getPurchase() { Log.d(TAG, "getPurchase");
         return purchase == null ?
                 new Purchase() : purchase;
     }
@@ -366,23 +528,59 @@ public class CartService {
 
     }
 
+    public void persistFreightInBackground() { Log.d(TAG, "persistFreightInBackground");
+        AsyncTask<Void, Void, Void> request = new AsyncTask<Void, Void, Void> () {
+            @Override
+            protected Void doInBackground(Void... params) {
 
-    private void showProgressDialog(String message) {
-        progressDialog = ProgressDialog
-                .show(context, context.getString(R.string.dialog_header_wait), message, true, false);
+                if (getFreight() == null
+                        || getFreight().getVersion() == 0) return null;
+
+                persistFreight();
+                getFreight().setVersion(0);
+                return null;
+            }
+        };
+
+        try {
+            request.execute().get();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        } catch (ExecutionException e) {
+            e.printStackTrace();
+        }
     }
 
     public Freight getFreight() {
+        Log.d(TAG, "getFreight");
         freight = purchase.getFreight();
         return freight;
     }
 
     public void setFreight(Freight freight) {
+        Log.d(TAG, "setFreight");
         purchase.setFreight(freight);
         this.freight = freight;
     }
 
+    public FreightSetup getFreightSetupFromDB() {
+        Log.d(TAG, "getFreightSetupFromDB");
+
+        if (purchase == null) return null;
+
+        if (purchase.getFreight() == null) {
+            purchase.setFreight(daoFreight.findByAttribute(DatabaseHelper.Freight._PURCHASE_ID, String.valueOf(purchase.getId())));
+
+            return purchase.getFreight() != null ?
+                    purchase.getFreight().getFreightSetup() :
+                    null;
+        }
+
+        return purchase.getFreight().getFreightSetup();
+    }
+
     public FreightSetup getFreightSetup() {
+        Log.d(TAG, "getFreightSetup");
         Freight f = getFreight();
 
         if (f != null)
@@ -391,11 +589,27 @@ public class CartService {
         return null;
     }
 
+    public FreightSetup getFreightSetup(boolean tryFromDatabase) {
+        Log.d(TAG, "getFreightSetup(boolean)");
+        if (tryFromDatabase)
+            return getFreightSetupFromDB();
+        return null;
+    }
+
     public void setFreightSetup(FreightSetup freightSetup) {
+        Log.d(TAG, "setFreightSetup");
         if (getFreight() != null) {
             freight.setFreightSetup(freightSetup);
             getFreightSetup();
         }
+    }
+
+    public Context getContext() {
+        return context;
+    }
+
+    public void setContext(Context context) {
+        this.context = context;
     }
 
 }

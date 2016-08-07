@@ -6,6 +6,7 @@
 
     <!-- User\'s responses -->
     <string name="yes">Sim</string>
+    <string name="ok">OK</string>
     <string name="no">Não</string>
 
 
@@ -32,6 +33,8 @@
 
 
     <!-- Button's labels -->
+    <string name="button_edit_cart">Editar Carrinho</string>
+    <string name="button_text_close_purchase">Concluir a Compra</string>
     <string name="button_text_login">Log in</string>
     <string name="button_text_register">Cadastrar se</string>
     <string name="button_text_add_address">Adicionar Endereço</string>
@@ -72,6 +75,9 @@
     <string name="dialog_content_text_registering_on_server">Registrando no servidor...</string>
     <string name="dialog_content_text_validating_data_on_server">Validando Dados no Servidor...</string>
     <string name="dialog_content_text_registering_data">Realizando Cadastro...</string>
+    <string name="dialog_content_text_loading_product">Carregando informações do produto...</string>
+    <string name="dialog_content_text_starting_transaction">Iniciando transação para conclusão da compra...</string>
+
 
     <!-- ProgressDialog's headers texts -->
     <string name="dialog_header_wait">Aguarde</string>
@@ -79,6 +85,7 @@
 
     <!-- Confirmation's actions -->
     <string name="delete_confirmation_address">Você realmente deseja remover este endereço?</string>
+    <string name="delete_confirmation_cart_item">Você realmente deseja remover este item de seu carrinho?</string>
     <string name="close_purchase_confirmation">Após a compra ser fechada, não será possível reabrir a mesma. Você tem certeza que deseja fechar a compra?</string>
     <string name="logout_action_confirmation">Você tem certeza que deseja sair?</string>
 
@@ -120,6 +127,8 @@
     <string name="data_registered_successful_message">Seus dados foram salvos com sucesso.</string>
     <string name="purchase_concluded_successful_message">Compra concluída com sucesso! Para detalhes da entrega, vá para Minhas Compras</string>
     <string name="address_saved_successful_message">Endereço salvo com sucesso</string>
+    <string name="purchase_done_successful_message">Parabéns! Você acabou de concluir sua compra com sucesso!</string>
+    <string name="product_added_successful_message">Produto adicionado com sucesso</string>
 
 
     <!-- Dashboard page's resources -->
@@ -128,7 +137,6 @@
     <string name="manager_addresses">Gerenciar Endereços</string>
     <string name="list_purchases">Listar Compras Feitas</string>
     <string name="add_address">Adicionar Novo Endereço</string>
-    <string name="title_my_addresses">Meus Endereços</string>
     <string name="change_password">Alterar minha senha</string>
     <string name="identification">N. Documento</string>
     <string name="my_data">Meu Cadastro</string>
@@ -143,6 +151,7 @@
     <string name="alter_quantity">Alterar Quantidade</string>
     <string name="establishment">Local:</string>
     <string name="loading_current_cart_dialog">Carregando atual carrinho</string>
+    <string name="updating_current_cart_dialog">Atualizando o carrinho...</string>
 
 
     <!-- Read Codes Options -->
@@ -158,6 +167,10 @@
     <string name="action_bar_purchase">Items</string>
     <string name="action_bar_cart_item_label">Item Carrinho</string>
     <string name="action_bar_dashboard_label">Compre Melhor</string>
+    <string name="action_bar_expired_items_label">Items</string>
+    <string name="action_bar_my_addresses_label">Meus Endereços</string>
+    <string name="action_bar_register_label">Cadastro</string>
+
 
 
     <string name="manual">Inserir Código</string>
@@ -206,7 +219,7 @@
 
 
     <string name="token_api">token_app DG4OjT9ciuPtHk1p7Fi/kg==</string>
-    <string name="register_label">Cadastro</string>
+
     <string name="header_dialog_error_message_without_internet">Sem Conexão</string>
 
 

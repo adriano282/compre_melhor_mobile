@@ -61,8 +61,9 @@ public class DashboardActivity extends AppCompatActivity implements View.OnClick
 
     protected void setToolbar() {
         Toolbar myToolbar = (Toolbar) findViewById(R.id.my_toolbar);
+        if (myToolbar != null) {
         myToolbar.setLogo(R.drawable.icon);
-        setSupportActionBar(myToolbar);
+        setSupportActionBar(myToolbar); }
         if (getSupportActionBar() != null) {
 //            getSupportActionBar().setDisplayShowHomeEnabled(true);
         //    getSupportActionBar().setDisplayHomeAsUpEnabled(true);
