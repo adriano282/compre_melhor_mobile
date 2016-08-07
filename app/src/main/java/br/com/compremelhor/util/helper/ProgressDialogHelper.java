@@ -33,4 +33,9 @@ public class ProgressDialogHelper {
                         context.getString(R.string.dialog_header_wait),
                         message, true, false);
     }
+
+    public void dismissProgressDialog() {
+        if (progressDialog.isShowing())
+            progressDialog.dismiss();
+    }
 }
