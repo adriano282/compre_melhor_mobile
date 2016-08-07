@@ -18,12 +18,12 @@ public class ProgressDialogHelper {
 
     private ProgressDialogHelper() {}
 
-    public ProgressDialogHelper getInstance(@NonNull Context context, String message) {
+    public static ProgressDialogHelper getInstance(@NonNull Context context, String message) {
         if (instance == null) {
             instance = new ProgressDialogHelper(); }
 
-        this.context = context;
-        this.message = message;
+        instance.context = context;
+        instance.message = message;
         return instance;
     }
 
