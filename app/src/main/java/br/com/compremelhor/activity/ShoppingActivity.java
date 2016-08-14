@@ -16,9 +16,9 @@ import android.view.View;
 
 import br.com.compremelhor.R;
 import br.com.compremelhor.dao.impl.DAOEstablishment;
-import br.com.compremelhor.fragment.CartFragment;
-import br.com.compremelhor.fragment.FreightFragment;
-import br.com.compremelhor.fragment.PaymentFragment;
+import br.com.compremelhor.fragment.shopping.CartFragment;
+import br.com.compremelhor.fragment.shopping.FreightFragment;
+import br.com.compremelhor.fragment.shopping.PaymentFragment;
 import br.com.compremelhor.service.CartService;
 
 import static br.com.compremelhor.util.Constants.PREFERENCES;

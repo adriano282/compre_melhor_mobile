@@ -34,6 +34,7 @@ public interface Constants {
     String SP_FACEBOOK_USER_ID = "facebook_user_id";
     String SP_LOGGED_ON_FACEBOOK = "is_logged_on_facebook";
     String SP_FREIGHT_VALUE = "sp_freight_value";
+    String SP_VIEW_PURCHASE_BY_YEAR = "sp_view_purchase_by_year";
 
 
     String CLIENT_SCANNER = "com.google.zxing.client.android.SCAN";
@@ -55,6 +56,8 @@ public interface Constants {
 
     // Constants for MENU OPTIONS on Action Bar
     int MENU_OPTION_ID_MANAGE_ADDRESS = 1;
+    int MENU_OPTION_ID_LIST_BY_YEAR = 2;
+    int MENU_OPTION_ID_LIST_BY_MONTH = 3;
 
     String CART_FRAGMENT = "cart_fragment";
     String FREIGHT_FRAGMENT = "freight_fragment";

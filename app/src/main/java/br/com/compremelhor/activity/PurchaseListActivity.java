@@ -1,84 +1,116 @@
 package br.com.compremelhor.activity;
 
-import android.content.Intent;
+import android.app.ProgressDialog;
+import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentTransaction;
+import android.support.v7.app.ActionBar;
+import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
-import android.view.View;
-import android.widget.AdapterView;
-import android.widget.ListView;
-import android.widget.SimpleAdapter;
-import android.widget.TextView;
+import android.view.Menu;
+import android.view.MenuItem;
 
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ExecutionException;
 
 import br.com.compremelhor.R;
+import br.com.compremelhor.api.integration.resource.Resource;
 import br.com.compremelhor.api.integration.resource.impl.PurchaseResource;
 import br.com.compremelhor.api.integration.resource.impl.SyncResource;
 import br.com.compremelhor.dao.impl.DAOPurchase;
+import br.com.compremelhor.fragment.purchase.PurchaseListChartFragment;
+import br.com.compremelhor.fragment.purchase.PurchaseListFragment;
 import br.com.compremelhor.model.Purchase;
 import br.com.compremelhor.model.Sync;
-import br.com.compremelhor.util.helper.DatabaseHelper;
 
-import static br.com.compremelhor.util.Constants.EXTRA_PARTNER_ID;
-import static br.com.compremelhor.util.Constants.EXTRA_PURCHASE_ID;
-import static br.com.compremelhor.util.Constants.REQUEST_CODE_PURCHASE_VIEWED;
+import static br.com.compremelhor.util.Constants.MENU_OPTION_ID_LIST_BY_MONTH;
+import static br.com.compremelhor.util.Constants.MENU_OPTION_ID_LIST_BY_YEAR;
+import static br.com.compremelhor.util.Constants.PREFERENCES;
 import static br.com.compremelhor.util.Constants.SP_USER_ID;
+import static br.com.compremelhor.util.Constants.SP_VIEW_PURCHASE_BY_YEAR;
 
 /**
  * Created by adriano on 21/04/16.
  */
-public class PurchaseListActivity extends ActivityListTemplate<Purchase> {
+public class PurchaseListActivity extends ActionBarActivity {
+    private final String TAG = "purchaseListActivity";
+    private ProgressDialog progressDialog;
+    private DAOPurchase dao;
+    private SharedPreferences preferences;
+    private Resource<Purchase> resource;
+
+    PurchaseListFragment listFragment;
+    PurchaseListChartFragment chartFragment;
+    private ActionBar ab = null;
 
     @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (requestCode == REQUEST_CODE_PURCHASE_VIEWED) {}
-    }
-
-    @Override
-    public void onCreate(Bundle savedInstanceState) {
-        setupOnCreateActivity(R.layout.activity_purchase_list,
-                DAOPurchase.getInstance(this),
-                new PurchaseResource("purchases", this));
+    protected void onCreate(Bundle savedInstanceState) {
+        Log.d(TAG, "onCreate");
         super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_purchase_list);
+        setActionBar();
+
+        preferences = getSharedPreferences(PREFERENCES, MODE_PRIVATE);
+        dao = DAOPurchase.getInstance(this);
+        resource = new PurchaseResource("purchases", this);
+        sync();
     }
 
     @Override
-    protected void setWidgets() {
-        objects = listObjects();
+    public boolean onCreateOptionsMenu(Menu menu) {
+        Log.d(TAG, "onCreateOptionsMenu");
 
-        String[] from = {
-                DatabaseHelper.Establishment.NAME,
-                DatabaseHelper.Purchase.DATE_CREATED,
-                DatabaseHelper.Purchase.STATUS,
-                DatabaseHelper.Purchase.LAST_UPDATED,
-                DatabaseHelper.Purchase.TOTAL_VALUE
-        };
+        if (ab!= null && ab.getSelectedTab().getPosition() == 0) {
+//            if (preferences.getBoolean(SP_VIEW_PURCHASE_BY_YEAR, false)) {
+                menu.add(0, MENU_OPTION_ID_LIST_BY_MONTH, 0, R.string.setting_view_purchases_by_month)
+                        .setShowAsAction(MenuItem.SHOW_AS_ACTION_NEVER);
+  //          }
+    //        else {
+                menu.add(0, MENU_OPTION_ID_LIST_BY_YEAR, 0, R.string.setting_view_purchases_by_year)
+                        .setShowAsAction(MenuItem.SHOW_AS_ACTION_NEVER);
+      //      }
+        }
+        getMenuInflater().inflate(R.menu.action_bars_menu, menu);
+        return true;
+    }
 
-        int [] to = {R.id.tv_purchase_row_establishment_name,
-                R.id.tv_purchase_row_date,
-                R.id.tv_purchase_row_status,
-                R.id.tv_purchase_row_last_updated,
-                R.id.tv_purchase_row_value_total};
+    private void refreshPurchaseList() {
+        if (listFragment.isVisible()) {
+            listFragment.fillFields();
+            listFragment.setWidgets();
+        }
+        else if (chartFragment.isVisible()) {
+            chartFragment.refreshFragment();
+        }
+    }
 
-        adapter = new SimpleAdapter(this, objects,
-                R.layout.purchase_row, from, to);
-        listView = (ListView) findViewById(R.id.purchase_list_view);
-        listView.setAdapter(adapter);
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.menu_settings:
+                return true;
 
+            case android.R.id.home:
+                finish();
+                return true;
 
-        TextView tv = (TextView) findViewById(R.id.purchase_list_empty);
-        if (objects.size() > 0) {
-            tv.setVisibility(TextView.GONE);
-        } else {
-            tv.setVisibility(TextView.VISIBLE);
+            case MENU_OPTION_ID_LIST_BY_YEAR:
+                preferences.edit().putBoolean(SP_VIEW_PURCHASE_BY_YEAR, true).apply();
+                refreshPurchaseList();
+
+                return true;
+
+            case MENU_OPTION_ID_LIST_BY_MONTH:
+                preferences.edit().putBoolean(SP_VIEW_PURCHASE_BY_YEAR, false).apply();
+                refreshPurchaseList();
+                return true;
         }
 
+        return super.onOptionsItemSelected(item);
     }
 
     private void sync() {
@@ -125,59 +157,65 @@ public class PurchaseListActivity extends ActivityListTemplate<Purchase> {
         }
     }
 
-    private List<Map<String, Object>> listObjects() {
-        sync();
+    protected void showProgressDialog(int headerTextId, int contentTextId) {
+        this.progressDialog = ProgressDialog
+                .show(this, getString(headerTextId), getString(contentTextId), true, false);
+    }
 
-        objects = new ArrayList<>();
-        int userId = preferences.getInt(SP_USER_ID, 0);
-
-        List<Purchase> listPurchases =
-                dao.findAllByAttribute(DatabaseHelper.Purchase._USER_ID,
-                                String.valueOf(userId));
-
-        Map<String, Object> item;
-
-        SimpleDateFormat dt = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
-        for (Purchase p : listPurchases) {
-            item = new HashMap<>();
-
-            item.put(DatabaseHelper.Purchase._ESTABLISHMENT_ID, p.getEstablishment().getId());
-            item.put(DatabaseHelper.Establishment.NAME, p.getEstablishment().getName());
-            item.put(DatabaseHelper.Purchase.DATE_CREATED, dt.format(p.getDateCreated().getTime()));
-            item.put(DatabaseHelper.Purchase.LAST_UPDATED, dt.format(p.getLastUpdated().getTime()));
-            item.put(DatabaseHelper.Purchase.STATUS, p.getStatus().getTranslatedValued());
-
-            Double totalValue = p.getTotalValue().doubleValue() +
-                    (p.getFreight() != null ? p.getFreight().getRideValue().doubleValue() : 0.0);
-
-            item.put(DatabaseHelper.Purchase.TOTAL_VALUE,
-                    String.format("R$ %,.2f", totalValue));
-            item.put(DatabaseHelper.Purchase._ID, p.getId());
-            objects.add(item);
+    protected void dismissProgressDialog() {
+        if (progressDialog != null && progressDialog.isShowing()) {
+            progressDialog.dismiss();
         }
-        return objects;
     }
 
-    @Override
-    protected void registerWidgets() {
-        listView.setOnItemClickListener(new OnItemClickListener());
+    private void setActionBar() {
+        ab = getSupportActionBar();
+        Log.d(TAG, "setActionBar");
+        ab.setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);
+        ab.setIcon(R.mipmap.icon);
+        ab.setDisplayShowHomeEnabled(true);
+        ab.setDisplayHomeAsUpEnabled(true);
+
+
+        ab.setElevation(4);
+
+        listFragment = PurchaseListFragment.newInstance("PurchaseListFragment");
+        chartFragment = PurchaseListChartFragment.newInstance("purchaseListCharFragment");
+
+        ab.addTab(
+                ab.newTab()
+                        .setText("Listagem")
+                        .setTabListener(new MyTabsListener(listFragment))
+        );
+        ab.addTab(ab.newTab().setText("Gráfico").setTabListener(new MyTabsListener(chartFragment)));
     }
 
-    @Override
-    protected void setDialogs() {}
 
-    private class OnItemClickListener implements  AdapterView.OnItemClickListener {
+    private class MyTabsListener implements ActionBar.TabListener {
+        public Fragment fragment;
+
+        public MyTabsListener(Fragment fragment) {
+            this.fragment = fragment;
+            Log.d("MyTabsListener", "Constructor");
+
+        }
+
+
         @Override
-        public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-            PurchaseListActivity.this.objectSelected = position;
-            int purchaseId = (int) objects.get(position).get(DatabaseHelper.Purchase._ID);
-            int partnerId = (int) objects.get(position).get(DatabaseHelper.Purchase._ESTABLISHMENT_ID);
+        public void onTabSelected(ActionBar.Tab tab, FragmentTransaction ft) {
+            Log.d("MyTabsListener", "onTabSelected");
+            ft.replace(R.id.purchase_list_placeholder, fragment);
 
-            Intent intent = new Intent(PurchaseListActivity.this, PurchaseActivity.class);
-            intent.putExtra(EXTRA_PURCHASE_ID, purchaseId);
-            intent.putExtra(EXTRA_PARTNER_ID, partnerId);
-            startActivityForResult(intent, REQUEST_CODE_PURCHASE_VIEWED);
+        }
+
+        @Override
+        public void onTabUnselected(ActionBar.Tab tab, FragmentTransaction ft) {
+            Log.d("MyTabsListener", "onTabUnselected");
+        }
+
+        @Override
+        public void onTabReselected(ActionBar.Tab tab, FragmentTransaction ft) {
+            Log.d("MyTabsListener", "onTabReselected");
         }
     }
-
 }

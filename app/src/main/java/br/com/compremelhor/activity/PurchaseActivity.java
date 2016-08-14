@@ -9,15 +9,13 @@ import android.view.Menu;
 import android.view.MenuItem;
 
 import br.com.compremelhor.R;
-import br.com.compremelhor.fragment.ChartPurchaseLinesFragment;
-import br.com.compremelhor.fragment.PurchaseLinesFragment;
+import br.com.compremelhor.fragment.purchase.line.PurchaseLinesChartFragment;
+import br.com.compremelhor.fragment.purchase.line.PurchaseLinesFragment;
 
 /**
  * Created by adriano on 21/04/16.
  */
 public class PurchaseActivity extends ActionBarActivity  {
-    private final String CART_FRAGMENT = "cart_fragment";
-
 
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -57,7 +55,7 @@ public class PurchaseActivity extends ActionBarActivity  {
         ab.setElevation(4);
 
         Fragment purchaseLinesFragment = new PurchaseLinesFragment();
-        Fragment chartPurchaseLinesFragment = new ChartPurchaseLinesFragment();
+        Fragment chartPurchaseLinesFragment = new PurchaseLinesChartFragment();
 
         ab.addTab(ab.newTab().setText(R.string.action_bar_tab_list_items_purchase).setTabListener(new MyTabsListener(purchaseLinesFragment)));
         ab.addTab(ab.newTab().setText(R.string.action_bar_tab_items_purchase_graphic).setTabListener(new MyTabsListener(chartPurchaseLinesFragment)));
@@ -66,7 +64,6 @@ public class PurchaseActivity extends ActionBarActivity  {
 
     private class MyTabsListener implements ActionBar.TabListener {
         public Fragment fragment;
-
         public MyTabsListener(Fragment fragment) {
             this.fragment = fragment;
         }

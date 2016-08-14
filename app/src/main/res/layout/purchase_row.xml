@@ -6,7 +6,9 @@
 
     <TableLayout
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        android:paddingLeft="@dimen/margin_medium"
+        android:paddingRight="@dimen/margin_medium">
 
         <TableRow>
             <TextView style="?android:textAppearanceListItemSmall"
@@ -75,7 +77,7 @@
 
                 android:text="Valor Total: " />
             <TextView style="?android:textAppearanceListItemSmall"
-                android:id="@+id/tv_purchase_row_value_total"
+                android:id="@+id/tv_purchase_row_total_value"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
 

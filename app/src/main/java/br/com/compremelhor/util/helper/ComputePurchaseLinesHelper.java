@@ -1,5 +1,7 @@
 package br.com.compremelhor.util.helper;
 
+import android.support.annotation.NonNull;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -10,12 +12,37 @@ import java.util.TreeMap;
 import java.util.TreeSet;
 
 import br.com.compremelhor.model.PurchaseLine;
+import br.com.compremelhor.util.function.MyFunction;
 import br.com.compremelhor.view.SkuListView;
 
 /**
  * Created by adriano on 23/04/16.
  */
 public class ComputePurchaseLinesHelper {
+
+
+    public static Map<String, Double> getGroupedSum(@NonNull List<PurchaseLine> lines,
+                                                       MyFunction<PurchaseLine, String> getDelimiterGroupFunction,
+                                                       MyFunction<PurchaseLine, Double> getValueFunction) {
+        Map<String, Double> result = new TreeMap<>();
+
+        for (PurchaseLine p : lines) {
+
+            String delimiter = getDelimiterGroupFunction.apply(p);
+
+            if (!result.containsKey(delimiter)) {
+                result.put(delimiter, getValueFunction.apply(p));
+                continue;
+            }
+
+            double accumulator = result.get(delimiter);
+            accumulator += getValueFunction.apply(p);
+
+            result.put(delimiter, accumulator);
+        }
+
+        return result;
+    }
 
     public static SkuListView getSkuListView(TreeSet<PurchaseLine> items) {
         TreeMap<String, List<String>> listDataChild = new TreeMap<>();
@@ -33,7 +60,8 @@ public class ComputePurchaseLinesHelper {
             }
 
             sumByCategoryMap.put(currentCategory,
-                    Double.valueOf(String.format("%.2f", (sumByCategoryMap.get(currentCategory) + line.getSubTotal().doubleValue()))));
+                    Double.valueOf(String.format("%.2f",
+                            (sumByCategoryMap.get(currentCategory) + line.getSubTotal().doubleValue()))));
 
             String name = line.getProductName();
             listDataChild

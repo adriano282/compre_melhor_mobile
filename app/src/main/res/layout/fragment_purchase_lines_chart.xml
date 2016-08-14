@@ -3,7 +3,6 @@
     android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-
     android:id="@+id/fragment_chart_purchase_lines">
 
     <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
@@ -11,6 +10,8 @@
         android:id="@+id/container_one"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:paddingLeft="10dp"
+        android:paddingRight="10dp"
         tools:ignore="MergeRootFrame" />
 
 </LinearLayout>

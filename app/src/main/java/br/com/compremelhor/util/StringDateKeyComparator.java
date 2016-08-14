@@ -1,0 +1,47 @@
+package br.com.compremelhor.util;
+
+import android.util.Log;
+
+import java.util.Comparator;
+
+import br.com.compremelhor.util.helper.ComputePurchaseListHelper;
+
+/**
+ * Created by adriano on 14/08/16.
+ */
+public class StringDateKeyComparator implements Comparator<String> {
+    @Override
+    public int compare(String lhs, String rhs) {
+        String left = lhs;
+        String right = rhs;
+
+        try {
+            String rYe = "";
+            String lYe = "";
+            String rMon = "";
+            String lMon = "";
+            if (right.contains("/") && left.contains("/")) {
+                rMon = right.split("/")[0];
+                rYe = right.split("/")[1];
+
+                lMon = left.split("/")[0];
+                lYe = left.split("/")[1];
+            }
+            else {
+                return Integer.valueOf(left) - Integer.valueOf(right);
+            }
+
+            if (Integer.valueOf(lYe).intValue() != Integer.valueOf(rYe).intValue()) {
+                return Integer.valueOf(lYe) - Integer.valueOf(rYe);
+            }
+
+            ComputePurchaseListHelper.Months rM = ComputePurchaseListHelper.Months.valueOf(rMon);
+            ComputePurchaseListHelper.Months lM = ComputePurchaseListHelper.Months.valueOf(lMon);
+            return lM.ordinal() - rM.ordinal();
+        } catch (Exception e) {
+            Log.d("Comparator", e.getMessage());
+            return -1;
+        }
+
+    }
+}

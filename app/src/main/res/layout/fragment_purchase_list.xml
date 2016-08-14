@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:id="@+id/fragment_purchase_line">
+
+    <TextView
+        android:id="@+id/purchase_list_empty"
+        android:textSize="25sp"
+        android:text="@string/purchase_list_is_empty"
+        android:gravity="center_vertical|center_horizontal"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:padding="@dimen/margin_medium"/>
+
+    <LinearLayout
+        android:id="@+id/rlMainLayout"
+        android:layout_marginTop="10dp"
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:scrollbarSize="@dimen/abc_text_size_display_3_material"
+        android:layout_weight="1">
+
+        <ExpandableListView
+            android:id="@+id/lv_purchase_list"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+    </LinearLayout>
+
+</LinearLayout>

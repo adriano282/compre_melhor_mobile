@@ -75,15 +75,15 @@ public class ExpandableListAdapter extends BaseExpandableListAdapter {
         if (convertView == null) {
             LayoutInflater inflater = (LayoutInflater) this._context
                     .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-            convertView = inflater.inflate(R.layout.shopping_list_group, null);
+            convertView = inflater.inflate(R.layout.expandable_list_header_component, null);
         }
 
         TextView lblListHeader = (TextView) convertView
-                .findViewById(R.id.lblListCategory);
+                .findViewById(R.id.lbl_first_div_header);
         lblListHeader.setTypeface(null, Typeface.BOLD);
         lblListHeader.setText(title);
 
-        TextView lblSubtotal = (TextView) convertView.findViewById(R.id.lblSubTotalByCategory);
+        TextView lblSubtotal = (TextView) convertView.findViewById(R.id.lbl_sec_div_header);
         lblSubtotal.setTypeface(null, Typeface.BOLD);
         lblSubtotal.setText(value);
         return convertView;

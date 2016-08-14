@@ -48,7 +48,13 @@
 
         <activity
             android:name=".activity.PurchaseListActivity"
-            android:label="@string/action_bar_purchase_list" />
+            android:label="@string/action_bar_purchase_list"
+            android:theme="@style/Theme.Example" >
+            <meta-data
+                android:name="android.support.UI_OPTIONS"
+                android:value="splitActionBarWhenNarrow" />
+
+        </activity>
 
         <activity android:name=".activity.PurchaseActivity"
             android:label="@string/action_bar_purchase"

@@ -43,6 +43,9 @@
     <string name="button_text_change_on_cart">ALTERAR QUANTIDADE</string>
     <string name="button_text_put_on_cart">COLOCAR NO CARRINHO</string>
 
+    <!-- Setting options Name -->
+    <string name="setting_view_purchases_by_year">Visualisar compras por ano</string>
+    <string name="setting_view_purchases_by_month">Visualisar compras por mês</string>
 
     <!-- CheckBox's labels -->
     <string name="check_box_label_keep_connected">Manter-se conectado</string>

@@ -1,45 +1,11 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <android.support.v7.widget.Toolbar
-        android:id="@+id/my_toolbar"
+    <FrameLayout
+        android:id="@+id/purchase_list_placeholder"
         android:layout_width="match_parent"
-        android:layout_height="?attr/actionBarSize"
-        android:background="?attr/colorPrimary"
-        android:elevation="4dp"
-        android:theme="@style/ThemeOverlay.AppCompat.ActionBar"
-        app:popupTheme="@style/ThemeOverlay.AppCompat.Light"/>
-
-    <!--<TextView
-        android:layout_marginTop="20sp"
-        android:drawableTop="@drawable/address"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content" />
-    -->
-    <TextView
-        android:id="@+id/purchase_list_empty"
-        android:textSize="25sp"
-        android:text="@string/purchase_list_is_empty"
-        android:gravity="center_vertical|center_horizontal"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:padding="@dimen/margin_medium"/>
-
-    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-        android:orientation="vertical"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:padding="@dimen/margin_medium">
-
-        <ListView android:id="@+id/purchase_list_view"
-            android:layout_width="match_parent"
-            android:layout_height="194dp"
-            android:layout_marginTop="20sp"
-            android:scrollbarSize="@dimen/abc_text_size_display_3_material"
-            android:layout_weight="1">
-        </ListView>
-    </LinearLayout>
+        android:layout_height="match_parent">
+    </FrameLayout>
 </LinearLayout>

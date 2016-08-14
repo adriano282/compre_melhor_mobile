@@ -5,11 +5,10 @@
     android:layout_height="wrap_content"
     android:padding="8dp"
     android:background="@color/accent_material_light"
-    android:id='@+id/category_id'
-    >
+    android:id="@+id/header_component_id">
 
     <TextView
-        android:id="@+id/lblListCategory"
+        android:id="@+id/lbl_first_div_header"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:paddingLeft="?android:attr/expandableListPreferredItemPaddingLeft"
@@ -18,7 +17,7 @@
         android:textColor="#FFFFFF" />
 
     <TextView
-        android:id="@+id/lblSubTotalByCategory"
+        android:id="@+id/lbl_sec_div_header"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="end"
