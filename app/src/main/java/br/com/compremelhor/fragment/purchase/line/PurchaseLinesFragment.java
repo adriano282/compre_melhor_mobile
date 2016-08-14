@@ -1,4 +1,4 @@
-package br.com.compremelhor.fragment;
+package br.com.compremelhor.fragment.purchase.line;
 
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -35,6 +35,7 @@ public class PurchaseLinesFragment extends android.support.v4.app.Fragment  {
 
     private DAOEstablishment daoEstablishment;
 
+
     @Override
     public View onCreateView(LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
@@ -55,7 +56,8 @@ public class PurchaseLinesFragment extends android.support.v4.app.Fragment  {
     }
 
     protected void setWidgets() {
-        ExpandableListView explicitView = (ExpandableListView) getActivity().findViewById(R.id.lv_shopping_list);
+        ExpandableListView explicitView =
+                (ExpandableListView) getActivity().findViewById(R.id.lv_shopping_list);
         ExpandableListAdapter listAdapter = new ExpandableListAdapter(getActivity(), headerDataList, childDataList);
         explicitView.setAdapter(listAdapter);
         TextView tvPartnerName = (TextView) getActivity().findViewById(R.id.fragment_tv_partner_name);

@@ -1,4 +1,4 @@
-package br.com.compremelhor.fragment;
+package br.com.compremelhor.fragment.shopping;
 
 import android.app.DatePickerDialog;
 import android.app.TimePickerDialog;

@@ -1,4 +1,4 @@
-package br.com.compremelhor.fragment;
+package br.com.compremelhor.fragment.purchase.line;
 
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -7,12 +7,12 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import br.com.compremelhor.R;
-import br.com.compremelhor.fragment.charts.PieChartFragment;
+import br.com.compremelhor.fragment.charts.purchase.item.PieChartFragment;
 
 /**
  * Created by adriano on 22/04/16.
  */
-public class ChartPurchaseLinesFragment extends Fragment{
+public class PurchaseLinesChartFragment extends Fragment{
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -24,7 +24,7 @@ public class ChartPurchaseLinesFragment extends Fragment{
     @Override
     public View onCreateView(LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.fragment_chart_purchase_lines, container, false);
+        return inflater.inflate(R.layout.fragment_purchase_lines_chart, container, false);
     }
 
     public void onViewCreated(View view, Bundle savedInstanceState) {

@@ -1,4 +1,4 @@
-package br.com.compremelhor.fragment.charts;
+package br.com.compremelhor.fragment.charts.purchase.item;
 
 import android.graphics.Typeface;
 import android.os.Bundle;
@@ -65,7 +65,6 @@ public class PieChartFragment extends Fragment {
 
         chart = (PieChartView) rootView.findViewById(R.id.pie_chart);
         chart.setOnValueTouchListener(new ValueTouchListener());
-
 
         daoEstablishment = DAOEstablishment.getInstance(getActivity());
         daoPurchaseLine = DAOPurchaseLine.getInstance(getActivity());
