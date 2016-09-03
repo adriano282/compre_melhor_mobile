@@ -33,7 +33,9 @@ public class FreightTypeResource extends AbstractResource<FreightType> {
         ft.setScheduled(jsonObject.get("scheduled").getAsBoolean());
         ft.setDelayInWorkdays(jsonObject.get("delayWorkdays").getAsInt());
         ft.setDescription((jsonObject.get("description").getAsString()));
-        ft.setAvailabilityScheduleWorkDays(jsonObject.get("availabilityScheduleWorkDays").getAsInt());
+
+        if (!jsonObject.get("availabilityScheduleWorkDays").isJsonNull())
+            ft.setAvailabilityScheduleWorkDays(jsonObject.get("availabilityScheduleWorkDays").getAsInt());
 
         JsonArray ja;
         ja = jsonObject.get("dateCreated").getAsJsonArray();
