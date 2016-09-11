@@ -66,4 +66,14 @@ public class FreightType extends EntityModel {
         this.availabilityScheduleWorkDays = availabilityScheduleWorkDays;
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (o instanceof FreightType &&
+                ((FreightType) o).getId() != 0 &&
+                this.getId() != 0 &&
+                this.getId() == ((FreightType)o).getId()) {
+            return true;
+        }
+        return false;
+    }
 }

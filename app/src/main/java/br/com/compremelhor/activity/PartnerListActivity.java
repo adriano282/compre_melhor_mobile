@@ -95,8 +95,9 @@ public class PartnerListActivity extends ActivityTemplate<Establishment> {
                 List<FreightType> freightTypeList = new ArrayList<>();
                 freightTypeList = freightTypeResource.getAllResources(0, 30);
 
-                for (FreightType ft : freightTypeList) {
+                                for (FreightType ft : freightTypeList) {
                         FreightType fromDb;
+
                         if ((fromDb = daoFreightType.find(ft.getId())) == null
                                 || fromDb.getLastUpdated().before(ft.getLastUpdated())) {
 
@@ -122,6 +123,14 @@ public class PartnerListActivity extends ActivityTemplate<Establishment> {
                             else
                                 daoFreightType.insertOrUpdate(fromDb);
                         }
+                }
+
+                List<FreightType> freightTypesDb = daoFreightType.findAllByForeignId(DatabaseHelper.FreightType._ESTABLISHMENT_ID, preferences.getInt(SP_PARTNER_ID, 0));
+
+                for (FreightType ft : freightTypesDb) {
+                    if (!freightTypeList.contains(ft)) {
+                        daoFreightType.delete(ft.getId());
+                    }
                 }
 
                 progressDialog.dismiss();
