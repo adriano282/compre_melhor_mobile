@@ -56,8 +56,7 @@ public abstract class AbstractResource<T extends EntityModel> implements Resourc
     public ResponseServer<T> deleteResource(T entity) {
 
         if (entity.getId() == 0) throw new NullPointerException("ID is null in a DELETE method on server");
-        try {
-            URL url = new URL(APPLICATION_ROOT
+        try {            URL url = new URL(APPLICATION_ROOT
                     .concat(RESOURCE_ROOT)
                     .concat("/")
                     .concat(String.valueOf(entity.getId())));

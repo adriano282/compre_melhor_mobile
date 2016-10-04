@@ -14,8 +14,8 @@ import java.util.Map;
 import java.util.TreeMap;
 
 import br.com.compremelhor.model.Purchase;
-import br.com.compremelhor.util.StringDateKeyComparator;
-import br.com.compremelhor.util.EntryDateKeyComparator;
+import br.com.compremelhor.util.comparator.StringDateKeyComparator;
+import br.com.compremelhor.util.comparator.EntryDateKeyComparator;
 import br.com.compremelhor.util.function.MyFunction;
 import br.com.compremelhor.view.PurchaseListView;
 
