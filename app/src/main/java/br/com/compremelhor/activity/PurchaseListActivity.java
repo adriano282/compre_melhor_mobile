@@ -124,7 +124,7 @@ public class PurchaseListActivity extends ActionBarActivity {
 
                 try {
                     for (Sync c : changes) {
-                        if (c.getEntityName().equals("purchase") && c.getAction().equals("edit")) {
+                        if (c.getEntityName().equals("purchase") && c.getAction().equals("EDITED")) {
                             Purchase p;
 
                             if ((p = dao.find(c.getEntityId())) == null) {
