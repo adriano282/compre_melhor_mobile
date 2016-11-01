@@ -101,6 +101,7 @@ public class ProfileActivity extends ActivityTemplate<User> implements OnClickLi
             edEmail.setError(getString(R.string.err_field_not_filled));
             valid = false;
         }
+
         return valid;
     }
 
@@ -112,7 +113,6 @@ public class ProfileActivity extends ActivityTemplate<User> implements OnClickLi
                         !edDocument.getText().toString().isEmpty() &&
                         !edName.getText().toString().isEmpty() &&
                         (rbCnpj.isChecked() || rbCpf.isChecked());
-
             }
         };
 
@@ -151,6 +151,8 @@ public class ProfileActivity extends ActivityTemplate<User> implements OnClickLi
         switch (view.getId()) {
             case R.id.profile_btn_save:
                 if (!validForm()) return;
+                if (!validDocument()) return;
+
                 final User user = getUserView();
 
                 showProgressDialog(R.string.dialog_header_wait,
@@ -293,4 +295,95 @@ public class ProfileActivity extends ActivityTemplate<User> implements OnClickLi
             rbCpf.setChecked(user.getTypeDocument().getType().equals(TypeDocument.CPF.toString().toLowerCase()));
         }
     }
+
+    private boolean validDocument() {
+        boolean result = false;
+
+        if (rbCpf.isChecked()) {
+            result = validCPFNumber(edDocument.getText().toString());
+        }
+        else if (rbCnpj.isChecked()) {
+            result =  validCNPJNumber(edDocument.getText().toString());
+        }
+
+        if (!result) {
+            edDocument.setError(getString(R.string.err_document_number_invalid));
+        }
+
+        return result;
+    }
+
+    private boolean validCNPJNumber(String cnpjNumber) {
+        char [] numbers = cnpjNumber.toCharArray();
+
+        return validVerifierNumberCNPJ(numbers, 12) &&
+                validVerifierNumberCNPJ(numbers, 13);
+    }
+
+    private boolean validVerifierNumberCNPJ(char [] cnpjNumber, int delimiter) {
+        boolean firstVerifier;
+        final int  firsVerPosition = 12;
+        final int secVerPosition = 13;
+
+        if (delimiter == firsVerPosition) {
+            firstVerifier = true;
+        }
+        else if (delimiter == secVerPosition) {
+            firstVerifier = false;
+        }
+        else { return false; }
+
+        int[] weights = firstVerifier ?
+                new int [] {5, 4, 3, 2, 9, 8, 7, 6, 5, 4, 3, 2} :
+                new int [] {6, 5, 4, 3, 2, 9, 8, 7, 6, 5, 4, 3, 2};
+
+        int verifierNumber =
+                firstVerifier ?
+                        getNumber(cnpjNumber[firsVerPosition]) :
+                        getNumber(cnpjNumber[secVerPosition]);
+
+        long sum = 0;
+
+        for (int i = 0; i < delimiter; i++) {
+            sum += getNumber(cnpjNumber[i]) * weights[i];
+        }
+
+        long rest = sum % 11;
+
+        return (rest) < 2 ?
+                verifierNumber == 0 :
+                (11 - (rest)) == verifierNumber;
+    }
+
+    private int getNumber(char c) {
+        return Integer.parseInt(String.valueOf(c));
+    }
+
+    private boolean validCPFNumber(String cpfNumber) {
+        return validVerifierNumber(cpfNumber.toCharArray(), 10)
+                && validVerifierNumber(cpfNumber.toCharArray(), 11);
+    }
+
+    private boolean validVerifierNumber(char [] cpfNumber, int startFactor) {
+        int firstVerifierNumber = getNumber(cpfNumber[9]);
+        int secondVerifierNumber = getNumber(cpfNumber[10]);
+        int sum = 0;
+
+        int factor = startFactor;
+
+        boolean firstVerifier = startFactor == 10;
+
+        for (char c : cpfNumber) {
+            if (factor < 2) break;
+            sum += getNumber(c) * factor--;
+        }
+
+        return ((sum * 10) % 11) ==
+                (firstVerifier ?
+                        firstVerifierNumber :
+                        secondVerifierNumber);
+    }
+
+
+
 }
