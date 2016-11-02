@@ -23,6 +23,7 @@ public interface Constants {
 
     String EXTRA_CURRENT_QUANTITY_OF_ITEM = "current_quantity_of_item_selected";
     String EXTRA_PURCHASE_ID = "purchase_id";
+    String EXTRA_CATEGORY_NAME = "category_name";
     String EXTRA_PARTNER_ID = "partner_id";
     String EXTRA_ADDRESS_ID = "address_id";
     String EXTRA_SER_PRODUCT = "product";
@@ -51,7 +52,8 @@ public interface Constants {
     int REQUEST_CODE_PAYMENT_PURCHASE_PAID = 14;
     int REQUEST_CODE_PURCHASE_FINISHED = 15;
     int REQUEST_CODE_PURCHASE_VIEWED = 16;
-    int REQUEST_CODE_UNVAILABLE_PRODUCTS_ISSUE = 17;
+    int REQUEST_CODE_PURCHASE_LINE_VIEWED = 17;
+    int REQUEST_CODE_UNVAILABLE_PRODUCTS_ISSUE = 18;
 
 
     // Constants for MENU OPTIONS on Action Bar

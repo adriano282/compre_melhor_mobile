@@ -91,6 +91,7 @@
     <string name="delete_confirmation_cart_item">Você realmente deseja remover este item de seu carrinho?</string>
     <string name="close_purchase_confirmation">Após a compra ser fechada, não será possível reabrir a mesma. Você tem certeza que deseja fechar a compra?</string>
     <string name="logout_action_confirmation">Você tem certeza que deseja sair?</string>
+    <string name="view_category_spent_historical_confirmation">Visualizar histórico de gastos da categoria deste produto?</string>
 
 
     <!-- TextView's messages texts -->
@@ -117,6 +118,7 @@
     <string name="err_wrong_credentials">Usuário ou senha incorretos</string>
     <string name="err_login_facebook">Desculpe, ocorreu um erro inesperado ao tentar-se conectar pelo facebook.</string>
     <string name="err_cpf_document_invalid">Documento CPF inválido</string>
+    <string name="err_document_number_invalid">Número de Documento Inválido</string>
     <string name="err_cnpj_document_invalid">Documento CNPJ inválido</string>
     <string name="err_ocurred_attempting_save_address">Ocorreu um erro ao tentar salvar o endereço</string>
     <string name="err_cep_not_found">CEP não encontrado</string>
@@ -173,6 +175,7 @@
     <string name="action_bar_expired_items_label">Items</string>
     <string name="action_bar_my_addresses_label">Meus Endereços</string>
     <string name="action_bar_register_label">Cadastro</string>
+    <string name="action_bar_historical_chart_label">Histórico</string>
 
 
 

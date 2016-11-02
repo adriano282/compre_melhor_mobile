@@ -23,6 +23,7 @@ import com.paypal.android.sdk.payments.PayPalPayment;
 import com.paypal.android.sdk.payments.PayPalProfileSharingActivity;
 import com.paypal.android.sdk.payments.PayPalService;
 import com.paypal.android.sdk.payments.PaymentActivity;
+import com.paypal.android.sdk.payments.PaymentConfirmation;
 
 import org.json.JSONException;
 
@@ -245,14 +246,14 @@ public class PaymentFragment extends android.support.v4.app.Fragment  {
             if (resultCode == Activity.RESULT_OK) {
 
 
-    /**            PaymentConfirmation confirm =
+                PaymentConfirmation confirm =
                         data.getParcelableExtra(PaymentActivity.EXTRA_RESULT_CONFIRMATION);
                 if (confirm != null) {
                     try {
 
                         Log.i(TAG, confirm.toJSONObject().toString(4));
                         Log.i(TAG, confirm.getPayment().toJSONObject().toString(4));
-**/
+
                         /**
                          *  TODO: send 'confirm' (and possibly confirm.getPayment() to your server for verification
                          * or consent completion.
@@ -273,12 +274,12 @@ public class PaymentFragment extends android.support.v4.app.Fragment  {
                         getActivity().finish();
 
 
-/**                    } catch (JSONException e) {
+                    } catch (JSONException e) {
                         Log.e(TAG, "an extremely unlikely failure occurred: ", e);
-                        }
+                    }
 
                 }
- **/
+
             } else if (resultCode == Activity.RESULT_CANCELED) {
                 Log.i(TAG, "The user canceled.");
             } else if (resultCode == PaymentActivity.RESULT_EXTRAS_INVALID) {
@@ -372,15 +373,15 @@ public class PaymentFragment extends android.support.v4.app.Fragment  {
             switch (item) {
                 case DialogInterface.BUTTON_POSITIVE:
 
-/**                    PayPalPayment purchaseToCharge =
+                    PayPalPayment purchaseToCharge =
                             getPurchaseToBuy(PayPalPayment.PAYMENT_INTENT_SALE);
 
                     intent = new Intent(getActivity(), PaymentActivity.class);
                     intent.putExtra(PayPalService.EXTRA_PAYPAL_CONFIGURATION, PayPalPaymentHelper.config);
                     intent.putExtra(PaymentActivity.EXTRA_PAYMENT, purchaseToCharge);
                     startActivityForResult(intent, PayPalPaymentHelper.REQUEST_CODE_PAYMENT);
-**/
-                    onActivityResult(1, Activity.RESULT_OK, null);
+
+//                    onActivityResult(1, Activity.RESULT_OK, null);
                     break;
 
                 case DialogInterface.BUTTON_NEGATIVE:
