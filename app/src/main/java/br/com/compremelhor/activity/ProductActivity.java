@@ -23,7 +23,6 @@ import br.com.compremelhor.model.PurchaseLine;
 import br.com.compremelhor.model.Stock;
 import br.com.compremelhor.service.CartService;
 
-import static br.com.compremelhor.util.Constants.EXTRA_CURRENT_QUANTITY_OF_ITEM;
 import static br.com.compremelhor.util.Constants.EXTRA_PURCHASE_ID;
 import static br.com.compremelhor.util.Constants.EXTRA_SER_PRODUCT;
 import static br.com.compremelhor.util.Constants.PREFERENCES;
@@ -155,8 +154,12 @@ public class ProductActivity extends ActivityTemplate<Stock> {
             request.execute().get();
             dismissProgressDialog();
 
-
             npQuantity.setMaxValue(item.getStock().getQuantity().intValue() > 100 ? 100 : item.getStock().getQuantity().intValue());
+            if (item.getStock().getQuantity().intValue() == 0)
+                btnChangeOnCart.setEnabled(false);
+            else
+                btnChangeOnCart.setEnabled(true);
+
         } catch (InterruptedException e) {
             e.printStackTrace();
         } catch (ExecutionException e) {
@@ -183,11 +186,11 @@ public class ProductActivity extends ActivityTemplate<Stock> {
         if (itemId != 0)
             btnChangeOnCart.setText(getString(R.string.button_text_change_on_cart));
 
-        String quantity = getIntent().getStringExtra(EXTRA_CURRENT_QUANTITY_OF_ITEM);
         npQuantity = (NumberPicker) findViewById(R.id.np_quantity);
+
+
         npQuantity.setMinValue(0);
         npQuantity.setMaxValue(20);
-        npQuantity.setValue(quantity == null || quantity.isEmpty() ? 0 : Integer.valueOf(quantity));
     }
 
     protected void registerWidgets() {

@@ -150,20 +150,20 @@ public class RegisterActivity extends ActivityTemplate<User> {
             valid = false;
         }
 
-        if (rbCpf.isChecked() &&
-                !document.isEmpty() &&
-                !document.matches(getString(R.string.regex_pattern_cpf_document))) {
+        if (rbCpf.isChecked()) {
+            String regex = getString(R.string.regex_pattern_cpf_document);
 
+            if (!document.isEmpty() && !document.matches(regex)) {
                 etDocument.setError(getString(R.string.err_cpf_document_invalid));
                 valid = false;
+            }
+        } else if (rbCnpj.isChecked()) {
+            String regex = getString(R.string.regex_pattern_cnpj_document);
 
-        } else if (rbCnpj.isChecked() &&
-                !document.isEmpty()
-                && !document.matches(getString(R.string.regex_pattern_cnpj_document))) {
-
+            if (!document.isEmpty() && !document.matches(regex)) {
                 etDocument.setError(getString(R.string.err_cnpj_document_invalid));
                 valid = false;
-
+            }
         } else {
             rbCnpj.setError("!?");
             rbCpf.setError("!?");
@@ -203,6 +203,8 @@ public class RegisterActivity extends ActivityTemplate<User> {
         @Override
         public void onClick(View v) {
             final User user = getUserView();
+            if (!validForm()) return;
+            if (!validDocument()) return;
 
             if (!resource.isConnectedOnInternet()) {
                 createDialogErrorWithoutNetwork(R.string.err_without_connection_register_message);
@@ -280,4 +282,93 @@ public class RegisterActivity extends ActivityTemplate<User> {
             query.execute();
         }
     }
+
+    private boolean validDocument() {
+        boolean result = false;
+
+        if (rbCpf.isChecked()) {
+            result = validCPFNumber(etDocument.getText().toString());
+        }
+        else if (rbCnpj.isChecked()) {
+            result =  validCNPJNumber(etDocument.getText().toString());
+        }
+
+        if (!result) {
+            etDocument.setError(getString(R.string.err_document_number_invalid));
+        }
+
+        return result;
+    }
+
+    private boolean validCNPJNumber(String cnpjNumber) {
+        char [] numbers = cnpjNumber.toCharArray();
+
+        return validVerifierNumberCNPJ(numbers, 12) &&
+                validVerifierNumberCNPJ(numbers, 13);
+    }
+
+    private boolean validVerifierNumberCNPJ(char [] cnpjNumber, int delimiter) {
+        boolean firstVerifier;
+        final int  firsVerPosition = 12;
+        final int secVerPosition = 13;
+
+        if (delimiter == firsVerPosition) {
+            firstVerifier = true;
+        }
+        else if (delimiter == secVerPosition) {
+            firstVerifier = false;
+        }
+        else { return false; }
+
+        int[] weights = firstVerifier ?
+                new int [] {5, 4, 3, 2, 9, 8, 7, 6, 5, 4, 3, 2} :
+                new int [] {6, 5, 4, 3, 2, 9, 8, 7, 6, 5, 4, 3, 2};
+
+        int verifierNumber =
+                firstVerifier ?
+                        getNumber(cnpjNumber[firsVerPosition]) :
+                        getNumber(cnpjNumber[secVerPosition]);
+
+        long sum = 0;
+
+        for (int i = 0; i < delimiter; i++) {
+            sum += getNumber(cnpjNumber[i]) * weights[i];
+        }
+
+        long rest = sum % 11;
+
+        return (rest) < 2 ?
+                verifierNumber == 0 :
+                (11 - (rest)) == verifierNumber;
+    }
+
+    private int getNumber(char c) {
+        return Integer.parseInt(String.valueOf(c));
+    }
+
+    private boolean validCPFNumber(String cpfNumber) {
+        return validVerifierNumber(cpfNumber.toCharArray(), 10)
+                && validVerifierNumber(cpfNumber.toCharArray(), 11);
+    }
+
+    private boolean validVerifierNumber(char [] cpfNumber, int startFactor) {
+        int firstVerifierNumber = getNumber(cpfNumber[9]);
+        int secondVerifierNumber = getNumber(cpfNumber[10]);
+        int sum = 0;
+
+        int factor = startFactor;
+
+        boolean firstVerifier = startFactor == 10;
+
+        for (char c : cpfNumber) {
+            if (factor < 2) break;
+            sum += getNumber(c) * factor--;
+        }
+
+        return ((sum * 10) % 11) ==
+                (firstVerifier ?
+                        firstVerifierNumber :
+                        secondVerifierNumber);
+    }
+
 }

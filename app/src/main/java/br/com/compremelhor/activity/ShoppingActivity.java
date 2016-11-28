@@ -40,6 +40,7 @@ public class ShoppingActivity extends ActionBarActivity {
     private Handler handler;
 
     public Handler getHandler() {
+        if (handler == null) handler = new Handler();
         return handler;
     }
 
@@ -48,11 +49,14 @@ public class ShoppingActivity extends ActionBarActivity {
         Log.d(TAG, "onCreate");
         super.onCreate(savedInstanceState);
         setContentView(R.layout.shopping);
-        setActionBar();
+        setActionBar(savedInstanceState);
         handler = new Handler();
+
         SharedPreferences preferences = getSharedPreferences(PREFERENCES, Activity.MODE_PRIVATE);
         int userId = preferences.getInt(SP_USER_ID, 0);
         int partnerId = preferences.getInt(SP_PARTNER_ID, 0);
+
+
 
         preferences
                 .edit()
@@ -103,7 +107,7 @@ public class ShoppingActivity extends ActionBarActivity {
         return super.onOptionsItemSelected(item);
     }
 
-    private void setActionBar() {
+    private void setActionBar(Bundle savedInstanceState) {
         Log.d(TAG, "setActionBar");
         ActionBar ab = getSupportActionBar();
 
@@ -114,9 +118,17 @@ public class ShoppingActivity extends ActionBarActivity {
 
         ab.setElevation(4);
 
-        Fragment cartFragment = CartFragment.newInstance(CART_FRAGMENT);
-        Fragment freightFragment = FreightFragment.newInstance(FREIGHT_FRAGMENT);
-        Fragment closePurchaseFragment = PaymentFragment.newInstance(PAYMENT_FRAGMENT);
+        Fragment cartFragment;
+        Fragment freightFragment;
+        Fragment closePurchaseFragment;
+
+
+        cartFragment = CartFragment.newInstance(savedInstanceState);
+        freightFragment = FreightFragment.newInstance(savedInstanceState);
+        closePurchaseFragment = PaymentFragment.newInstance(savedInstanceState);
+
+
+
 
         ab.addTab(ab.newTab().setText(R.string.cart).setTabListener(new MyTabsListener(cartFragment)));
         ab.addTab(ab.newTab().setText(R.string.freight).setTabListener(new MyTabsListener(freightFragment)));
@@ -127,8 +139,9 @@ public class ShoppingActivity extends ActionBarActivity {
         public Fragment fragment;
 
         public MyTabsListener(Fragment fragment) {
-            this.fragment = fragment;
 
+
+            this.fragment = fragment;
             if (fragment instanceof CartFragment) {
                 currentFragment = CART_FRAGMENT;
             } else if (fragment instanceof  FreightFragment) {
@@ -147,12 +160,13 @@ public class ShoppingActivity extends ActionBarActivity {
         @Override
         public void onTabUnselected(ActionBar.Tab tab, FragmentTransaction ft) {
             Log.d("MyTabsListener", "onTabUnselected");
+
         }
 
         @Override
         public void onTabReselected(ActionBar.Tab tab, FragmentTransaction ft) {
             Log.d("MyTabsListener", "onTabReselected");
-//            ft.remove(fragment);
+
         }
     }
 

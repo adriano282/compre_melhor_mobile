@@ -67,13 +67,10 @@ public class PaymentFragment extends android.support.v4.app.Fragment  {
     private int partnerId;
     private int userId;
 
-    public static PaymentFragment newInstance(String mTag) {
+    public static PaymentFragment newInstance(Bundle args) {
         if (instance == null)
             instance = new PaymentFragment();
 
-        Bundle args = new Bundle();
-        args.putString("mTag", mTag);
-        instance.setArguments(args);
         return instance;
     }
 
@@ -204,6 +201,8 @@ public class PaymentFragment extends android.support.v4.app.Fragment  {
         Intent intent = new Intent(getActivity(), PayPalService.class);
         intent.putExtra(PayPalService.EXTRA_PAYPAL_CONFIGURATION, PayPalPaymentHelper.config);
         getActivity().startService(intent);
+
+        setRetainInstance(true);
 
         preferences = getActivity().getSharedPreferences(PREFERENCES, Activity.MODE_PRIVATE);
         int userId = preferences.getInt(SP_USER_ID, 0);

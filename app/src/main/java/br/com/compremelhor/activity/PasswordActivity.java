@@ -153,8 +153,9 @@ public class PasswordActivity extends ActivityTemplate<User> implements OnClickL
 
         MyPredicate predicate = new MyPredicate() {
             public boolean test() {
-                return !etNewPassword.getText().toString().isEmpty()
-                        && !etRepeatPassword.getText().toString().isEmpty() && isDivergentPasswords.test();
+                return !etNewPassword.getText().toString().isEmpty() &&
+                        !etRepeatPassword.getText().toString().isEmpty() &&
+                        isDivergentPasswords.test();
             }
         };
 

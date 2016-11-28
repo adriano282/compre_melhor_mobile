@@ -61,7 +61,7 @@ public interface Constants {
     int MENU_OPTION_ID_LIST_BY_YEAR = 2;
     int MENU_OPTION_ID_LIST_BY_MONTH = 3;
 
-    String CART_FRAGMENT = "cart_fragment";
-    String FREIGHT_FRAGMENT = "freight_fragment";
-    String PAYMENT_FRAGMENT = "payment_fragment";
+    String CART_FRAGMENT = "fragment_cart";
+    String FREIGHT_FRAGMENT = "fragment_freight";
+    String PAYMENT_FRAGMENT = "fragment_payment";
 }

@@ -206,8 +206,8 @@ public class BarChartFragment extends Fragment {
         @Override
         public void onValueSelected(int arcIndex, SliceValue value) {
             String whenSelected =
-                    String.format("%,.2f%% - R$ %,.2f",
-                            (value.getValue()/sumBySelectedMonth)*100,
+                    String.format("%s: %,.2f%% - R$ %,.2f",
+                            new String(value.getLabel()), (value.getValue()/sumBySelectedMonth)*100,
                             value.getValue());
 
             Toast.makeText(getActivity(), whenSelected, Toast.LENGTH_SHORT).show();

@@ -79,13 +79,10 @@ public class FreightFragment extends Fragment {
     private int userId;
     private int partnerId;
 
-    public static FreightFragment newInstance(String mTag){
+    public static FreightFragment newInstance(Bundle args){
         if (instance == null)
             instance = new FreightFragment();
 
-        Bundle args = new Bundle();
-        args.putString("mTag", mTag);
-        instance.setArguments(args);
         return instance;
     }
 
@@ -97,6 +94,7 @@ public class FreightFragment extends Fragment {
         setPreferences();
         setDAOS();
 
+        setRetainInstance(true);
         userId = preferences.getInt(SP_USER_ID, 0);
         partnerId = preferences.getInt(SP_PARTNER_ID, 0);
 

@@ -61,15 +61,18 @@
 
             <EditText
                 android:id="@+id/register_et_password"
+                android:inputType="textPassword"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content" />
 
             <TextView
+
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="@string/edit_text_label_password_confirmation"/>
 
             <EditText
+                android:inputType="textPassword"
                 android:id="@+id/register_et_password2"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content" />

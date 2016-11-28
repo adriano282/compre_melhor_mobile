@@ -123,7 +123,7 @@ public class PieChartFragment extends Fragment {
         @Override
         public void onValueSelected(int arcIndex, SliceValue value) {
             String whenSelected =
-                    String.format("%,.2f%% - R$ %,.2f",
+                    String.format("%s: %,.2f%% - R$ %,.2f", new String(value.getLabel()),
                             (value.getValue()/totalValue)*100,
                             value.getValue());
 

@@ -8,7 +8,6 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.os.Handler;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -26,6 +25,7 @@ import java.util.TreeSet;
 
 import br.com.compremelhor.R;
 import br.com.compremelhor.activity.ProductActivity;
+import br.com.compremelhor.activity.ShoppingActivity;
 import br.com.compremelhor.adapter.ExpandableListAdapter;
 import br.com.compremelhor.model.Product;
 import br.com.compremelhor.model.PurchaseLine;
@@ -74,7 +74,6 @@ public class CartFragment extends android.support.v4.app.Fragment {
     private SharedPreferences preferences;
 
     private CartService cartService;
-    private Handler handler;
 
     private String partnerName;
 
@@ -82,14 +81,11 @@ public class CartFragment extends android.support.v4.app.Fragment {
         return instance;
     }
 
-    public static CartFragment newInstance(String mTag){
+    public static CartFragment newInstance(Bundle args){
         Log.d(TAG, "newInstance");
         if (instance == null)
             instance = new CartFragment();
 
-        Bundle args = new Bundle();
-        args.putString("mTag", mTag);
-        instance.setArguments(args);
         return instance;
     }
 
@@ -100,11 +96,11 @@ public class CartFragment extends android.support.v4.app.Fragment {
         preferences = getActivity().getSharedPreferences(PREFERENCES, Activity.MODE_PRIVATE);
         partnerName = preferences.getString(SP_PARTNER_NAME, "");
 
+        setRetainInstance(true);
+
         int userId = preferences.getInt(SP_USER_ID, 0);
         int partnerId = preferences.getInt(SP_PARTNER_ID, 0);
-
         cartService = CartService.getInstance(getActivity(), userId, partnerId);
-        handler = new Handler();
     }
 
 
@@ -119,9 +115,8 @@ public class CartFragment extends android.support.v4.app.Fragment {
     public void onViewCreated(View view, Bundle savedInstanceState) {
         Log.d(TAG, "onViewCreated");
         super.onViewCreated(view, savedInstanceState);
-        new LoadCurrentCart().execute();
+        new LoadCurrentCart().execute(view);
 
-        handler = new Handler();
         setWidgets();
         registerViews();
     }
@@ -153,7 +148,7 @@ public class CartFragment extends android.support.v4.app.Fragment {
                             Product p = cartService.getProduct(code);
 
                             if (cartService.containsProduct(code)) {
-                                handler.post(new Runnable() {
+                                ((ShoppingActivity)getActivity()).getHandler().post(new Runnable() {
                                     @Override
                                     public void run() {
                                         Toast.makeText(getActivity(),
@@ -165,7 +160,7 @@ public class CartFragment extends android.support.v4.app.Fragment {
                             }
 
                             if (p == null) {
-                                handler.post(new Runnable() {
+                                ((ShoppingActivity)getActivity()).getHandler().post(new Runnable() {
                                     @Override
                                     public void run() {
                                         Toast.makeText(getActivity(),
@@ -307,7 +302,7 @@ public class CartFragment extends android.support.v4.app.Fragment {
                         protected Void doInBackground(Void... params) {
                             Product p = cartService.getProduct(Integer.valueOf(itemIdSelected.trim()));
                             if (p == null) {
-                                handler.post(new Runnable() {
+                                ((ShoppingActivity)getActivity()).getHandler().post(new Runnable() {
                                     @Override
                                     public void run() {
                                         Toast.makeText(getActivity(),
@@ -376,25 +371,29 @@ public class CartFragment extends android.support.v4.app.Fragment {
         }
     }
 
-    private class LoadCurrentCart extends AsyncTask<Void, Void, Double> {
-        public void onPreExecute() {
-
-            handler.post(new Runnable() {
-                @Override
-                public void run() {
-                    ProgressDialogHelper.getInstance(getActivity())
-                            .setMessage(getString(R.string.loading_current_cart_dialog))
-                            .showWaitProgressDialog();
-                }
-            });
-
-        }
-
+    private class LoadCurrentCart extends AsyncTask<View, Void, Double> {
         @Override
-        protected Double doInBackground(Void... params) {
+        protected Double doInBackground(View... params) {
+            if (params != null && params.length == 1)
+                return refreshListOnCurrentCart(params[0]);
 
-            return refreshListOnCurrentCart();
+
+            return refreshListOnCurrentCart(null);
         }
+
+        public void onPreExecute() {
+            if (isAdded() && getActivity() != null)
+                ((ShoppingActivity)getActivity()).getHandler().post(new Runnable() {
+                    @Override
+                    public void run() {
+                        ProgressDialogHelper.getInstance(getActivity())
+                                .setMessage(getString(R.string.loading_current_cart_dialog))
+                                .showWaitProgressDialog();
+                    }
+                });
+
+        }
+
 
         public void onPostExecute(Double valueTotal) {
             setWidgets();
@@ -402,19 +401,25 @@ public class CartFragment extends android.support.v4.app.Fragment {
             ProgressDialogHelper.dismissProgressDialog();
         }
 
-        private double refreshListOnCurrentCart() {
+        private double refreshListOnCurrentCart(final View container) {
             Log.d(TAG, "refreshListOnCurrentCart");
             final TreeSet<PurchaseLine> items = cartService.getItems();
-            handler.post(new Runnable() {
-                @Override
-                public void run() {
-                    if (items.size() == 0) {
-                        getView().findViewById(R.id.tv_empty_cart_message).setVisibility(View.VISIBLE);
-                    } else {
-                        getView().findViewById(R.id.tv_empty_cart_message).setVisibility(View.GONE);
+            if (isAdded() && getActivity() != null)
+                ((ShoppingActivity)getActivity()).getHandler().post(new Runnable() {
+                    @Override
+                    public void run() {
+                        View view = getView();
+                        if (view == null) {
+                            view = container;
+                        }
+
+                        if (items.size() == 0) {
+                            view.findViewById(R.id.tv_empty_cart_message).setVisibility(View.VISIBLE);
+                        } else {
+                            view.findViewById(R.id.tv_empty_cart_message).setVisibility(View.GONE);
+                        }
                     }
-                }
-            });
+                });
 
             SkuListView slv = ComputePurchaseLinesHelper.getSkuListView(items);
 
