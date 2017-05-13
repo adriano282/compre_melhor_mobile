@@ -9,4 +9,5 @@
 *.war
 *.class
 *.jks
+.gitignore
 facebook*
